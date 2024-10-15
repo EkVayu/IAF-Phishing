@@ -1,0 +1,76 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #e0f7fa;
+  border-radius: 10px;
+  width: 300px;
+  padding: 20px;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.inputContainer{
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  width: calc(100% - 20px);
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  
+}
+
+.buttonContainer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sendButton {
+  background-color: #007bff;
+  color: white;
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+/* .batchButton {
+  background-color: #007bff;
+} */
+
+/* .sendButton {
+  background-color: #1e90ff;
+} */
