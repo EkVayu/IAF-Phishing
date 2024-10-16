@@ -69,17 +69,21 @@ function RogueDB() {
       const mailResponse = await fetchRoughMail();
 
       if (urlResponse.ok && domainResponse.ok && mailResponse.ok) {
-        setUrlData(urlResponse.results.data);
-        setDomainData(domainResponse.results.data);
-        setMailData(mailResponse.results.data);
+        const urlData = await urlResponse.json();
+        const domainData = await domainResponse.json();
+        const mailData = await mailResponse.json();
+
+        setUrlData(urlData.results.data);
+        setDomainData(domainData.results.data);
+        setMailData(mailData.results.data);
         setLoading(false);
       } else {
         setLoading(false);
-        setUrlData(dummyUrlData);
-        setDomainData(dummyDomainData);
-        setMailData(dummyMailData);
-        toast.warn("API response not OK. Showing dummy data.");
-        // toast.warn("API response not as expected. Please check the data.");
+        // setUrlData(dummyUrlData);
+        // setDomainData(dummyDomainData);
+        // setMailData(dummyMailData);
+        toast.warn("API response not OK.");
+        throw new Error("One or more API responses were not OK");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -88,7 +92,6 @@ function RogueDB() {
       setDomainData(dummyDomainData);
       setMailData(dummyMailData);
       toast.error("Error fetching data. Showing dummy data.");
-      // toast.error("Error fetching data. Please try again.");
     }
   };
 
@@ -367,56 +370,58 @@ function RogueDB() {
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
         </div>
       ) : (
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-primary text-white">
-              {tabData[activeTab].headers.map(
-                (header, index) =>
-                  visibleColumns[header.toLowerCase().replace(/ /g, "_")] && (
-                    <th key={index} className="py-2 px-4 text-center">
-                      {header}
-                    </th>
-                  )
-              )}
-              <th className="py-2 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedData().map((item) => (
-              <tr key={item.id} className="border bg-background">
-                {tabData[activeTab].dataKeys.map(
-                  (key, index) =>
-                    visibleColumns[
-                      tabData[activeTab].headers[index]
-                        .toLowerCase()
-                        .replace(/ /g, "_")
-                    ] && (
-                      <td
-                        key={key}
-                        className="py-2 px-4 text-center text-secondary-foreground"
-                      >
-                        {item[key]}
-                      </td>
+        <div className="rounded-md overflow-hidden">
+          <table className="w-full border-collapse rounded-md">
+            <thead>
+              <tr className="bg-primary text-white">
+                {tabData[activeTab].headers.map(
+                  (header, index) =>
+                    visibleColumns[header.toLowerCase().replace(/ /g, "_")] && (
+                      <th key={index} className="py-2 px-4 text-center">
+                        {header}
+                      </th>
                     )
                 )}
-                <td className="py-2 px-4 text-right">
-                  <button
-                    className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                    onClick={() => handleEdit(item)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-2 py-1 rounded"
-                    onClick={() => handleDeleteClick(item)}
-                  >
-                    Delete
-                  </button>
-                </td>
+                <th className="py-2 px-4 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {paginatedData().map((item) => (
+                <tr key={item.id} className="border bg-background hover:bg-gray-200 dark:hover:bg-gray-900">
+                  {tabData[activeTab].dataKeys.map(
+                    (key, index) =>
+                      visibleColumns[
+                        tabData[activeTab].headers[index]
+                          .toLowerCase()
+                          .replace(/ /g, "_")
+                      ] && (
+                        <td
+                          key={key}
+                          className="py-2 px-4 text-center text-secondary-foreground"
+                        >
+                          {item[key]}
+                        </td>
+                      )
+                  )}
+                  <td className="py-2 px-4 text-right">
+                    <button
+                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                      onClick={() => handleEdit(item)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                      onClick={() => handleDeleteClick(item)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {!loading && (

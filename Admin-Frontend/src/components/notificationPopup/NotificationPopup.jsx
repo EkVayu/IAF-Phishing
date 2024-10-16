@@ -1,5 +1,4 @@
 import React from "react";
-<<<<<<< HEAD
 import { MdNotifications, MdClear } from "react-icons/md";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -49,50 +48,6 @@ const NotificationPopup = ({ notifications }) => {
         </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>
-=======
-import { MdCancel, MdNotifications, MdClear } from "react-icons/md";
-
-const NotificationPopup = ({ notifications, onClose, onClearNotification }) => {
-  return (
-    <div className="fixed top-16 right-4 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-      <div className="flex items-center justify-between bg-blue-600 dark:bg-blue-800 text-white px-4 py-3">
-        <div className="flex items-center space-x-2">
-          <MdNotifications className="text-xl" />
-          <h2 className="text-lg font-semibold">Notifications</h2>
-        </div>
-        <MdCancel
-          className="text-2xl cursor-pointer hover:text-gray-200 transition-colors"
-          onClick={onClose}
-        />
-      </div>
-      <div className="max-h-96 overflow-y-auto">
-        {notifications.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-            No new notifications
-          </p>
-        ) : (
-          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {notifications.map((notification, index) => (
-              <li
-                key={index}
-                className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-gray-800 dark:text-gray-200 flex-grow">
-                    {notification}
-                  </p>
-                  <MdClear
-                    className="text-gray-500 hover:text-red-500 cursor-pointer ml-2 flex-shrink-0"
-                    onClick={() => onClearNotification(index)}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
   );
 };
 

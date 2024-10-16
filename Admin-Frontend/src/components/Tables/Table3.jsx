@@ -164,7 +164,7 @@ const Table3 = ({
                 {paginatedData?.map((row, rowIndex) => (
                   <tr
                     key={rowIndex}
-                    className="border-b border-indigo-100 hover:bg-indigo-100 dark:hover:bg-gray-700 transition duration-200 text-secondary-foreground"
+                    className="border hover:bg-gray-200 dark:hover:bg-gray-900 text-secondary-foreground"
                   >
                     {columns
                       .filter((col) => visibleColumns[col.accessor])

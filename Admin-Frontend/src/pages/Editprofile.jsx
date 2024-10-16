@@ -181,11 +181,7 @@ function EditProfile() {
                     required
                     value={formData[key]}
                     onChange={handleInputChange}
-<<<<<<< HEAD
-                    className={`block w-full pl-10 sm:text-sm border h-10 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-secondary-foreground ${
-=======
-                    className={`block w-full pl-10 sm:text-sm border h-10 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 ${
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
+                    className={`block w-full text-secondary-foreground pl-10 sm:text-sm border h-10 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 ${
                       key === "email" || key === "username"
                         ? "bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
                         : "dark:bg-gray-700"
@@ -214,11 +210,7 @@ function EditProfile() {
               rows="4"
               value={formData.bio}
               onChange={handleInputChange}
-<<<<<<< HEAD
-              className="block w-full p-2 sm:text-sm border border-gray-300 dark:bg-gray-700 rounded-md focus:ring-blue-500 focus:border-blue-500 resize-none text-secondary-foreground"
-=======
-              className="block w-full p-2 sm:text-sm border border-gray-300 dark:bg-gray-700 rounded-md focus:ring-blue-500 focus:border-blue-500 resize-none"
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
+              className="block w-full p-2 sm:text-sm text-secondary-foreground border border-gray-300 dark:bg-gray-700 rounded-md focus:ring-blue-500 focus:border-blue-500 resize-none"
               placeholder="Tell us about yourself..."
             ></textarea>
           </div>

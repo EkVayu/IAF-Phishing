@@ -82,7 +82,7 @@ function CreateRogueDBModal({ isOpen, onClose, activeTab, onSubmit, loading }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg relative">
-        <h2 className="text-xl font-bold mb-4 text-primary">
+        <h2 className="text-xl font-bold mb-4 text-secondary-foreground">
           Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
         </h2>
         {renderForm()}

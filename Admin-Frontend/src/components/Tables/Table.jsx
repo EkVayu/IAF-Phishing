@@ -451,7 +451,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                       onClick={(event) =>
                         handleRowClick(event, row?.original?.license_id)
                       }
-                      className={`border cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-800`}
+                      className={`border hover:bg-gray-200 dark:hover:bg-gray-900`}
                     >
                       {row?.cells
                         ?.filter((cell) => cell.column.show)

@@ -19,7 +19,7 @@ function EditRogueDBModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-4 text-primary">
+        <h2 className="text-2xl font-bold mb-4 text-secondary-foreground">
           Edit {activeTab.toUpperCase()}
         </h2>
         <form onSubmit={onSubmit}>

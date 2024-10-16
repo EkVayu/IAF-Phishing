@@ -361,7 +361,7 @@ export const createRoughUrl = async (urlData) => {
     },
     body: JSON.stringify(urlData),
   });
-  return response.json();
+  return response;
 };
 
 export const updateRoughUrl = async (id, urlData) => {
@@ -374,7 +374,7 @@ export const updateRoughUrl = async (id, urlData) => {
     },
     body: JSON.stringify(urlData),
   });
-  return response.json();
+  return response;
 };
 
 export const deleteRoughUrl = async (id) => {
@@ -412,7 +412,7 @@ export const createRoughDomain = async (domainData) => {
     },
     body: JSON.stringify(domainData),
   });
-  return response.json();
+  return response;
 };
 
 export const updateRoughDomain = async (id, domainData) => {
@@ -425,7 +425,7 @@ export const updateRoughDomain = async (id, domainData) => {
     },
     body: JSON.stringify(domainData),
   });
-  return response.json();
+  return response;
 };
 
 export const deleteRoughDomain = async (id) => {
@@ -450,7 +450,7 @@ export const fetchRoughMail = async () => {
       Authorization: `Token ${token}`,
     },
   });
-  return response.json();
+  return response;
 };
 export const createRoughMail = async (mailData) => {
   const token = sessionStorage.getItem("token");
@@ -462,7 +462,7 @@ export const createRoughMail = async (mailData) => {
     },
     body: JSON.stringify(mailData),
   });
-  return response.json();
+  return response;
 };
 
 export const updateRoughMail = async (id, mailData) => {
@@ -475,7 +475,7 @@ export const updateRoughMail = async (id, mailData) => {
     },
     body: JSON.stringify(mailData),
   });
-  return response.json();
+  return response;
 };
 
 export const deleteRoughMail = async (id) => {

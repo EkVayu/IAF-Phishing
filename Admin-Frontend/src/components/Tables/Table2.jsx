@@ -191,7 +191,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                   .map((column) => (
                     <th
                       key={column.accessor}
-                      className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                      className="px-10 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
                     >
                       {column.Header}
                     </th>
@@ -199,15 +199,11 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
               </tr>
             </thead>
 
-            <tbody className="">
+            <tbody className="bg-background">
               {paginatedData.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
-<<<<<<< HEAD
-                  className="border bg-background hover:bg-gray-300 dark:hover:bg-gray-800"
-=======
-                  className="border hover:bg-gray-300 dark:hover:bg-gray-800"
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
+                  className="border hover:bg-gray-200 dark:hover:bg-gray-900"
                 >
                   {columns
                     .filter((col) => visibleColumns[col.accessor])
@@ -272,7 +268,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
       </div>
       {!error && !loading && (
         <div className="mt-4 flex items-center justify-between">
-          <div>
+          <div className="text-secondary-foreground">
             Showing {(currentPage - 1) * itemsPerPage + 1}-
             {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
             {filteredData.length}

@@ -34,16 +34,16 @@ function Reports() {
         toast.success("Displaying live data from API");
       } else {
         // Generate 10 random reports if no live data is available
-        const generatedData = ReportDataGenerator(10);
+        const generatedData = ReportDataGenerator(5);
         setReportsData(generatedData);
-        toast.info("No live data available. Displaying generated data");
+        toast.warn("No live data available. Displaying generated data");
       }
     } catch (error) {
       console.error("Failed to load reports data:", error);
       // Generate 10 random reports in case of API error
-      const generatedData = ReportDataGenerator(10);
+      const generatedData = ReportDataGenerator(5);
       setReportsData(generatedData);
-      toast.warning("API error. Displaying generated data");
+      toast.error("API error. Displaying generated data");
     } finally {
       setLoading(false);
     }

@@ -2,13 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import userIcon from "../assets/user.png";
 import LogoutPopup from "../components/logpopup/LogoutPopup";
-<<<<<<< HEAD
 import ChangePassword from "../components/popup/ChangePassword/ChangePassword";
 import NotificationPopup from "../components/notificationPopup/NotificationPopup";
-=======
-import NotificationPopup from "../components/notificationPopup/NotificationPopup";
-import ChangePassword from "../components/popup/ChangePassword/ChangePassword";
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { FaAngleDown, FaBell, FaRegEdit } from "react-icons/fa";
@@ -16,25 +11,9 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import { HiArrowLeftStartOnRectangle } from "react-icons/hi2";
 import { useAuth } from "../context/AuthContext";
 
-<<<<<<< HEAD
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
-=======
-function NotificationBadge({ count }) {
-  return (
-    <div className="absolute -top-[14px] -right-[3px] bg-red-500 text-background rounded-full px-[2px] text-[10px] max-h-fit max-w-[80%]">
-      {count > 9 ? "9+" : count}
-    </div>
-  );
-}
-
-const Header = () => {
-  const notificationCount = 50;
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
-  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
   const [changePasswordPopup, setChangePasswordPopup] = useState(false);
   const menuRef = useRef();
   const triggerRef = useRef();
@@ -59,7 +38,6 @@ const Header = () => {
     "Notification 3",
     "Notification 4",
     "Notification 5",
-<<<<<<< HEAD
     "Notification 6",
     "Notification 7",
     "Notification 8",
@@ -67,8 +45,6 @@ const Header = () => {
     "Notification 10",
     "Notification 11",
     "Notification 12",
-=======
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
   ];
 
   const toggleDropdown = () => {
@@ -89,13 +65,6 @@ const Header = () => {
     setShowLogoutPopup(false);
   };
 
-<<<<<<< HEAD
-=======
-  const handleBellClick = () => {
-    setShowNotificationPopup(!showNotificationPopup);
-  };
-
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -123,20 +92,11 @@ const Header = () => {
         </h3>
       </div>
       <div className="w-full flex items-center justify-end gap-5">
-<<<<<<< HEAD
         <div className="relative cursor-pointer">
           <NotificationPopup notifications={notifications} />
         </div>
         <div
           className="flex items-center cursor-pointer select-none bg-gray-200 dark:bg-gray-800 rounded-md px-2 py-1"
-=======
-        <div className="relative cursor-pointer" onClick={handleBellClick}>
-          <FaBell className="w-[18px] h-[18px] text-secondary-foreground" />
-          <NotificationBadge count={notificationCount} />
-        </div>
-        <div
-          className="flex items-center cursor-pointer select-none bg-gray-200 dark:bg-transparent rounded-md px-2 py-1"
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
           onClick={toggleDropdown}
           ref={triggerRef}
         >
@@ -200,20 +160,7 @@ const Header = () => {
         </div>
 
         {showLogoutPopup && <LogoutPopup onClose={closeLogoutPopup} />}
-<<<<<<< HEAD
-        {/* {showNotificationPopup && (
-=======
-        {showNotificationPopup && (
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
-          <NotificationPopup
-            notifications={notifications}
-            onClose={() => setShowNotificationPopup(false)}
-          />
-<<<<<<< HEAD
-        )} */}
-=======
-        )}
->>>>>>> 068ae200d36dc9e91c7d40e7b4847434738a876e
+        
         {changePasswordPopup && (
           <ChangePassword
             onClose={() => setChangePasswordPopup(false)}
