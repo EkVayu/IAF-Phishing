@@ -9,12 +9,16 @@ import generateDummyUsers from "../../Utils/Usergenerator";
 function Users() {
   const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const columns = [
     { Header: "Id", accessor: "id" },
-    { Header: "Name", accessor: "name" },
+    {
+      Header: "Name",
+      accessor: "name",
+      Cell: ({ row }) => `${row.original.first_name} ${row.original.last_name}`,
+    },
     { Header: "Email", accessor: "email" },
     {
       Header: "Actions",
@@ -31,12 +35,17 @@ function Users() {
   ];
 
   const getUsers = async () => {
+    setLoading(true);
     try {
       const response = await fetchUsers();
       if (response.results) {
-        setUsers(response.results);
+        const formattedUsers = response.results.map((user) => ({
+          ...user,
+          name: `${user.first_name} ${user.last_name}`,
+        }));
+        setUsers(formattedUsers);
       } else {
-        setUsers(Array.isArray(response) ? response : []);
+        setError("Response not Ok!");
       }
       setLoading(false);
     } catch (error) {

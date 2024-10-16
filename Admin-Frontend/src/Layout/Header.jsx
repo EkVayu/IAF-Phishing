@@ -87,14 +87,16 @@ const Header = () => {
   return (
     <div className="w-full h-16 flex items-center justify-between px-6 dark:border-b">
       <div className="w-full">
-        <h3 className="text-2xl font-semibold text-secondary-foreground">
-          Company Name
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-primary via-white to-secondary text-transparent bg-clip-text">
+          Indian Air Force
         </h3>
       </div>
       <div className="w-full flex items-center justify-end gap-5">
-        <div className="relative cursor-pointer">
-          <NotificationPopup notifications={notifications} />
-        </div>
+        {role === "staff" && (
+          <div className="relative cursor-pointer">
+            <NotificationPopup notifications={notifications} />
+          </div>
+        )}
         <div
           className="flex items-center cursor-pointer select-none bg-gray-200 dark:bg-gray-800 rounded-md px-2 py-1"
           onClick={toggleDropdown}
@@ -130,23 +132,27 @@ const Header = () => {
               ref={menuRef}
             >
               <ul className="flex flex-col gap-2">
-                <li className="flex items-center p-[7px_10px] cursor-pointer  hover:bg-gray-300 dark:hover:bg-gray-800 text-secondary-foreground rounded-md">
-                  <FaRegEdit className="mr-[10px] w-[18px] h-[18px]" />
-                  <Link to="/edit-profile" className="no-underline text-sm">
-                    Edit Profile
-                  </Link>
-                </li>
+                {role === "staff" && (
+                  <li className="flex items-center p-[7px_10px] cursor-pointer  hover:bg-gray-300 dark:hover:bg-gray-800 text-secondary-foreground rounded-md">
+                    <FaRegEdit className="mr-[10px] w-[18px] h-[18px]" />
+                    <Link to="/edit-profile" className="no-underline text-sm">
+                      Edit Profile
+                    </Link>
+                  </li>
+                )}
+                {role === "staff" && (
+                  <li
+                    className="flex items-center p-[7px_10px] cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-800 text-secondary-foreground rounded-md"
+                    onClick={handleChangePasswordPopup}
+                  >
+                    <RiLockPasswordFill className="mr-[10px] w-[18px] h-[18px]" />
+                    <Link to="#" className="no-underline text-sm">
+                      Change Password
+                    </Link>
+                  </li>
+                )}
                 <li
-                  className="flex items-center p-[7px_10px] cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-800 text-secondary-foreground rounded-md"
-                  onClick={handleChangePasswordPopup}
-                >
-                  <RiLockPasswordFill className="mr-[10px] w-[18px] h-[18px]" />
-                  <Link to="#" className="no-underline text-sm">
-                    Change Password
-                  </Link>
-                </li>
-                <li
-                  className="flex items-center p-[7px_10px] cursor-pointer  hover:bg-gray-300 dark:hover:bg-gray-800 text-secondary-foreground rounded-md"
+                  className="flex items-center p-[7px_10px] cursor-pointer  hover:bg-gray-300 dark:hover:bg-gray-800 text-red-500 rounded-md"
                   onClick={handleLogoutPopup}
                 >
                   <HiArrowLeftStartOnRectangle className="mr-[10px] w-[18px] h-[18px]" />
@@ -160,7 +166,7 @@ const Header = () => {
         </div>
 
         {showLogoutPopup && <LogoutPopup onClose={closeLogoutPopup} />}
-        
+
         {changePasswordPopup && (
           <ChangePassword
             onClose={() => setChangePasswordPopup(false)}
