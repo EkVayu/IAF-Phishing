@@ -10,6 +10,16 @@ import { FaAngleDown, FaBell, FaRegEdit } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { HiArrowLeftStartOnRectangle } from "react-icons/hi2";
 import { useAuth } from "../context/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/context/theme-provider";
+import { Moon, Sun } from "lucide-react";
+import { FaComputer } from "react-icons/fa6";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,6 +29,7 @@ const Header = () => {
   const triggerRef = useRef();
   const [open, setOpen] = useState(false);
   const { user, role } = useAuth();
+  const { setTheme, theme } = useTheme();
 
   const handleClick = () => {
     setChangePasswordPopup(false);
@@ -97,6 +108,46 @@ const Header = () => {
             <NotificationPopup notifications={notifications} />
           </div>
         )}
+        {role === "superuser" && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="text-secondary-foreground bg-gray-200 dark:bg-gray-800 outline-none ring-offset-0 focus-visible:outline-none focus-visible:ring-0 flex items-center gap-2 h-[44px]"
+              >
+                {theme === "light" ? (
+                  <Sun className="h-[1.2rem] w-[1.2rem]" />
+                ) : theme === "dark" ? (
+                  <Moon className="h-[1.2rem] w-[1.2rem]" />
+                ) : (
+                  <FaComputer className="h-[1.2rem] w-[1.2rem]" />
+                )}
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => setTheme("light")}
+                className="cursor-pointer border-b"
+              >
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setTheme("dark")}
+                className="cursor-pointer border-b"
+              >
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setTheme("system")}
+                className="cursor-pointer"
+              >
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         <div
           className="flex items-center cursor-pointer select-none bg-gray-200 dark:bg-gray-800 rounded-md px-2 py-1"
           onClick={toggleDropdown}
