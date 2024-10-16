@@ -46,6 +46,7 @@ function Licenses() {
     return licenses.map((license) => ({
       ...license,
       plugin_id: license.plugins[0]?.plugin_id || "N/A",
+      allocated_to: license.allocated_to || "N/A",
       statusText: license.status === "1" ? "Active" : "Inactive",
     }));
   };
@@ -61,7 +62,7 @@ function Licenses() {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching licenses:", error);
-      const dummyLicenses = generateDummyLicenses(50);
+      const dummyLicenses = generateDummyLicenses(5);
       setLicenses(processLicenses(dummyLicenses));
       setLoading(false);
       toast.warning("Failed to fetch licenses. Using dummy data.");

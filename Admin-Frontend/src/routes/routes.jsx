@@ -35,8 +35,8 @@ const ConditionalPluginPopup = () => {
 
 
 const AppRoutes = () => {
-  const { role } = useAuth();
-  // const role = "superuser";
+  // const { role } = useAuth();
+  const role = "superuser";
   return (
     <Router>
       <Routes>
