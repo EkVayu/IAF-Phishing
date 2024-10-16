@@ -44,8 +44,11 @@ function Users() {
           name: `${user.first_name} ${user.last_name}`,
         }));
         setUsers(formattedUsers);
+        setLoading(false);
       } else {
-        setError("Response not Ok!");
+        setError("Server response not Ok!");
+        setLoading(false);
+        toast.warning("Server response not OK!.");
       }
       setLoading(false);
     } catch (error) {
@@ -53,7 +56,8 @@ function Users() {
       const dummyUsers = generateDummyUsers(5);
       setUsers(dummyUsers);
       setLoading(false);
-      toast.warning("Failed to load user data. Using dummy data.");
+      toast.error(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     }
   };
 

@@ -54,18 +54,22 @@ function Licenses() {
   const getLicenses = async () => {
     try {
       const response = await fetchLicenses();
-      if (!response.ok) {
-        throw new Error("Error fetching data");
+      if (response.ok) {
+        const data = await response.json();
+        setLicenses(processLicenses(data));
+        setLoading(false);
+      } else {
+        setError("Server response not Ok!");
+        setLoading(false);
+        toast.warning("Server response not OK!.");
       }
-      const data = await response.json();
-      setLicenses(processLicenses(data));
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching licenses:", error);
       const dummyLicenses = generateDummyLicenses(5);
       setLicenses(processLicenses(dummyLicenses));
       setLoading(false);
-      toast.warning("Failed to fetch licenses. Using dummy data.");
+      toast.error(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     }
   };
 

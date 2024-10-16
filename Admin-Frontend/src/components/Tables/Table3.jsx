@@ -143,7 +143,9 @@ const Table3 = ({
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : error ? (
-            <p className="text-red-500 text-sm font-semibold p-5">{error}</p>
+            <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
+              <p className="text-red-500">{error}</p>
+            </div>
           ) : (
             <>
               <thead>

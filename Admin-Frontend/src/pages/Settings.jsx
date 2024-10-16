@@ -1,7 +1,6 @@
 import React from "react";
-import { FiSave, FiGlobe, FiMoon } from "react-icons/fi";
 import { Moon, Sun } from "lucide-react";
-
+import { FaComputer } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/context/theme-provider";
-import { FaComputer } from "react-icons/fa6";
 
 function Settings() {
   const { setTheme, theme } = useTheme();

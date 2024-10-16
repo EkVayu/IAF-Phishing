@@ -50,6 +50,7 @@ function RogueDB() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [error, setError] = useState(null);
 
   const pageSize = 10;
 
@@ -79,11 +80,8 @@ function RogueDB() {
         setLoading(false);
       } else {
         setLoading(false);
-        // setUrlData(dummyUrlData);
-        // setDomainData(dummyDomainData);
-        // setMailData(dummyMailData);
+        setError("API response not OK.");
         toast.warn("API response not OK.");
-        throw new Error("One or more API responses were not OK");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -91,7 +89,8 @@ function RogueDB() {
       setUrlData(dummyUrlData);
       setDomainData(dummyDomainData);
       setMailData(dummyMailData);
-      toast.error("Error fetching data. Showing dummy data.");
+      toast.error(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     }
   };
 
@@ -366,8 +365,12 @@ function RogueDB() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64 bg-background rounded-lg">
+        <div className="flex justify-center items-center h-64 bg-background dark:bg-gray-800 rounded-lg">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
+        </div>
+      ) : error ? (
+        <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
+          <p className="text-red-500">{error}</p>
         </div>
       ) : (
         <div className="rounded-md overflow-hidden">
@@ -387,7 +390,10 @@ function RogueDB() {
             </thead>
             <tbody>
               {paginatedData().map((item) => (
-                <tr key={item.id} className="border bg-background hover:bg-gray-200 dark:hover:bg-gray-900">
+                <tr
+                  key={item.id}
+                  className="border bg-background hover:bg-gray-200 dark:hover:bg-gray-900"
+                >
                   {tabData[activeTab].dataKeys.map(
                     (key, index) =>
                       visibleColumns[
@@ -424,7 +430,7 @@ function RogueDB() {
         </div>
       )}
 
-      {!loading && (
+      {!loading && !error && (
         <div className="flex items-center justify-between p-4 rounded-lg">
           <div className="text-secondary-foreground font-semibold">
             Showing {(currentPage - 1) * pageSize + 1}-

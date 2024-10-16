@@ -26,8 +26,8 @@ const staffMenuItems = [
 ];
 
 function Sidebar() {
-  // const { role } = useAuth();
-  const role = "superuser";
+  const { role } = useAuth();
+  // const role = "superuser";
   const location = useLocation();
   const menuItems = role === "superuser" ? superadminMenuItems : staffMenuItems;
   return (
