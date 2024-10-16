@@ -16,19 +16,22 @@ function Plugin() {
         throw new Error("Error fetching data");
       }
       const result = await response.json();
-      if (result && result.length > 0) {
+      if (result) {
         setLicenseData(result);
         toast.success("Displaying live data from API");
+      } else if (result.length === 0) {
+        setError("No data available!");
+        toast.info("No data available!");
       } else {
-        const dummyData = generateDummyLicenses(10); // Generate 10 dummy licenses
-        setLicenseData(dummyData);
-        toast.info("No live data available. Displaying generated dummy data");
+        setError("Server response not Ok!");
+        toast.warn("Server response not Ok!");
       }
     } catch (error) {
       console.error("Failed to load license data:", error);
       const dummyData = generateDummyLicenses(10); // Generate 10 dummy licenses
       setLicenseData(dummyData);
-      toast.warning("API error. Displaying generated dummy data");
+      toast.error(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     } finally {
       setLoading(false);
     }

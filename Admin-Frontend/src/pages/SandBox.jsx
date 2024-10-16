@@ -6,34 +6,34 @@ import { generateSandBoxData } from "../Utils/generateSandBoxData";
 
 function SandBox() {
   const [sandBoxData, setSandBoxData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAllData = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
         const runTestResponse = await fetchRunTestData();
         const fetchDataResponse = await fetchFetchData();
 
-        const runTestResult = await runTestResponse.json();
-        const fetchDataResult = await fetchDataResponse.json();
-
-        if (runTestResult.length > 0 && fetchDataResult.length > 0) {
+        if (runTestResponse.ok && fetchDataResponse.ok) {
+          const runTestResult = await runTestResponse.json();
+          const fetchDataResult = await fetchDataResponse.json();
           setSandBoxData([
             { ...runTestResult[0], label: "Run Test" },
             { ...fetchDataResult[0], label: "Fetch Data" },
           ]);
-          toast.success("SandBox data loaded successfully");
         } else {
-          const generatedData = generateSandBoxData();
-          setSandBoxData(generatedData);
-          toast.info("No SandBox data available. Showing dummy data.");
+          setError("No data available!");
+          toast.error("No data available!");
+          setSandBoxData([]);
         }
-      } catch (error) {
-        console.error("Error fetching sandbox data:", error);
-        const generatedData = generateSandBoxData();
+      } catch (err) {
+        console.error("Error fetching sandbox data:", err);
+        const generatedData = generateSandBoxData(5);
         setSandBoxData(generatedData);
-        toast.error("Failed to fetch data. Showing dummy data.");
+        toast.error(`API error: ${err.message}`);
+        setError(`API error: ${err.message}`);
       } finally {
         setIsLoading(false);
       }
@@ -52,8 +52,10 @@ function SandBox() {
           <div className="flex justify-center items-center h-64 bg-background rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
+        ) : Array.isArray(sandBoxData) && sandBoxData.length > 0 ? (
+          <Table tabData={sandBoxData} error={error} />
         ) : (
-          <Table tabData={sandBoxData} />
+          <div className="text-red-500 text-xl">No data available</div>
         )}
       </div>
     </div>

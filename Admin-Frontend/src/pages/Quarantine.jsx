@@ -8,10 +8,10 @@ import {
 import { toast } from "react-toastify";
 import { generateQuarantineData } from "../Utils/QuarantineDataGenerator";
 
-
 function Quarantine() {
   const [quarantineData, setQuarantineData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -35,17 +35,16 @@ function Quarantine() {
             { ...checkLevelResult[0], label: "Check Level" },
             { ...importTestResult[0], label: "Import Test Data" },
           ]);
-          toast.success("Quarantine data loaded successfully");
         } else {
-          const generatedData = generateQuarantineData();
-          setQuarantineData(generatedData);
-          toast.info("No Quarantine data available. Showing dummy data.");
+          setError("No data available!");
+          toast.error("No data available!");
         }
-      } catch (error) {
-        console.error("Error fetching quarantine data:", error);
+      } catch (err) {
+        console.error("Error fetching quarantine data:", err);
         const generatedData = generateQuarantineData();
         setQuarantineData(generatedData);
-        toast.error("Failed to fetch data. Showing dummy data.");
+        toast.error(`API error: ${err.message}`);
+        setError(`API error: ${err.message}`);
       } finally {
         setIsLoading(false);
       }
@@ -65,7 +64,7 @@ function Quarantine() {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
         ) : (
-          <Table tabData={quarantineData} />
+          <Table tabData={quarantineData} error={error} />
         )}
       </div>
     </div>

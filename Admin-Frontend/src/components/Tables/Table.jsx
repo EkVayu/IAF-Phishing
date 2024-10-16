@@ -407,7 +407,9 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
             </div>
           ) : error ? (
-            <p className="text-red-500 text-sm font-semibold p-5">{error}</p>
+            <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
+              <p className="text-red-500">{error}</p>
+            </div>
           ) : (
             <table
               {...getTableProps()}
@@ -474,7 +476,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
             </table>
           )}
         </div>
-        {!loading && (
+        {!loading && !error && (
           <div className="mt-4 flex items-center justify-between p-4 rounded-lg shadow-md">
             <div className="text-secondary-foreground font-semibold">
               Showing {pageIndex * 10 + 1}-

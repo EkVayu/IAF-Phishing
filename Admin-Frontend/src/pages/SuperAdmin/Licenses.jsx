@@ -62,14 +62,14 @@ function Licenses() {
         setError("Server response not Ok!");
         setLoading(false);
         toast.warning("Server response not OK!.");
-        throw new Error("Error fetching data");
       }
     } catch (error) {
       console.error("Error fetching licenses:", error);
       const dummyLicenses = generateDummyLicenses(5);
       setLicenses(processLicenses(dummyLicenses));
       setLoading(false);
-      toast.error("Error fetching licenses. Using dummy data.");
+      toast.error(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     }
   };
 

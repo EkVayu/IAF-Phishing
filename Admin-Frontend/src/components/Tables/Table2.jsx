@@ -179,9 +179,9 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
         ) : error ? (
-          <p className="text-red-500 text-sm font-semibold p-5 w-full">
-            {error}
-          </p>
+          <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
+            <p className="text-red-500">{error}</p>
+          </div>
         ) : (
           <table className="">
             <thead>
@@ -277,7 +277,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="p-2 disabled:bg-gray-300 bg-primary hover:bg-blue-600 text-secondary-foreground disabled:text-gray-600 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="p-2 disabled:bg-gray-300 bg-primary hover:bg-secondary text-white disabled:text-gray-600 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <FaChevronLeft className="" />
             </button>
@@ -287,7 +287,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
               disabled={currentPage === totalPages}
-              className="p-2 disabled:bg-gray-300 bg-primary hover:bg-blue-600 text-secondary-foreground disabled:text-gray-600 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="p-2 disabled:bg-gray-300 bg-primary hover:bg-secondary text-white disabled:text-gray-600 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <FaChevronRight className="" />
             </button>

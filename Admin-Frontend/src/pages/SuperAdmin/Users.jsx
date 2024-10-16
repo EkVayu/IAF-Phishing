@@ -49,7 +49,6 @@ function Users() {
         setError("Server response not Ok!");
         setLoading(false);
         toast.warning("Server response not OK!.");
-        throw new Error("Error fetching data");
       }
       setLoading(false);
     } catch (error) {
@@ -57,7 +56,8 @@ function Users() {
       const dummyUsers = generateDummyUsers(5);
       setUsers(dummyUsers);
       setLoading(false);
-      toast.error("Error fetching users. Using dummy data.");
+      toast.error(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     }
   };
 

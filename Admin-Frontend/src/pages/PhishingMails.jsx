@@ -26,38 +26,32 @@ function PhishingMails() {
   useEffect(() => {
     const getPhishingMails = async () => {
       setLoading(true);
-      setError("");
-
       try {
         const response = await fetchPhishingMails();
-        const result = await response.json();
-        let formattedData;
-
-        if (response.ok && result.length > 0) {
-          formattedData = result.flatMap((mailGroup) =>
-            mailGroup.email_details.map((mail) => ({
-              ...mail,
-              user_comment: mailGroup.dispute_info[0]?.user_comment || "N/A",
-              admin_comment: mailGroup.dispute_info[0]?.admin_comment || "N/A",
-            }))
-          );
-        } else {
-          // Use generated data if API returns no data
-          const generatedData = generatePhishingMails(5); // Generate 5 phishing mail entries
-          formattedData = generatedData.flatMap((mailGroup) =>
-            mailGroup.email_details.map((mail) => ({
-              ...mail,
-              user_comment: mailGroup.dispute_info[0]?.user_comment || "N/A",
-              admin_comment: mailGroup.dispute_info[0]?.admin_comment || "N/A",
-            }))
-          );
+        if (!response.ok) {
+          throw new Error("Error fetching data");
         }
+        const result = await response.json();
 
-        setPhishingMails(formattedData);
-        toast.success("Phishing mails data loaded successfully!");
+        if (result && result.length > 0) {
+          const formattedData = result.flatMap((mailGroup) =>
+            mailGroup.email_details.map((mail) => ({
+              ...mail,
+              user_comment: mailGroup.dispute_info[0]?.user_comment || "N/A",
+              admin_comment: mailGroup.dispute_info[0]?.admin_comment || "N/A",
+            }))
+          );
+          setPhishingMails(formattedData);
+          toast.success("Displaying live data from API");
+        } else if (result.length === 0) {
+          setError("No data available!");
+          toast.info("No data available!");
+        } else {
+          setError("Server response not Ok!");
+          toast.warn("Server response not Ok!");
+        }
       } catch (error) {
         console.error("Error fetching phishing mails:", error);
-        // Use generated data in case of error
         const generatedData = generatePhishingMails(5);
         const formattedGeneratedData = generatedData.flatMap((mailGroup) =>
           mailGroup.email_details.map((mail) => ({
@@ -67,7 +61,8 @@ function PhishingMails() {
           }))
         );
         setPhishingMails(formattedGeneratedData);
-        toast.warning("API error. Displaying generated data");
+        toast.error(`API error: ${error.message}`);
+        setError(`API error: ${error.message}`);
       } finally {
         setLoading(false);
       }

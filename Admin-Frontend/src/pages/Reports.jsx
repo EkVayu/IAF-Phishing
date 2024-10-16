@@ -17,33 +17,34 @@ const columns = [
 
 function Reports() {
   const [reportsData, setReportsData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchReportsData = async () => {
+    setLoading(true);
     try {
       const response = await fetchReports();
 
-      if (!response.ok) {
-        throw new Error("Error fetching data");
-      }
-
-      const result = await response.json();
-
-      if (result && result.length > 0) {
+      if (response.ok) {
+        const result = await response.json();
         setReportsData(result);
-        toast.success("Displaying live data from API");
+        setLoading(false);
+      } else if (result.length === 0) {
+        setError("No data available!");
+        toast.info("No data available!");
+        setLoading(false);
       } else {
-        // Generate 10 random reports if no live data is available
-        const generatedData = ReportDataGenerator(5);
-        setReportsData(generatedData);
-        toast.warn("No live data available. Displaying generated data");
+        setError("Server response not Ok!");
+        toast.warn("Server response not Ok!");
+        setLoading(false);
+        throw new Error("Error fetching data");
       }
     } catch (error) {
       console.error("Failed to load reports data:", error);
-      // Generate 10 random reports in case of API error
-      const generatedData = ReportDataGenerator(5);
-      setReportsData(generatedData);
-      toast.error("API error. Displaying generated data");
+      const dummyData = ReportDataGenerator(5); // Generate 10 dummy reports
+      setReportsData(dummyData);
+      toast.error(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -65,7 +66,7 @@ function Reports() {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
         ) : (
-          <Table2 data={reportsData} columns={columns} />
+          <Table2 data={reportsData} columns={columns} error={error} />
         )}
       </div>
     </div>
