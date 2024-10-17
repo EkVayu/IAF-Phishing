@@ -57,7 +57,7 @@ function Users() {
       setUsers(dummyUsers);
       setLoading(false);
       toast.error(`API error: ${error.message}`);
-      setError(`API error: ${error.message}`);
+      // setError(`API error: ${error.message}`);
     }
   };
 
@@ -79,7 +79,7 @@ function Users() {
           );
         }
       } catch (error) {
-        setUsers(users.filter((user) => user.id !== id));
+        // setUsers(users.filter((user) => user.id !== id));
         console.error("Error deleting user:", error);
         toast.error(
           "An error occurred while deleting the user. Please try again."

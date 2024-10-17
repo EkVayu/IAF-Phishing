@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { fetchLicenses } from "../../Api/api";
+import { fetchLicenses, updateLicenseStatus } from "../../Api/api";
 import CreateLicense from "../../components/popup/CreateLicense/CreateLicense";
 import Table3 from "../../components/Tables/Table3";
 import generateDummyLicenses from "../../Utils/LecenseGenerator";
@@ -69,7 +69,7 @@ function Licenses() {
       setLicenses(processLicenses(dummyLicenses));
       setLoading(false);
       toast.error(`API error: ${error.message}`);
-      setError(`API error: ${error.message}`);
+      // setError(`API error: ${error.message}`);
     }
   };
 
@@ -77,24 +77,41 @@ function Licenses() {
     getLicenses();
   }, []);
 
-  const handleAction = (id, action) => {
+  const handleAction = async (id, action, setUpdatingRow) => {
     if (action === "toggle") {
-      setLicenses((prevLicenses) =>
-        prevLicenses.map((license) => {
-          if (license.license_id === id) {
-            const newStatus = license.status === "1" ? "0" : "1";
-            return {
-              ...license,
-              status: newStatus,
-              statusText: newStatus === "1" ? "Active" : "Inactive",
-            };
-          }
-          return license;
-        })
-      );
-      toast.success(`License status changed for id: ${id}`);
+      try {
+        setUpdatingRow(id);
+        const currentLicense = licenses.find(license => license.license_id === id);
+        const newStatus = currentLicense.status === "1" ? "0" : "1";
+        
+        const response = await updateLicenseStatus(id, newStatus);
+        
+        if (response.ok) {
+          setLicenses((prevLicenses) =>
+            prevLicenses.map((license) => {
+              if (license.license_id === id) {
+                return {
+                  ...license,
+                  status: newStatus,
+                  statusText: newStatus === "1" ? "Active" : "Inactive",
+                };
+              }
+              return license;
+            })
+          );
+          toast.success(`License status changed for id: ${id}`);
+        } else {
+          throw new Error('Failed to update license status');
+        }
+      } catch (error) {
+        console.error("Error updating license status:", error);
+        toast.error(`Failed to update license status: ${error.message}`);
+      } finally {
+        setUpdatingRow(null);
+      }
     }
   };
+  
 
   return (
     <>
