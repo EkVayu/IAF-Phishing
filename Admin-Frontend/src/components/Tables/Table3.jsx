@@ -22,6 +22,7 @@ const Table3 = ({
     Object.fromEntries(columns.map((col) => [col.accessor, true]))
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [updatingRow, setUpdatingRow] = useState(null);
 
   const filteredData = useMemo(() => {
     return data.filter((row) =>
@@ -143,7 +144,7 @@ const Table3 = ({
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : error ? (
-            <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
+            <div className="w-full py-5 px-3 bg-background dark:bg-gray-800">
               <p className="text-red-500">{error}</p>
             </div>
           ) : (
@@ -176,7 +177,15 @@ const Table3 = ({
                           className="py-2 px-4 text-center"
                         >
                           {column.accessor === "actions" ? (
-                            column.cell(row, onAction)
+                            <div className="flex items-center justify-center">
+                              {updatingRow === row.license_id ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary"></div>
+                              ) : (
+                                column.cell(row, (id, action) =>
+                                  onAction(id, action, setUpdatingRow)
+                                )
+                              )}
+                            </div>
                           ) : column.accessor.includes("date") ||
                             column.accessor.includes("from") ||
                             column.accessor.includes("till") ? (

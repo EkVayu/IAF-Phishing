@@ -143,6 +143,22 @@ export const fetchLicensesHistory = async (licenseId) => {
   return response;
 };
 
+export const updateLicenseStatus = async (id, newStatus) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(
+    `${API_BASE_URL}/licenses/${id}/update-status/`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    }
+  );
+  return response;
+};
+
 export const fetchCurrentUserData = async () => {
   const token = sessionStorage.getItem("token");
   const user = JSON.parse(sessionStorage.getItem("user"));
