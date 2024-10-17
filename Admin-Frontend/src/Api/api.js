@@ -146,7 +146,7 @@ export const fetchLicensesHistory = async (licenseId) => {
 export const updateLicenseStatus = async (id, newStatus) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(
-    `${API_BASE_URL}/licenses/${id}/update-status/`,
+    `${API_BASE_URL}/license-action/${id}/toggle_status/`,
     {
       method: "PATCH",
       headers: {

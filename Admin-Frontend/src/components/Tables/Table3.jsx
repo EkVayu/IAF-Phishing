@@ -179,7 +179,7 @@ const Table3 = ({
                           {column.accessor === "actions" ? (
                             <div className="flex items-center justify-center">
                               {updatingRow === row.license_id ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary"></div>
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary my-[9px]"></div>
                               ) : (
                                 column.cell(row, (id, action) =>
                                   onAction(id, action, setUpdatingRow)

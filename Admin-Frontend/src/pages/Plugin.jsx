@@ -17,8 +17,11 @@ function Plugin() {
       }
       const result = await response.json();
       if (result) {
-        setLicenseData(result);
-        toast.success("Displaying live data from API");
+        // Filter out licenses with status 0
+        const filteredLicenses = result.filter(
+          (license) => license.status !== 0
+        );
+        setLicenseData(filteredLicenses);
       } else if (result.length === 0) {
         setError("No data available!");
         toast.info("No data available!");
