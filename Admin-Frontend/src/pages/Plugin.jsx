@@ -69,7 +69,7 @@ function Plugin() {
         })),
     },
     {
-      label: "Allocated License",
+      label: "Installed License",
       headers: [
         "License ID",
         "Plugin ID",
