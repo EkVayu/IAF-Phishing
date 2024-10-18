@@ -195,7 +195,7 @@ function RogueDB() {
       }
     } catch (error) {
       console.error("Error deleting item:", error);
-      toast.error("Error deleting item");
+      toast.error(`Error deleting item: ${error.message}`);
       setLoading(false);
     }
   };
@@ -271,11 +271,11 @@ function RogueDB() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-5">
+    <div className="w-full flex flex-col">
       <h1 className="text-3xl font-semibold text-secondary-foreground">
         Rogue DB
       </h1>
-      <div className="flex gap-4">
+      <div className="flex gap-4 mt-5">
         {Object.keys(tabData).map((tab) => (
           <button
             key={tab}
@@ -290,7 +290,7 @@ function RogueDB() {
           </button>
         ))}
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mt-5">
         <div className="relative max-w-sm">
           <input
             type="text"
@@ -365,16 +365,16 @@ function RogueDB() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64 bg-background dark:bg-gray-800 rounded-lg">
+        <div className="flex justify-center items-center h-64 bg-background dark:bg-gray-800 rounded-lg mt-5">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
         </div>
       ) : error ? (
-        <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
+        <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-lg mt-5">
           <p className="text-red-500">{error}</p>
         </div>
       ) : (
-        <div className="rounded-md overflow-hidden">
-          <table className="w-full border-collapse rounded-md">
+        <div className="rounded-t-lg overflow-hidden mt-5">
+          <table className="w-full border-collapse">
             <thead>
               <tr className="bg-primary dark:bg-gray-800 text-white">
                 {tabData[activeTab].headers.map(
@@ -431,7 +431,7 @@ function RogueDB() {
       )}
 
       {!loading && !error && (
-        <div className="flex items-center justify-between p-4 rounded-lg">
+        <div className="flex items-center justify-between p-2 rounded-b-lg bg-background dark:bg-gray-800">
           <div className="text-secondary-foreground font-semibold">
             Showing {(currentPage - 1) * pageSize + 1}-
             {Math.min(currentPage * pageSize, filteredData().length)} of{" "}

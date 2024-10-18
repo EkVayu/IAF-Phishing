@@ -173,7 +173,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
           )}
         </div>
       </div>
-      <div className="overflow-auto rounded-lg">
+      <div className="overflow-auto rounded-t-lg">
         {loading ? (
           <div className="flex justify-center items-center h-64 bg-background rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
@@ -183,7 +183,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
             <p className="text-red-500">{error}</p>
           </div>
         ) : (
-          <table className="">
+          <table className="min-w-full">
             <thead>
               <tr className="bg-primary dark:bg-gray-800">
                 {columns
@@ -191,7 +191,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                   .map((column) => (
                     <th
                       key={column.accessor}
-                      className="px-10 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                      className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
                     >
                       {column.Header}
                     </th>
@@ -267,7 +267,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
         )}
       </div>
       {!error && !loading && (
-        <div className="mt-4 flex items-center justify-between">
+        <div className="p-2 flex items-center justify-between bg-background dark:bg-gray-800 rounded-b-lg">
           <div className="text-secondary-foreground">
             Showing {(currentPage - 1) * itemsPerPage + 1}-
             {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}

@@ -44,7 +44,7 @@ function Quarantine() {
         const generatedData = generateQuarantineData();
         setQuarantineData(generatedData);
         toast.error(`API error: ${err.message}`);
-        setError(`API error: ${err.message}`);
+        // setError(`API error: ${err.message}`);
       } finally {
         setIsLoading(false);
       }
