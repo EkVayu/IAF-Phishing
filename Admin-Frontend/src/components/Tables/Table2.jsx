@@ -9,6 +9,7 @@ import { IoFilterSharp } from "react-icons/io5";
 import { FaDownload } from "react-icons/fa";
 import DateFormatter from "../Common/DateFormatter";
 import { toast } from "react-toastify";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const getStatusColor = (status) => {
   if (!status) return "bg-gray-200"; // Default color for undefined or null status
@@ -173,7 +174,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
           )}
         </div>
       </div>
-      <div className="overflow-auto rounded-t-lg">
+      <ScrollArea className="rounded-t-lg">
         {loading ? (
           <div className="flex justify-center items-center h-64 bg-background rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
@@ -265,7 +266,8 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
             </tbody>
           </table>
         )}
-      </div>
+        <ScrollBar orientation="horizontal" className="" />
+      </ScrollArea>
       {!error && !loading && (
         <div className="p-2 flex items-center justify-between bg-background dark:bg-gray-800 rounded-b-lg">
           <div className="text-secondary-foreground">

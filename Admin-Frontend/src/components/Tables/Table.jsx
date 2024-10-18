@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useTable, usePagination, useSortBy } from "react-table";
-import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import LicenseForm from "../popup/licenseFormPopup/LicenseForm";
 import DateFormatter from "../Common/DateFormatter";
@@ -14,6 +13,7 @@ import {
 import { Close, Search } from "@mui/icons-material";
 import { IoFilterSharp } from "react-icons/io5";
 import { FaEye } from "react-icons/fa";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -413,7 +413,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
       </div>
 
       <div className="overflow-hidden">
-        <div className="overflow-x-auto bg-background shadow-lg rounded-t-lg">
+        <ScrollArea className="bg-background rounded-t-lg">
           {loading ? (
             <div className="flex justify-center items-center h-64 bg-background rounded-lg">
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
@@ -487,7 +487,8 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
               </tbody>
             </table>
           )}
-        </div>
+          <ScrollBar orientation="horizontal" className="" />
+        </ScrollArea>
         {!loading && !error && (
           <div className="flex items-center justify-between p-2 rounded-b-lg shadow-md bg-background dark:bg-gray-800 overflow-hidden">
             <div className="text-secondary-foreground font-semibold">
