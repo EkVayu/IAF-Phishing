@@ -209,27 +209,27 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
               const getStatusColor = (status) => {
                 switch (status?.toLowerCase()) {
                   case "completed":
-                    return "bg-green-500";
+                    return "bg-green-500 text-white";
                   case "processing":
-                    return "bg-blue-500";
+                    return "bg-blue-500  text-white";
                   case "failed":
-                    return "bg-red-500";
+                    return "bg-red-500  text-white";
                   case "quarantined":
-                    return "bg-red-500";
+                    return "bg-red-500 text-white";
                   case "released":
-                    return "bg-green-500";
+                    return "bg-green-500 text-white";
                   case "under review":
-                    return "bg-yellow-500";
+                    return "bg-yellow-500 text-white";
                   case "pending":
-                    return "bg-blue-500";
+                    return "bg-blue-500 text-white";
                   case "approved":
-                    return "bg-emerald-500";
+                    return "bg-emerald-500 text-white";
                   case "rejected":
-                    return "bg-pink-500";
+                    return "bg-pink-500 text-white";
                   case "active":
-                    return "text-green-500";
+                    return "bg-green-500 text-white";
                   case "inactive":
-                    return "text-red-500";
+                    return "bg-red-500 text-white";
                   default:
                     return "bg-gray-500";
                 }
