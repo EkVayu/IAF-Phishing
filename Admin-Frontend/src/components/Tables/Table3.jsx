@@ -137,8 +137,8 @@ const Table3 = ({
           </div>
         </div>
       </div>
-      <div className="bg-background shadow-lg rounded-b-md  overflow-hidden">
-        <table className="w-full">
+      <div className="bg-background shadow-lg overflow-hidden">
+        <table className="min-w-full">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
@@ -150,7 +150,7 @@ const Table3 = ({
           ) : (
             <>
               <thead>
-                <tr className="bg-indigo-200 dark:bg-primary dark:text-white text-primary">
+                <tr className="bg-indigo-200 dark:bg-gray-700 dark:text-white text-primary">
                   {columns
                     ?.filter((col) => visibleColumns[col.accessor])
                     ?.map((column) => (
@@ -203,7 +203,7 @@ const Table3 = ({
         </table>
       </div>
       {!error && !loading && (
-        <div className="mt-4 flex items-center justify-between">
+        <div className="p-2 flex items-center justify-between bg-background dark:bg-gray-800 rounded-b-lg">
           <div className="text-secondary-foreground">
             Showing {(currentPage - 1) * itemsPerPage + 1}-
             {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}

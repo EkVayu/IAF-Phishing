@@ -33,7 +33,7 @@ function SandBox() {
         const generatedData = generateSandBoxData(5);
         setSandBoxData(generatedData);
         toast.error(`API error: ${err.message}`);
-        setError(`API error: ${err.message}`);
+        // setError(`API error: ${err.message}`);
       } finally {
         setIsLoading(false);
       }
@@ -54,9 +54,7 @@ function SandBox() {
           </div>
         ) : Array.isArray(sandBoxData) && sandBoxData.length > 0 ? (
           <Table tabData={sandBoxData} error={error} />
-        ) : (
-          <div className="text-red-500 text-xl">No data available</div>
-        )}
+        ) : null}
       </div>
     </div>
   );
