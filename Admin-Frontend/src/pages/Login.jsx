@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import leftImage from "../assets/loginPlane.png";
 import { useAuth } from "../context/AuthContext";
-import { loginApi, sendPasswordResetRequest,  } from "../Api/api";
+import { loginApi, sendPasswordResetRequest } from "../Api/api";
 import { MdOutlineEmail } from "react-icons/md";
 import { HiLockClosed } from "react-icons/hi";
 import { FaAngleLeft } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { LuLoader } from "react-icons/lu";
 
 function Login() {
   const [action, setAction] = useState("Login");
@@ -93,7 +94,7 @@ function Login() {
       }
     }
   };
-  
+
   return (
     <div className="w-full h-screen relative bg-gradient-to-br from-sky-300 to-sky-500">
       <div className="absolute top-0 left-0 h-[80%] w-[80%] -rotate-12 overflow-hidden">
@@ -164,9 +165,10 @@ function Login() {
                 onClick={handleSendPasswordReset}
               >
                 {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  </div>
+                  <span className="flex items-center">
+                    <LuLoader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
+                    Sending...
+                  </span>
                 ) : (
                   "Send Password Reset Link"
                 )}
@@ -177,9 +179,10 @@ function Login() {
                 onClick={handleLogin}
               >
                 {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  </div>
+                  <span className="flex items-center">
+                    <LuLoader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
+                    Login...
+                  </span>
                 ) : (
                   "Login"
                 )}

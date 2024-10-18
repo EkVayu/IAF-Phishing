@@ -47,16 +47,16 @@ function Profile() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[80vh] bg-background">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary dark:border-white"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-background min-h-[80vh] p-8">
+    <div className="min-h-[80vh]">
       <div className="w-full">
         <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="bg-primary h-20 px-5">
+          <div className="bg-primary dark:bg-gray-900 h-20 px-5">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-4xl font-bold text-white mb-2 capitalize">

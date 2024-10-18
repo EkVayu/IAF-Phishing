@@ -17,11 +17,7 @@ function Plugin() {
       }
       const result = await response.json();
       if (result) {
-        // Filter out licenses with status 0
-        const filteredLicenses = result.filter(
-          (license) => license.status !== 0
-        );
-        setLicenseData(filteredLicenses);
+        setLicenseData(result);
       } else if (result.length === 0) {
         setError("No data available!");
         toast.info("No data available!");
@@ -32,9 +28,10 @@ function Plugin() {
     } catch (error) {
       console.error("Failed to load license data:", error);
       const dummyData = generateDummyLicenses(10); // Generate 10 dummy licenses
+      console.log("data", dummyData);
       setLicenseData(dummyData);
       toast.error(`API error: ${error.message}`);
-      setError(`API error: ${error.message}`);
+      // setError(`API error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -53,6 +50,7 @@ function Plugin() {
         "Email",
         "Validity From",
         "Validity Till",
+        "Status",
         "Issue",
       ],
       data: licenseData
@@ -66,6 +64,7 @@ function Plugin() {
           email: item?.allocated_to,
           validity_from: item?.valid_from,
           validity_till: item?.valid_till,
+          status: item?.status === "0" ? "Inactive" : "Active",
           issue: item?.status,
         })),
     },

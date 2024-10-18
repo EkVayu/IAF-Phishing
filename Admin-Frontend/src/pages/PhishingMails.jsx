@@ -62,7 +62,7 @@ function PhishingMails() {
         );
         setPhishingMails(formattedGeneratedData);
         toast.error(`API error: ${error.message}`);
-        setError(`API error: ${error.message}`);
+        // setError(`API error: ${error.message}`);
       } finally {
         setLoading(false);
       }
