@@ -62,7 +62,7 @@ const StaffDashboard = () => {
   };
 
   return (
-    <div className="w-full p-6 bg-background">
+    <div className="w-full p-6 bg-background rounded-lg">
       <h1 className="text-3xl font-semibold mb-6 text-secondary-foreground">
         Dashboard
       </h1>

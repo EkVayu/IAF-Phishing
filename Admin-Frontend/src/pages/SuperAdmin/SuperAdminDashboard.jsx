@@ -18,13 +18,14 @@ const SuperAdminDashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Attempt to fetch data from API
-        const [userResponse, licenseResponse, phishingMailsResponse] = await Promise.all([
-          fetchUsers(),
-          fetchLicenses(),
-          fetchPhishingMails(),
-        ]);
+        const [userResponse, licenseResponse, phishingMailsResponse] =
+          await Promise.all([
+            fetchUsers(),
+            fetchLicenses(),
+            fetchPhishingMails(),
+          ]);
 
         let users, licenses, phishingMails;
 
@@ -75,12 +76,12 @@ const SuperAdminDashboard = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        
+
         // Use generated data as a fallback
         const generatedData = SuperAdminDashboardGenerate();
         setUserData(generatedData.userData);
         setLicenseData(generatedData.licenseData);
-        
+
         toast.error("Failed to fetch data. Using generated data.");
         setLoading(false);
       }
@@ -112,8 +113,10 @@ const SuperAdminDashboard = () => {
   };
 
   return (
-    <div className="w-full p-6 bg-gray-100 dark:bg-transparent">
-      <h1 className="text-3xl font-semibold mb-6 text-secondary-foreground">Dashboard</h1>
+    <div className="w-full p-6 bg-background rounded-lg">
+      <h1 className="text-3xl font-semibold mb-6 text-secondary-foreground">
+        Dashboard
+      </h1>
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
