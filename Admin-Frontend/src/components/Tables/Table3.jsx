@@ -7,6 +7,7 @@ import {
 } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
 import DateFormatter from "../Common/DateFormatter";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const Table3 = ({
   data,
@@ -137,7 +138,7 @@ const Table3 = ({
           </div>
         </div>
       </div>
-      <div className="bg-background shadow-lg overflow-hidden">
+      <ScrollArea className="bg-background">
         <table className="min-w-full">
           {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -201,7 +202,8 @@ const Table3 = ({
             </>
           )}
         </table>
-      </div>
+        <ScrollBar orientation="horizontal" className="" />
+      </ScrollArea>
       {!error && !loading && (
         <div className="p-2 flex items-center justify-between bg-background dark:bg-gray-800 rounded-b-lg">
           <div className="text-secondary-foreground">
