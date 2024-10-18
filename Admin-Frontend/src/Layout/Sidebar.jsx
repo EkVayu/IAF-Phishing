@@ -45,7 +45,7 @@ function Sidebar() {
             <li key={index}>
               <Link
                 to={item.path}
-                className={`block px-4 rounded-lg py-2 text-sm hover:bg-secondary dark:hover:bg-gray-700 transition duration-150 ease-in-out ${
+                className={`block px-4 rounded-lg py-2 text-sm hover:bg-secondary dark:hover:bg-gray-700 transition duration-150 ease-in-out tracking-widest ${
                   location.pathname === item.path ? "bg-secondary dark:bg-gray-700" : ""
                 }`}
               >
