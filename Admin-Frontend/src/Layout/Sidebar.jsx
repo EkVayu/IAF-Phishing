@@ -31,7 +31,7 @@ function Sidebar() {
   const location = useLocation();
   const menuItems = role === "superuser" ? superadminMenuItems : staffMenuItems;
   return (
-    <div className="w-full h-screen bg-primary text-white flex flex-col px-6">
+    <div className="w-full h-screen bg-primary dark:bg-gray-800 text-white flex flex-col px-6">
       <div className="pt-4 px-3">
         <img
           src={logoTop}
@@ -45,8 +45,8 @@ function Sidebar() {
             <li key={index}>
               <Link
                 to={item.path}
-                className={`block px-4 rounded-lg py-2 text-sm hover:bg-secondary transition duration-150 ease-in-out ${
-                  location.pathname === item.path ? "bg-secondary" : ""
+                className={`block px-4 rounded-lg py-2 text-sm hover:bg-secondary dark:hover:bg-gray-700 transition duration-150 ease-in-out ${
+                  location.pathname === item.path ? "bg-secondary dark:bg-gray-700" : ""
                 }`}
               >
                 {item.title}

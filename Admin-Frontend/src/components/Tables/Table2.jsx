@@ -173,9 +173,9 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
           )}
         </div>
       </div>
-      <div className="overflow-auto">
+      <div className="overflow-auto rounded-lg">
         {loading ? (
-          <div className="flex justify-center items-center h-64 bg-background">
+          <div className="flex justify-center items-center h-64 bg-background rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
         ) : error ? (
@@ -185,7 +185,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
         ) : (
           <table className="">
             <thead>
-              <tr className="bg-primary">
+              <tr className="bg-primary dark:bg-gray-800">
                 {columns
                   .filter((col) => visibleColumns[col.accessor])
                   .map((column) => (

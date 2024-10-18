@@ -49,6 +49,14 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
   };
 
   const handleIssueClick = (row, buttonText) => {
+    console.log(row);
+    if (row.status === "Inactive") {
+      toast.error(
+        "This license cannot be allocated due to its inactive status."
+      );
+      return;
+    }
+
     setShowLicensePopup(true);
     setSelectedRow({ ...row, buttonText });
   };
@@ -197,7 +205,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
             ) {
               return <DateFormatter dateString={value} />;
             }
-            if (header === "STATUS") {
+            if (header === "Status" || header === "STATUS") {
               const getStatusColor = (status) => {
                 switch (status?.toLowerCase()) {
                   case "completed":
@@ -218,6 +226,10 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                     return "bg-emerald-500";
                   case "rejected":
                     return "bg-pink-500";
+                  case "active":
+                    return "text-green-500";
+                  case "inactive":
+                    return "text-red-500";
                   default:
                     return "bg-gray-500";
                 }
@@ -332,8 +344,8 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
         flex-1 py-3 px-6 text-lg font-semibold rounded-lg
         ${
           activeTab === index
-            ? "bg-background text-primary dark:text-white shadow-lg border border-primary "
-            : "bg-primary text-background dark:text-white hover:bg-primary/50"
+            ? "bg-background text-primary dark:text-white shadow-lg border border-primary dark:border-gray-800 "
+            : "bg-primary dark:bg-gray-800 text-background dark:text-white hover:bg-primary/50"
         }
       `}
             onClick={() => setActiveTab(index)}
@@ -401,7 +413,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
       </div>
 
       <div className="shadow-lg overflow-hidden">
-        <div className="overflow-x-auto bg-background shadow-lg">
+        <div className="overflow-x-auto bg-background shadow-lg rounded-lg">
           {loading ? (
             <div className="flex justify-center items-center h-64 bg-background rounded-lg">
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
@@ -419,7 +431,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                 {headerGroups?.map((headerGroup) => (
                   <tr
                     {...headerGroup?.getHeaderGroupProps()}
-                    className="dark:border bg-primary"
+                    className="dark:border bg-primary dark:bg-gray-800"
                   >
                     {headerGroup?.headers
                       ?.filter((column) => column.show)

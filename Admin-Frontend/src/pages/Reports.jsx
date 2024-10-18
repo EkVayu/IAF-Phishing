@@ -44,7 +44,7 @@ function Reports() {
       const dummyData = ReportDataGenerator(5); // Generate 10 dummy reports
       setReportsData(dummyData);
       toast.error(`API error: ${error.message}`);
-      setError(`API error: ${error.message}`);
+      // setError(`API error: ${error.message}`);
     } finally {
       setLoading(false);
     }

@@ -90,7 +90,7 @@ function RogueDB() {
       setDomainData(dummyDomainData);
       setMailData(dummyMailData);
       toast.error(`API error: ${error.message}`);
-      setError(`API error: ${error.message}`);
+      // setError(`API error: ${error.message}`);
     }
   };
 
@@ -281,8 +281,8 @@ function RogueDB() {
             key={tab}
             className={`flex-1 py-3 px-6 text-lg font-semibold rounded-lg ${
               activeTab === tab
-                ? "bg-background text-primary dark:text-white shadow-lg border border-primary"
-                : "bg-primary text-background dark:text-white hover:bg-primary/50"
+                ? "bg-background text-primary dark:text-white shadow-lg border border-primary dark:border-gray-800"
+                : "bg-primary dark:bg-gray-800 text-background dark:text-white hover:bg-primary/50"
             }`}
             onClick={() => setActiveTab(tab)}
           >
@@ -376,7 +376,7 @@ function RogueDB() {
         <div className="rounded-md overflow-hidden">
           <table className="w-full border-collapse rounded-md">
             <thead>
-              <tr className="bg-primary text-white">
+              <tr className="bg-primary dark:bg-gray-800 text-white">
                 {tabData[activeTab].headers.map(
                   (header, index) =>
                     visibleColumns[header.toLowerCase().replace(/ /g, "_")] && (

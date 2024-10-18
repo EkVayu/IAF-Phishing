@@ -82,6 +82,13 @@ function Licenses() {
       try {
         setUpdatingRow(id);
         const currentLicense = licenses.find(license => license.license_id === id);
+        
+        // Check if the license is allocated
+        if (currentLicense.allocated_to && currentLicense.allocated_to !== "N/A") {
+          toast.warning("Cannot change status of an allocated license.");
+          return;
+        }
+  
         const newStatus = currentLicense.status === "1" ? "0" : "1";
         
         const response = await updateLicenseStatus(id, newStatus);
@@ -111,6 +118,7 @@ function Licenses() {
       }
     }
   };
+  
   
 
   return (

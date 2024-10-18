@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function NotFound() {
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center">
+    <div className="w-full h-screen flex flex-col justify-center items-center text-secondary-foreground">
       <h1 className="text-2xl font-semibold">Page not found</h1>
       <Link
         to="/"
