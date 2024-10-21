@@ -176,7 +176,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
       </div>
       <ScrollArea className="rounded-t-lg">
         {loading ? (
-          <div className="flex justify-center items-center h-64 bg-background rounded-lg">
+          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
         ) : error ? (

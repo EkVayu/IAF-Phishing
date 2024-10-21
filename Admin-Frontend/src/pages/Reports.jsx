@@ -61,13 +61,13 @@ function Reports() {
         Reports{" "}
       </h1>
       <div className="">
-        {loading ? (
+        {/* {loading ? (
           <div className="flex justify-center items-center h-64 bg-background rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
-        ) : (
-          <Table2 data={reportsData} columns={columns} error={error} />
-        )}
+        ) : ( */}
+          <Table2 data={reportsData} columns={columns} error={error} loading={loading} />
+        {/* )} */}
       </div>
     </div>
   );

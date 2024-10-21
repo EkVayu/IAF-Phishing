@@ -10,13 +10,13 @@ import { generateQuarantineData } from "../Utils/QuarantineDataGenerator";
 
 function Quarantine() {
   const [quarantineData, setQuarantineData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        setIsLoading(true);
+        setLoading(true);
         const statusResponse = await fetchStatusData();
         const checkLevelResponse = await fetchCheckLevelData();
         const importTestResponse = await fetchImportTestData();
@@ -35,6 +35,7 @@ function Quarantine() {
             { ...checkLevelResult[0], label: "Check Level" },
             { ...importTestResult[0], label: "Import Test Data" },
           ]);
+          setLoading(false);
         } else {
           setError("No data available!");
           toast.error("No data available!");
@@ -46,7 +47,7 @@ function Quarantine() {
         toast.error(`API error: ${err.message}`);
         // setError(`API error: ${err.message}`);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
@@ -59,12 +60,12 @@ function Quarantine() {
         Quarantine
       </h1>
       <div className="">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64 bg-background rounded-lg">
+        {loading ? (
+          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
         ) : (
-          <Table tabData={quarantineData} error={error} />
+          <Table tabData={quarantineData} error={error} loading={loading} />
         )}
       </div>
     </div>
