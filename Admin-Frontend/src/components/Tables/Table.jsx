@@ -341,7 +341,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
           <button
             key={index}
             className={`
-        flex-1 py-3 px-6 text-lg font-semibold rounded-lg
+        flex-1 py-3 px-6 text-lg font-semibold rounded-lg tracking-widest
         ${
           activeTab === index
             ? "bg-background text-primary dark:text-white shadow-lg border border-primary dark:border-gray-800 "
@@ -386,8 +386,8 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
             Filter
           </button>
           {showColumnToggle && (
-            <div className="absolute right-10 bg-background rounded-lg border shadow-lg mt-2 p-2 min-w-40">
-              <h1 className="mb-2 border-b text-secondary-foreground">
+            <div className="absolute right-10 bg-background rounded-lg border shadow-lg mt-2 p-2 min-w-40 z-50">
+              <h1 className="mb-2 border-b text-secondary-foreground tracking-widest">
                 Filter by
               </h1>
               {tabData[activeTab]?.headers?.map((header) => {
@@ -401,7 +401,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                       onChange={() => toggleColumnVisibility(header)}
                       className="mr-2"
                     />
-                    <label htmlFor={key} className="text-secondary-foreground">
+                    <label htmlFor={key} className="text-secondary-foreground tracking-wider">
                       {header}
                     </label>
                   </div>
