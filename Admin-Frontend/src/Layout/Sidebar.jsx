@@ -56,7 +56,7 @@ function Sidebar() {
         </ul>
       </nav>
       <div className="pb-3 mt-3 px-3">
-        <img src={logoBottom} alt="Bottom logo" className="w-16 h-16" />
+        <img src={logoBottom} alt="Bottom logo" className="w-16 h-16 rounded-lg" />
       </div>
     </div>
   );
