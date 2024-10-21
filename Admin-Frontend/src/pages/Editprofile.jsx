@@ -135,7 +135,7 @@ function EditProfile() {
     <div className="min-h-screen">
       <div className="w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="bg-primary dark:bg-gray-900 h-20 px-5 flex items-center">
-          <h2 className="text-3xl font-bold text-white">Edit Profile</h2>
+          <h2 className="text-3xl font-bold text-white tracking-widest">Edit Profile</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-8">
           <div className="mb-8 flex justify-center">

@@ -125,7 +125,7 @@ function Licenses() {
     <>
       <div className="w-full">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-primary">
+          <h1 className="text-3xl font-bold text-primary tracking-widest">
             License Management
           </h1>
           <button
