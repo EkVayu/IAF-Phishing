@@ -20,7 +20,7 @@ function Contact() {
 
   return (
     <div className="w-full flex flex-col gap-5 p-6 bg-gray-100 dark:bg-transparent">
-      <h1 className="text-3xl font-semibold text-primary">Contact Us</h1>
+      <h1 className="text-3xl font-semibold text-primary tracking-widest">Contact Us</h1>
 
       <div className="flex space-x-4 mb-2">
         <TabButton

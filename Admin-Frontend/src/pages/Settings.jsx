@@ -16,7 +16,7 @@ function Settings() {
     <div className="w-full h-[80vh] bg-background">
       <div className="h-full w-full">
         <div className="p-8 w-full h-full">
-          <h1 className="text-4xl font-bold text-primary mb-6">Settings</h1>
+          <h1 className="text-4xl font-bold text-primary mb-6 tracking-widest">Settings</h1>
           <div className="space-y-8 flex flex-col justify-between w-full h-[65vh]">
             <div className="space-y-6">
               {/* <div className="flex items-center justify-between">

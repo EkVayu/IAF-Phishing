@@ -272,7 +272,7 @@ function RogueDB() {
 
   return (
     <div className="w-full flex flex-col">
-      <h1 className="text-3xl font-semibold text-secondary-foreground">
+      <h1 className="text-3xl font-semibold text-secondary-foreground tracking-widest">
         Rogue DB
       </h1>
       <div className="flex gap-4 mt-5">

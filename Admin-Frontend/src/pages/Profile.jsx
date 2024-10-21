@@ -55,14 +55,17 @@ function Profile() {
   return (
     <div className="min-h-[80vh]">
       <div className="w-full">
-        <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="bg-primary dark:bg-gray-900 h-20 px-5">
+        <h1 className="text-3xl font-semibold text-secondary-foreground tracking-widest">
+          Profile
+        </h1>
+        <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mt-5">
+          <div className="bg-primary dark:bg-gray-900 h-20 px-5 py-2">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-4xl font-bold text-white mb-2 capitalize">
+                <h2 className="text-2xl font-bold text-white mb-2 capitalize tracking-widest">
                   {user?.username || "User Name"}
                 </h2>
-                <p className="text-white capitalize">
+                <p className="text-white capitalize text-sm">
                   {userInfo?.role || "User Role"}
                 </p>
               </div>
