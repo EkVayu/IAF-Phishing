@@ -34,14 +34,14 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
   useEffect(() => {
     setVisibleColumns(
       tabData[activeTab]?.headers?.reduce((acc, header) => {
-        acc[header.toLowerCase().replace(/ /g, "_")] = true;
+        acc[header?.toLowerCase().replace(/ /g, "_")] = true;
         return acc;
       }, {})
     );
   }, [activeTab, tabData]);
 
   const toggleColumnVisibility = (columnHeader) => {
-    const key = columnHeader.toLowerCase().replace(/ /g, "_");
+    const key = columnHeader?.toLowerCase().replace(/ /g, "_");
     setVisibleColumns((prev) => ({
       ...prev,
       [key]: !prev[key],
@@ -148,8 +148,8 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
     // Filtering the table data based on the search term
     if (!searchTerm) return tabData[activeTab]?.data || [];
     return tabData[activeTab]?.data?.filter((row) =>
-      Object.values(row).some((value) =>
-        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      Object?.values(row)?.some((value) =>
+        String(value)?.toLowerCase()?.includes(searchTerm.toLowerCase())
       )
     );
   }, [tabData, activeTab, searchTerm]);
@@ -157,22 +157,22 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
   const columns = useMemo(
     () =>
       tabData[activeTab]?.headers?.map((header) => {
-        const key = header.toLowerCase().replace(/ /g, "_");
+        const key = header?.toLowerCase()?.replace(/ /g, "_");
         return {
           Header: header,
           accessor: key === "sr._no." ? "sr_no" : key,
           sortType: (rowA, rowB, columnId) => {
             if (header === "Validity From" || header === "Validity Till") {
-              const dateA = new Date(rowA.values[columnId]);
-              const dateB = new Date(rowB.values[columnId]);
+              const dateA = new Date(rowA?.values[columnId]);
+              const dateB = new Date(rowB?.values[columnId]);
               return dateA.getTime() - dateB.getTime();
             }
-            return rowA.values[columnId] > rowB.values[columnId] ? 1 : -1;
+            return rowA?.values[columnId] > rowB?.values[columnId] ? 1 : -1;
           },
           show: visibleColumns[key],
           Cell: ({ value, row }) => {
             if (header === "Issue") {
-              const buttonText = !row.original.email ? "Allocate" : "Revoke";
+              const buttonText = !row?.original?.email ? "Allocate" : "Revoke";
               return (
                 <button
                   className={`${
@@ -285,7 +285,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
               return (
                 <div className="">
                   <button
-                    onClick={() => handleView(row.original)}
+                    onClick={() => handleView(row?.original)}
                     className="bg-primary hover:bg-secondary text-white font-semibold py-2 px-4 rounded-md inline-flex items-center text-xs"
                   >
                     <FaEye className="mr-2" />
@@ -391,7 +391,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                 Filter by
               </h1>
               {tabData[activeTab]?.headers?.map((header) => {
-                const key = header.toLowerCase().replace(/ /g, "_");
+                const key = header?.toLowerCase()?.replace(/ /g, "_");
                 return (
                   <div key={key} className="flex items-center mb-2">
                     <input
@@ -415,7 +415,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
       <div className="overflow-hidden">
         <ScrollArea className="bg-background rounded-t-lg">
           {loading ? (
-            <div className="flex justify-center items-center h-64 bg-background rounded-lg">
+            <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
             </div>
           ) : error ? (
@@ -437,15 +437,15 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                       ?.filter((column) => column.show)
                       ?.map((column) => (
                         <th
-                          {...column.getHeaderProps(
-                            column.getSortByToggleProps()
+                          {...column?.getHeaderProps(
+                            column?.getSortByToggleProps()
                           )}
                           className="px-6 py-3 text-center cursor-pointer text-white"
                         >
-                          {column.render("Header")}
+                          {column?.render("Header")}
                           <span>
-                            {column.isSorted
-                              ? column.isSortedDesc
+                            {column?.isSorted
+                              ? column?.isSortedDesc
                                 ? " 🔽"
                                 : " 🔼"
                               : ""}
@@ -461,14 +461,14 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                   return (
                     <tr
                       {...row?.getRowProps()}
-                      key={row.id}
+                      key={row?.id}
                       onClick={(event) =>
                         handleRowClick(event, row?.original?.license_id)
                       }
                       className={`border hover:bg-gray-200 dark:hover:bg-gray-900`}
                     >
                       {row?.cells
-                        ?.filter((cell) => cell.column.show)
+                        ?.filter((cell) => cell?.column?.show)
                         ?.map((cell) => {
                           const { key, ...cellProps } = cell?.getCellProps();
                           return (
@@ -493,7 +493,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
           <div className="flex items-center justify-between p-2 rounded-b-lg shadow-md bg-background dark:bg-gray-800 overflow-hidden">
             <div className="text-secondary-foreground font-semibold">
               Showing {pageIndex * 10 + 1}-
-              {Math.min((pageIndex + 1) * 10, filteredData.length)} of{" "}
+              {Math?.min((pageIndex + 1) * 10, filteredData?.length)} of{" "}
               {filteredData.length}
             </div>
             <div className="flex items-center space-x-2">
@@ -508,7 +508,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
               >
                 <FaChevronLeft />
               </button>
-              {Array.from({ length: pageOptions.length }, (_, i) => i + 1).map(
+              {Array.from({ length: pageOptions?.length }, (_, i) => i + 1).map(
                 (pageNumber) => (
                   <button
                     key={pageNumber}
