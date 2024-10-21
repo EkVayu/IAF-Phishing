@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { fetchLicenses, updateLicenseStatus } from "../../Api/api";
+import { fetchLicenses, reserveLicense } from "../../Api/api";
 import CreateLicense from "../../components/popup/CreateLicense/CreateLicense";
 import Table3 from "../../components/Tables/Table3";
 import generateDummyLicenses from "../../Utils/LecenseGenerator";
@@ -26,13 +26,13 @@ function Licenses() {
         <button
           onClick={() => onAction(row.license_id, "toggle")}
           className={`mr-2 p-1 rounded ${
-            row.status === "1"
+            row.is_reserved
               ? "text-green-600 hover:text-green-800"
               : "text-red-600 hover:text-red-800"
           }`}
-          title={`Toggle ${row.status === "1" ? "Inactive" : "Active"}`}
+          title={`${row.is_reserved ? "Unreserve" : "Reserve"}`}
         >
-          {row.status === "1" ? (
+          {row.is_reserved ? (
             <FaToggleOn size={30} />
           ) : (
             <FaToggleOff size={30} />
@@ -81,45 +81,49 @@ function Licenses() {
     if (action === "toggle") {
       try {
         setUpdatingRow(id);
-        const currentLicense = licenses.find(license => license.license_id === id);
-        
-        // Check if the license is allocated
-        if (currentLicense.allocated_to && currentLicense.allocated_to !== "N/A") {
-          toast.warning("Cannot change status of an allocated license.");
-          return;
-        }
-  
-        const newStatus = currentLicense.status === "1" ? "0" : "1";
-        
-        const response = await updateLicenseStatus(id, newStatus);
-        
+        const currentLicense = licenses.find(
+          (license) => license.license_id === id
+        );
+
+        const response = await reserveLicense(
+          id,
+          currentLicense.is_reserved ? "0" : "1"
+        );
+        const data = await response.json();
+
         if (response.ok) {
           setLicenses((prevLicenses) =>
             prevLicenses.map((license) => {
               if (license.license_id === id) {
                 return {
                   ...license,
-                  status: newStatus,
-                  statusText: newStatus === "1" ? "Active" : "Inactive",
+                  is_reserved: data.license.is_reserved,
+                  // status: data.license.status,
+                  // statusText:
+                  //   data.license.status === "1" ? "Active" : "Inactive",
                 };
               }
               return license;
             })
           );
-          toast.success(`License status changed for id: ${id}`);
+          if (data.license.is_reserved) {
+            toast.success(`License ${id} has been reserved successfully.`);
+          } else {
+            toast.info(`License ${id} has been unreserved.`);
+          }
         } else {
-          throw new Error('Failed to update license status');
+          throw new Error(
+            data.message || "Failed to update license reservation."
+          );
         }
       } catch (error) {
-        console.error("Error updating license status:", error);
-        toast.error(`Failed to update license status: ${error.message}`);
+        console.error("Error updating license reservation:", error);
+        toast.error(`Failed to update license reservation: ${error.message}`);
       } finally {
         setUpdatingRow(null);
       }
     }
   };
-  
-  
 
   return (
     <>

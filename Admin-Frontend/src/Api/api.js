@@ -144,22 +144,6 @@ export const fetchLicensesHistory = async (licenseId) => {
   return response;
 };
 
-export const updateLicenseStatus = async (id, newStatus) => {
-  const token = sessionStorage.getItem("token");
-  const response = await fetch(
-    `${API_BASE_URL}/license-action/${id}/toggle_status/`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
-      },
-      body: JSON.stringify({ status: newStatus }),
-    }
-  );
-  return response;
-};
-
 export const fetchCurrentUserData = async () => {
   const token = sessionStorage.getItem("token");
   const user = JSON.parse(sessionStorage.getItem("user"));
@@ -279,6 +263,20 @@ export const deleteLicense = async (id) => {
   });
   return response;
 };
+
+export const reserveLicense = async (licenseId, action) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/licenses/${licenseId}/reserve/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({ action }),
+  });
+  return response;
+};
+
 
 export const fetchReports = async () => {
   const token = sessionStorage.getItem("token");
