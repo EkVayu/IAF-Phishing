@@ -13,6 +13,7 @@ const generateDummyLicenses = (count) => {
       valid_from: validFrom.toISOString(),
       valid_till: validTill.toISOString(),
       status: Math.random() > 0.5 ? "1" : "0",
+      is_reserved: Math.random() > 0.7 ? 1 : 0,
     };
 
     // Generate different types of data

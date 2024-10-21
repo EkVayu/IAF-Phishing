@@ -28,7 +28,7 @@ function Plugin() {
     } catch (error) {
       console.error("Failed to load license data:", error);
       const dummyData = generateDummyLicenses(10); // Generate 10 dummy licenses
-      console.log("data", dummyData);
+      // console.log("data", dummyData);
       setLicenseData(dummyData);
       toast.error(`API error: ${error.message}`);
       // setError(`API error: ${error.message}`);
@@ -50,7 +50,7 @@ function Plugin() {
         "Email",
         "Validity From",
         "Validity Till",
-        "Status",
+        // "Status",
         "Issue",
       ],
       data: licenseData
@@ -65,6 +65,7 @@ function Plugin() {
           validity_from: item?.valid_from,
           validity_till: item?.valid_till,
           status: item?.status === "0" ? "Inactive" : "Active",
+          is_reserved: item?.is_reserved,
           issue: item?.status,
         })),
     },

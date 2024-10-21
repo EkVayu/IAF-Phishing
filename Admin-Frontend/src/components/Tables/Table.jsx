@@ -49,10 +49,10 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
   };
 
   const handleIssueClick = (row, buttonText) => {
-    console.log(row);
-    if (row.status === "Inactive") {
-      toast.error(
-        "This license cannot be allocated due to its inactive status."
+    // console.log(row);
+    if (row.is_reserved === 1) {
+      toast.warn(
+        "This license cannot be allocated as it is a reserved license."
       );
       return;
     }
@@ -401,7 +401,10 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                       onChange={() => toggleColumnVisibility(header)}
                       className="mr-2"
                     />
-                    <label htmlFor={key} className="text-secondary-foreground tracking-wider">
+                    <label
+                      htmlFor={key}
+                      className="text-secondary-foreground tracking-wider"
+                    >
                       {header}
                     </label>
                   </div>
