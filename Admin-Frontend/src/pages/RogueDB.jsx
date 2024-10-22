@@ -281,7 +281,7 @@ function RogueDB() {
             key={tab}
             className={`flex-1 py-3 px-6 text-lg font-semibold rounded-lg ${
               activeTab === tab
-                ? "bg-background text-primary dark:text-white shadow-lg border border-primary dark:border-gray-800"
+                ? "bg-background text-primary dark:text-white shadow-md border border-primary dark:border-gray-800"
                 : "bg-primary dark:bg-gray-800 text-background dark:text-white hover:bg-primary/50"
             }`}
             onClick={() => setActiveTab(tab)}
@@ -376,7 +376,7 @@ function RogueDB() {
         <div className="rounded-t-lg overflow-hidden mt-5">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-primary dark:bg-gray-800 text-white">
+              <tr className="bg-primary dark:bg-gray-800 text-white uppercase">
                 {tabData[activeTab].headers.map(
                   (header, index) =>
                     visibleColumns[header.toLowerCase().replace(/ /g, "_")] && (
@@ -409,7 +409,7 @@ function RogueDB() {
                         </td>
                       )
                   )}
-                  <td className="py-2 px-4 text-right">
+                  <td className="py-2 px-4 text-right text-xs">
                     <button
                       className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
                       onClick={() => handleEdit(item)}

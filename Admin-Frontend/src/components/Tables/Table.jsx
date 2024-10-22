@@ -341,7 +341,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
           <button
             key={index}
             className={`
-        flex-1 py-3 px-6 text-lg font-semibold rounded-lg tracking-widest
+        flex-1 py-3 px-6 text-md font-semibold rounded-lg tracking-widest
         ${
           activeTab === index
             ? "bg-background text-primary dark:text-white shadow-lg border border-primary dark:border-gray-800 "
@@ -430,7 +430,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
               {...getTableProps()}
               className="w-full text-sm text-left text-gray-500 bg-background"
             >
-              <thead className="text-xs text-gray-700 dark:text-secondary-foreground uppercase bg-background">
+              <thead className="bg-background">
                 {headerGroups?.map((headerGroup) => (
                   <tr
                     {...headerGroup?.getHeaderGroupProps()}
@@ -443,7 +443,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                           {...column?.getHeaderProps(
                             column?.getSortByToggleProps()
                           )}
-                          className="px-6 py-3 text-center cursor-pointer text-white"
+                          className="px-6 py-3 text-center cursor-pointer text-white text-xs uppercase"
                         >
                           {column?.render("Header")}
                           <span>
