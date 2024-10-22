@@ -149,7 +149,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
             Filter
           </button>
           {showColumnToggle && (
-            <div className="absolute right-0 bg-background rounded-lg border shadow-lg mt-2 p-2 min-w-40 z-10">
+            <div className="absolute right-0 bg-background rounded-lg border shadow-lg mt-2 p-2 min-w-52 z-10">
               <h1 className="mb-2 border-b text-secondary-foreground">
                 Filter by
               </h1>
@@ -192,7 +192,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                   .map((column) => (
                     <th
                       key={column.accessor}
-                      className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                      className="px-4 py-3 text-center text-white uppercase text-xs border min-w-28"
                     >
                       {column.Header}
                     </th>
@@ -211,7 +211,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                     .map((column) => (
                       <td
                         key={column.accessor}
-                        className="px-6 py-2 whitespace-nowrap text-center text-secondary-foreground"
+                        className="px-6 py-2 whitespace-nowrap text-center text-secondary-foreground text-sm"
                       >
                         {column.accessor === "status" ? (
                           row[column.accessor] === "safe" ||
@@ -221,7 +221,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                               onChange={(e) =>
                                 handleStatusChange(row, e.target.value)
                               }
-                              className={`px-2 py-1 text-xs leading-5 font-semibold rounded-md outline-none cursor-pointer ${getStatusColor(
+                              className={`px-2 py-1 leading-5 font-semibold rounded-md outline-none cursor-pointer ${getStatusColor(
                                 row[column.accessor]
                               )} text-white`}
                             >
@@ -230,7 +230,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                             </select>
                           ) : (
                             <span
-                              className={`px-2 py-1 text-xs leading-5 font-semibold rounded-md ${getStatusColor(
+                              className={`px-2 py-1 leading-5 font-semibold rounded-md ${getStatusColor(
                                 row[column.accessor]
                               )} text-white`}
                             >
@@ -240,7 +240,7 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                         ) : column.accessor === "export" ? (
                           <button
                             onClick={() => handleDownload(row)}
-                            className="bg-primary hover:bg-secondary text-white font-semibold py-2 px-4 rounded-md inline-flex items-center text-xs"
+                            className="bg-primary hover:bg-secondary text-white font-semibold py-2 px-4 rounded-md inline-flex items-center"
                           >
                             <FaDownload className="mr-2" />
                             <span>Download</span>
