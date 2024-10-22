@@ -13,6 +13,7 @@ import {
 import { Close, Search } from "@mui/icons-material";
 import { IoFilterSharp } from "react-icons/io5";
 import { FaEye } from "react-icons/fa";
+import { LuLoader } from "react-icons/lu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
@@ -106,39 +107,139 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
   };
 
   const handliPrintHistory = async (licenseId) => {
-    toast.success(`License: ${licenseId}, History printed successfully`);
-  };
+    const dummyData = [
+      {
+        license: licenseId,
+        plugin: "Plugin A",
+        allocated_to: "user1@example.com",
+        allocation_date: "2024-10-22T10:55:00.646615+05:30",
+        revoke_date: "2024-10-22T10:55:33.633906+05:30",
+        status: "Inactive",
+      },
+      {
+        license: licenseId,
+        plugin: null,
+        allocated_to: "user2@example.com",
+        allocation_date: "2024-10-22T10:55:50.434148+05:30",
+        revoke_date: "2024-10-22T10:56:05.106281+05:30",
+        status: "Inactive",
+      },
+      {
+        license: licenseId,
+        plugin: "Plugin B",
+        allocated_to: "user3@example.com",
+        allocation_date: "2024-10-22T10:56:19.880430+05:30",
+        revoke_date: null,
+        status: "Active",
+      },
+    ];
 
-  const handleRowClick = async (event, licenseId) => {
-    if (event?.target?.tagName === "BUTTON") {
-      return; // Exit the function early if it's a button click
-    }
+    setLoading(true);
+
     try {
       const response = await fetchLicensesHistory(licenseId);
 
       if (!response.ok) {
-        toast.error("Network response was not ok");
+        throw new Error("Network response was not ok");
       }
+
       const history = await response.json();
-      // Check if history is empty or undefined
+
       if (!history || history.length === 0) {
         setSelectedLicenseHistory({
           licenseId: licenseId,
-          history: [{ message: "No history available" }],
+          history: dummyData,
         });
+        toast.info("No history available. Showing dummy data.");
+        setLoading(false);
       } else {
         setSelectedLicenseHistory({
           licenseId: licenseId,
           history: history,
         });
+        toast.success("License history loaded successfully.");
+        setLoading(false);
       }
       setShowHistoryModal(true);
     } catch (error) {
+      setShowHistoryModal(true);
       console.error("Error fetching license history:", error);
+      toast.error(`Error fetching license history: ${error.message}`);
+      setSelectedLicenseHistory({
+        licenseId: licenseId,
+        history: dummyData,
+      });
+      setLoading(false);
     }
   };
 
-  // Add these functions to handle button clicks
+  // const handleRowClick = async (event, licenseId) => {
+  //   if (event?.target?.tagName === "BUTTON") {
+  //     return;
+  //   }
+
+  //   const dummyData = [
+  //     {
+  //       license: licenseId,
+  //       plugin: "Plugin A",
+  //       allocated_to: "user1@example.com",
+  //       allocation_date: "2024-10-22T10:55:00.646615+05:30",
+  //       revoke_date: "2024-10-22T10:55:33.633906+05:30",
+  //       status: "Inactive",
+  //     },
+  //     {
+  //       license: licenseId,
+  //       plugin: null,
+  //       allocated_to: "user2@example.com",
+  //       allocation_date: "2024-10-22T10:55:50.434148+05:30",
+  //       revoke_date: "2024-10-22T10:56:05.106281+05:30",
+  //       status: "Inactive",
+  //     },
+  //     {
+  //       license: licenseId,
+  //       plugin: "Plugin B",
+  //       allocated_to: "user3@example.com",
+  //       allocation_date: "2024-10-22T10:56:19.880430+05:30",
+  //       revoke_date: null,
+  //       status: "Active",
+  //     },
+  //   ];
+
+  //   try {
+  //     const response = await fetchLicensesHistory(licenseId);
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const history = await response.json();
+
+  //     if (!history || history.length === 0) {
+  //       setSelectedLicenseHistory({
+  //         licenseId: licenseId,
+  //         history: dummyData,
+  //       });
+  //       toast.info("No history available. Showing dummy data.");
+  //     } else {
+  //       setSelectedLicenseHistory({
+  //         licenseId: licenseId,
+  //         history: history,
+  //       });
+  //       toast.success("License history loaded successfully.");
+  //     }
+  //     setShowHistoryModal(true);
+  //   } catch (error) {
+  //     setShowHistoryModal(true);
+  //     console.error("Error fetching license history:", error);
+  //     // toast.error("Error fetching license history");
+  //     setSelectedLicenseHistory({
+  //       licenseId: licenseId,
+  //       history: dummyData,
+  //     });
+  //     toast.info("No history available. Showing dummy data.");
+  //   }
+  // };
+
   const handleView = (rowData) => {
     // Implement view functionality
     toast.success(`Viewing data for message ID: ${rowData.message_id}`);
@@ -189,9 +290,13 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
               return (
                 <button
                   className={`bg-green-500 text-white w-16 py-1 rounded cursor-pointer transition-colors duration-300`}
-                  onClick={() => handliPrintHistory(row?.original?.license_id)}
+                  onClick={() => handliPrintHistory(row.original.license_id)}
                 >
-                  {buttonText}
+                  {loading ? (
+                    <LuLoader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
+                  ) : (
+                    buttonText
+                  )}
                 </button>
               );
             }
@@ -465,9 +570,9 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
                     <tr
                       {...row?.getRowProps()}
                       key={row?.id}
-                      onClick={(event) =>
-                        handleRowClick(event, row?.original?.license_id)
-                      }
+                      // onClick={(event) =>
+                      //   handleRowClick(event, row?.original?.license_id)
+                      // }
                       className={`border hover:bg-gray-200 dark:hover:bg-gray-900`}
                     >
                       {row?.cells

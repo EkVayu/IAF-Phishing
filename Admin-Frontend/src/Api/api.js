@@ -132,7 +132,7 @@ export const createLicense = async (licenseData) => {
 export const fetchLicensesHistory = async (licenseId) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(
-    `${API_BASE_URL}/licenses/${licenseId}/history/`,
+    `${API_BASE_URL}/allocations/license/history-report/${licenseId}/`,
     {
       method: "GET",
       headers: {
@@ -266,17 +266,19 @@ export const deleteLicense = async (id) => {
 
 export const reserveLicense = async (licenseId, action) => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/licenses/${licenseId}/reserve/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Token ${token}`,
-    },
-    body: JSON.stringify({ action }),
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/licenses/${licenseId}/reserve/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+      body: JSON.stringify({ action }),
+    }
+  );
   return response;
 };
-
 
 export const fetchReports = async () => {
   const token = sessionStorage.getItem("token");
