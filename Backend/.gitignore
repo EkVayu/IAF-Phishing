@@ -4,9 +4,8 @@ venv/
 myvenv/
 /static
 myenv/
-myEnv/
 
-eml_backup/
+
 # Ignore Python cache files
 __pycache__/
 
@@ -18,8 +17,3 @@ myenv/
 # Other ignores
 *.pyc
 __pycache__/
-
-
-# Ignore migrations
-plugin/migrations/
-

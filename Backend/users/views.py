@@ -21,13 +21,9 @@ from .models import RoughURL, RoughDomain, RoughMail
 from rest_framework.exceptions import ValidationError
 from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
-
-
+import traceback
 
 User = get_user_model()
-
-
 class LoginViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = LoginSerializer
@@ -85,16 +81,30 @@ class RegisterViewset(viewsets.ViewSet):
             return Response(serializer.errors, status=400)
 
 
+#nidhi
 class UserViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
-    queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
     def list(self, request):
-        queryset = User.objects.all()
+        # Fetch only non-deleted users
+        queryset = User.objects.filter(is_deleted=False)
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['delete'], url_path='soft-delete')
+    def soft_delete(self, request, pk=None):
+        """Perform soft delete on a user."""
+        user = get_object_or_404(User, pk=pk, is_deleted=False)
+        user.delete()  # This will trigger the soft delete
+        return Response({"detail": "User soft deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['post'], url_path='restore')
+    def restore(self, request, pk=None):
+        """Restore a soft-deleted user."""
+        user = get_object_or_404(User, pk=pk, is_deleted=True)
+        user.restore()  # This will restore the user
+        return Response({"detail": "User restored successfully."}, status=status.HTTP_200_OK)
 
 class StaffViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
@@ -193,7 +203,6 @@ class PasswordResetViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 # License view
 class LicenseListView(viewsets.ModelViewSet):
-    # permission_classes = [permissions.AllowAny]
     permission_classes = [permissions.AllowAny]
 
     queryset = License.objects.all()
@@ -205,16 +214,6 @@ class LicenseListView(viewsets.ModelViewSet):
         count = queryset.count()
         return Response(serializer.data)
 
-    # @action(detail=False, methods=['get'], url_path='by-license/(?P<license_id>[^/.]+)')
-    # def get_by_license_id(self, request, license_id=None):
-    #     plugins = PluginMaster.objects.filter(license_id__license_id=license_id)
-    #     if plugins.exists():
-    #         serializer = self.get_serializer(plugins, many=True)
-    #         return Response(serializer.data)
-    #     else:
-    #         return Response({"detail": "No plugins found for the provided license_id"}, status=status.HTTP_404_NOT_FOUND)
-
-    # /licenses/${licenseId}/allocate/
     @action(detail=True, methods=['post'])
     def allocate(self, request, pk=None):
         try:
@@ -273,16 +272,6 @@ class LicenseListView(viewsets.ModelViewSet):
         except License.DoesNotExist:
             return Response({"detail": "License not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            # @action(detail=False, methods=['get'], url_path='details-with-plugins/(?P<license_id>[^/.]+)')
-
-    # def details_with_plugins(self, request, license_id=None):
-    #     try:
-    #         license_instance = License.objects.get(license_id=license_id)
-    #     except License.DoesNotExist:
-    #         return Response({"detail": "License not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    #     serializer = self.get_serializer(license_instance)
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['patch'], url_path='update-by-license-id/(?P<license_id>[^/.]+)')
     def update_by_license_id(self, request, license_id=None):
@@ -350,6 +339,70 @@ class LicenseListView(viewsets.ModelViewSet):
             return Response({"message": f"{number_of_licenses} license IDs created successfully."}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "No licenses were created."}, status=status.HTTP_400_BAD_REQUEST)
+        
+#nidhi
+class LicenseViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LicenseSerializer
+
+    @swagger_auto_schema(
+        operation_summary="Reserve or unreserve a license",
+        responses={
+            200: LicenseAllocationSerializer,
+            400: "License is already active.",
+            403: "You do not have permission to perform this action.",
+            404: "License not found."
+        }
+    )
+    def reserve_license(self, request, pk=None):
+        """
+        Reserve or unreserve a license based on the action specified.
+        Only superusers can perform this action.
+        """
+        user = request.user
+
+        # Check if the user is a superuser
+        if not user.is_superuser:
+            return Response({"detail": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+
+        action = request.data.get('action')
+
+        try:
+            # Fetch the license instance
+            license_instance = License.objects.get(license_id=pk)
+
+            if action == '1':  # Action to reserve the license
+                # Check if the license is already active or reserved
+                if license_instance.status == '1':
+                    return Response({"message": "License is already activated. Please revoke it before inactivating."}, status=status.HTTP_200_OK)
+
+                if license_instance.is_reserved:
+                    return Response({"message": "License is already reserved."}, status=status.HTTP_200_OK)
+
+                # Reserve the license
+                license_instance.is_reserved = True
+                license_instance.save()
+                message = "License has been reserved."
+
+            elif action == '0':  # Action to unreserve the license
+                if not license_instance.is_reserved:
+                    return Response({"message": "License is not currently reserved."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Unreserve the license
+                license_instance.is_reserved = False
+                license_instance.save()
+                message = "License has been unreserved."
+
+            else:
+                return Response({"message": "Invalid action specified. Use '1' to reserve or '0' to unreserve."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Return the updated license information
+            serializer = self.serializer_class(license_instance)
+            return Response({'license': serializer.data, 'message': message}, status=status.HTTP_200_OK)
+
+        except License.DoesNotExist:
+            return Response({"detail": "License not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 class PluginMasterViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
@@ -374,18 +427,15 @@ class PluginMasterViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_404_NOT_FOUND)
 
 
-# class LicenseListView(generics.ListAPIView):
-#     queryset = License.objects.all()
-#     serializer_class = LicenseSerializer
-
-# User profile
 # Mehtab- 11-07-2024
 class UserProfileView(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     serializer_class = UserProfileSerializer
 
     def get_queryset(self):
-        return UserProfile.objects.all()
+        #return UserProfile.objects.all()
+        return UserProfile.objects.filter(user__is_deleted=False) #nidhi
+
 
     def list(self, request):
         queryset = self.get_queryset()
@@ -394,7 +444,9 @@ class UserProfileView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path=r'user_id/(?P<user_id>[^/.]+)')
     def get_user_id(self, request, user_id=None):
-        user_profiles = UserProfile.objects.filter(user_id=user_id)
+        #user_profiles = UserProfile.objects.filter(user_id=user_id)
+        user_profiles = UserProfile.objects.filter(user_id=user_id, user__is_deleted=False) #nidhi
+
         if user_profiles.exists():
             serializer = self.get_serializer(user_profiles, many=True)
             return Response(serializer.data)
@@ -403,16 +455,41 @@ class UserProfileView(viewsets.ModelViewSet):
 
     def get_object_by_user_id(self, user_id):
         """Helper method to retrieve the UserProfile by user_id"""
-        return get_object_or_404(UserProfile, user_id=user_id)
+        #return get_object_or_404(UserProfile, user_id=user_id)
+        return get_object_or_404(UserProfile, user_id=user_id, user__is_deleted=False)
+
 
     @action(detail=False, methods=['post', 'put', 'patch',], url_path=r'user_id/(?P<user_id>[^/.]+)')
     def partial_update_by_user_id(self, request, user_id=None):
         """Handles partial updates to the user profile by user_id"""
-        instance = self.get_object_by_user_id(user_id=user_id)
+
+        # Ensure we only update non-deleted users
+        if instance.user.is_deleted: #nidhi
+            return Response({"detail": "Cannot update a soft-deleted user profile."}, status=status.HTTP_400_BAD_REQUEST) #nidhi
+        
+        #$instance = self.get_object_by_user_id(user_id=user_id)
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+    #nidhi
+    # Soft delete action
+    @action(detail=False, methods=['delete'], url_path=r'user_id/(?P<user_id>[^/.]+)')
+    def soft_delete_by_user_id(self, request, user_id=None):
+        """Soft delete a user profile by user_id"""
+        profile = self.get_object_by_user_id(user_id=user_id)
+        profile.user.is_deleted = True
+        profile.user.save()
+        return Response({"detail": "User profile soft deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    #nidhi
+    # Restore action
+    @action(detail=False, methods=['post'], url_path=r'user_id/(?P<user_id>[^/.]+)/restore')
+    def restore_by_user_id(self, request, user_id=None):
+        """Restore a soft-deleted user profile by user_id"""
+        profile = get_object_or_404(UserProfile, user_id=user_id, user__is_deleted=True)
+        profile.user.is_deleted = False
+        profile.user.save()
+        return Response({"detail": "User profile restored successfully."}, status=status.HTTP_200_OK)
 
 
 # Allocation
@@ -431,15 +508,54 @@ class LicenseAllocationViewSet(viewsets.ModelViewSet):
             return Response({"detail": "No plugins found for the provided license_id"},
                             status=status.HTTP_404_NOT_FOUND)
 
-#         
-#     {
-#         "license": "LID00003",
-#         "plugin": "ghogeabjahfmiadfcpklghcbijcopdhp",
-#         "allocated_to": "amit@email.com",
-#         "allocation_date": "2024-07-17T05:08:53.328385Z",
-#         "revoke_date": null
-#     }
-# ]
+#nidhi
+#Enhanced License Allocation ViewSet with full License Report
+    @action(detail=False, methods=['get'], url_path='license-report')
+    def license_report(self, request):
+        # Get all license allocations
+        allocations = LicenseAllocation.objects.all()
+
+        # Prepare the report data
+        report_data = []
+        for idx, allocation in enumerate(allocations, start=1):
+            report_data.append({
+                "S.No": idx,
+                "License Key": allocation.license_id,
+                "Allocated Email": allocation.allocated_to,
+                "Allocation Date": allocation.allocation_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "Revoke Date": allocation.revoke_date.strftime("%Y-%m-%d %H:%M:%S") if allocation.revoke_date else "N/A",
+                #"Revoke Reason": allocation.revoke_reason if allocation.revoke_reason else "N/A",
+                "Status": "Inactive" if allocation.revoke_date else "Active",
+                #"License Type": allocation.license_type,  # Assuming you have a field for this
+                #"Expiry Date": allocation.valid_till.strftime("%Y-%m-%d %H:%M:%S") if allocation.valid_till else "Does not expire"
+            })
+
+        return Response({
+            "message": "Full License report generated successfully.",
+            "data": report_data
+        }, status=status.HTTP_200_OK)
+
+
+    @action(detail=False, methods=['get'], url_path='license/history-report/(?P<license_id>[^/.]+)')
+    def get_license_details(self, request, license_id=None):
+        # Retrieve all allocations for the specific license ID
+        allocations = LicenseAllocation.objects.filter(license__license_id=license_id)
+
+        if allocations.exists():
+            allocation_data = []
+            for allocation in allocations:
+                serializer = self.get_serializer(allocation)
+                data = serializer.data
+                # Add status based on revoke_date
+                data['status'] = 'Inactive' if allocation.revoke_date else 'Active'
+                allocation_data.append(data)
+
+            return Response(allocation_data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "License allocation not found."},
+                            status=status.HTTP_200_OK)        
+
+
 
 class EmailDetailsViewSet(viewsets.ViewSet):
     def list(self, request):

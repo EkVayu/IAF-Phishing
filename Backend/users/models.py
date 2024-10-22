@@ -69,24 +69,29 @@ class CustomUser(AbstractUser):
         date_joined (datetime): The date and time when the user account was created.
     """
     email = models.EmailField(max_length=200, unique=True)
+    is_deleted = models.BooleanField(default=False)
+
     objects = CustomUserManager()
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
 
+    #nidhi
+    def delete(self, *args, **kwargs):
+        """Override delete method to perform a soft delete."""
+        self.is_deleted = True
+        self.save()
 
-# Custom models
+    def restore(self):
+        """Method to restore a soft-deleted user."""
+        self.is_deleted = False
+        self.save()
 
-# class License(models.Model):
-#     license_id = models.CharField(max_length=10,primary_key=True)
-#     user_email = models.CharField(max_length=50, null=True)
-#     count = models.IntegerField(null=False, default=0)
-#     valid_from = models.DateTimeField(null=True)
-#     valid_till = models.DateTimeField(null=True)
-#     created_timestamp = models.DateTimeField(default=django.utils.timezone.now)
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users"
 
-#     class Meta:
-#         db_table = 'license_masters'\
+
 
 class Organisations(models.Model):
     """
@@ -134,7 +139,9 @@ class License(models.Model):
     license_id = models.CharField(max_length=10, primary_key=True)
     organisation = models.CharField(max_length=5,null=True,default='IAF')
     allocated_to = models.CharField(max_length=150, null=True, blank=True)
-    status = models.CharField(max_length=2, null=True, default=0)
+    status = models.CharField(max_length=2, null=False, default=0) #nidhi
+    is_reserved = models.IntegerField(blank=True, default=0) #nidhi
+
     valid_from = models.DateTimeField(null=True)
     valid_till = models.DateTimeField(null=True)
     created_timestamp = models.DateTimeField(default=django.utils.timezone.now)
@@ -198,20 +205,6 @@ class PluginMaster(models.Model):
         return str(self.plugin_id)
 
 
-# class PluginMaster(models)
-
-
-# class PluginMaster(models.Model):
-#     plugin_id = models.CharField(max_length=50, unique=True,primary_key=True)  # Unique identifier for the plugin
-#     license_id = models.ForeignKey('License', on_delete=models.CASCADE)  # License id from class License
-#     browser = models.CharField(max_length=15, null=True)
-#     ip_add = models.GenericIPAddressField(null=True)  # IP address field
-#     install_date = models.DateTimeField(null=True)
-#     create_timestamp = models.DateTimeField(default=django.utils.timezone.now)  # Default to current timestamp
-#     last_updated_timestamp = models.DateTimeField(auto_now=True)  # Automatically set to current timestamp on update
-
-#     class Meta:
-#         db_table = 'plugin_masters'  # Custom table name
 
 # User profile
 class UserProfile(models.Model):
@@ -259,10 +252,9 @@ class LicenseAllocation(models.Model):
     revoke_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = (('license', 'allocation_date'),)
-                                   
+        unique_together = (('license', 'allocation_date'),)                         
         db_table = 'license_allocations'
-
+#nidhi
 class RoughURL(models.Model):
     """
     Model representing a rough URL.
@@ -313,3 +305,9 @@ class RoughMail(models.Model):
 
     def __str__(self):
         return self.mailid
+    
+
+
+
+
+    

@@ -20,11 +20,11 @@ def verify_lid(data):
                 "data": ""
             }, status=400)
 
-        # Try to find the License object
+        # Check if license exists
         try:
             license = License.objects.get(hashed_license_id=license_id)
             
-            # Try to find the associated LicenseAllocation object
+            
             try:
                 allocation = LicenseAllocation.objects.get(license=license)
                 resp = {

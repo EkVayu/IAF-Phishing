@@ -8,18 +8,9 @@ from .models import RoughURL, RoughDomain, RoughMail
 
 
 User = get_user_model()
-
-# class CustomUserManagerSerializer(serializers.Serializer):
-#     class Meta:
-#         fields = ['username']
-
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
-    
-
-    # fields = ['id', 'email']
-
     def to_representation(self, instance):        # The 'instance' is the user object
         ret = super().to_representation(instance)
         ret['id'] = instance.id
@@ -76,11 +67,17 @@ class LicenseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = License
-        fields = ['license_id', 'organisation', 'valid_from', 'valid_till', 'allocated_to', 'status', 'plugins']
+        #nidhi
+        fields = ['license_id', 'organisation', 'valid_from', 'valid_till', 'allocated_to', 'status','is_reserved', 'plugins']
         extra_kwargs = {
             'allocated_to': {'required': False, 'allow_null': True}
         }
+#nidhi
 
+    def validate_allocated_to(self, value):
+        if self.instance and self.instance.status == '0':
+            raise serializers.ValidationError("Inactive licenses cannot be allocated.")
+        return value
 
 class PluginMasterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -164,7 +161,7 @@ class EmailDetailsUpdateSerializer(serializers.Serializer):
             raise serializers.ValidationError("No EmailDetails found with the provided recievers_email and message_id.")
         
 
-
+#nidhi
 class RoughURLSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoughURL
