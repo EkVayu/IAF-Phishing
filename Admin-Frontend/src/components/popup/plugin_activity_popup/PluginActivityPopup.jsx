@@ -3,6 +3,7 @@ import { Button } from "../../ui/button";
 import { X } from "lucide-react";
 import { FaCaretLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function PluginActivityPopup({ onClose }) {
   const [stage, setStage] = useState(1);
@@ -111,20 +112,20 @@ function PluginActivityPopup({ onClose }) {
           <tbody className="text-[10px]">
             {disabledExtensions.map((ext, index) => (
               <tr key={ext.id}>
-                <td className="py-1 px-2 text-center text-muted-foreground border relative group">
+                <td className="py-1 px-2 text-center text-secondary-foreground border relative group">
                   <span className="cursor-pointer">
                     {truncatePluginId(ext.pluginId)}
                     {ext.pluginId.length > 8 && (
-                      <div className="absolute hidden group-hover:block bg-black text-white p-2 rounded text-xs -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10">
+                      <div className="absolute hidden group-hover:block bg-black text-white dark:bg-white dark:text-black p-2 rounded text-xs -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10">
                         {ext.pluginId}
                       </div>
                     )}
                   </span>
                 </td>
-                <td className="py-1 px-2 text-center text-muted-foreground border">
+                <td className="py-1 px-2 text-center text-secondary-foreground border">
                   {ext.userName}
                 </td>
-                <td className="py-1 px-2 text-center text-muted-foreground border">
+                <td className="py-1 px-2 text-center text-secondary-foreground border">
                   {ext.lastActive}
                 </td>
                 <td className="py-1 px-2 text-center border">
@@ -157,21 +158,52 @@ function PluginActivityPopup({ onClose }) {
   const renderStage3 = () => (
     <>
       {renderHeader("Plugin Details")}
-      <div className="p-4 text-secondary-foreground">
+      <div className="text-secondary-foreground">
         {selectedExtension && (
           <div className="space-y-3">
             <div className="p-4 border rounded-md bg-card">
               <div className="flex justify-between items-center mb-3">
                 <span className="">Plugin Id:</span>
-                <div className="relative group">
+                <div className="relative group flex items-center gap-2">
                   <span className="cursor-pointer font-medium">
                     {truncatePluginId(selectedExtension.pluginId)}
                     {selectedExtension.pluginId.length > 8 && (
-                      <div className="absolute hidden group-hover:block bg-black text-white p-2 rounded text-xs -top-8 right-0 transform whitespace-nowrap z-10">
+                      <div className="absolute hidden group-hover:block bg-black text-white dark:bg-white dark:text-black p-2 rounded text-xs -top-8 right-0 transform whitespace-nowrap z-10">
                         {selectedExtension.pluginId}
                       </div>
                     )}
                   </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-6"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedExtension.pluginId);
+                      toast.success("Copied to clipboard");
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect
+                        x="9"
+                        y="9"
+                        width="13"
+                        height="13"
+                        rx="2"
+                        ry="2"
+                      ></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </Button>
                 </div>
               </div>
 
