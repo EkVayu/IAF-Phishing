@@ -6,6 +6,7 @@ import { LuBoxes } from "react-icons/lu";
 import { FaChartLine } from "react-icons/fa";
 import { GoAlertFill } from "react-icons/go";
 import StaffDashboardGenerator from "../Utils/StaffDashboardGenerator";
+import Notification from "../components/popup/plugin_activity_popup/PluginActivityPopup";
 
 const StaffDashboard = () => {
   const [selectedCard, setSelectedCard] = useState(0);

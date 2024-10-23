@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Table2 from "../components/Tables/Table2";
 import { toast } from "react-toastify";
-import { fetchReports } from "../Api/api"; // Assuming you have this function in your api.js file
+import { fetchReports } from "../Api/api";
 import { ReportDataGenerator } from "../Utils/ReportDataGenerator";
 
 const columns = [

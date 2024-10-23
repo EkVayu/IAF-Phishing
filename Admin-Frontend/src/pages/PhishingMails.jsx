@@ -42,7 +42,7 @@ function PhishingMails() {
             }))
           );
           setPhishingMails(formattedData);
-          toast.success("Displaying live data from API");
+          toast.success("Data loaded successfully");
         } else if (result.length === 0) {
           setError("No data available!");
           toast.info("No data available!");
