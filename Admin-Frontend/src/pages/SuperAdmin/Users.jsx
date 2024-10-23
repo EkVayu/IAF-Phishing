@@ -38,26 +38,31 @@ function Users() {
     setLoading(true);
     try {
       const response = await fetchUsers();
-      if (response.results) {
-        const formattedUsers = response.results.map((user) => ({
-          ...user,
-          name: `${user.first_name} ${user.last_name}`,
-        }));
-        setUsers(formattedUsers);
-        setLoading(false);
+      if (response.ok) {
+        const results = await response.json();
+        if (results.length > 0) {
+          const formattedUsers = results.map((user) => ({
+            ...user,
+            name: `${user?.first_name} ${user?.last_name}`,
+          }));
+          setUsers(formattedUsers);
+        } else {
+          setError("User data not available.");
+          toast.warn("User data not available.");
+        }
       } else {
-        setError("Server response not Ok!");
-        setLoading(false);
-        toast.warning("Server response not OK!.");
+        setError("Server response not OK!");
+        toast.warning("Server response not OK.");
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
       const dummyUsers = generateDummyUsers(5);
       setUsers(dummyUsers);
       setLoading(false);
       toast.error(`API error: ${error.message}`);
-      // setError(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,7 +84,6 @@ function Users() {
           );
         }
       } catch (error) {
-        // setUsers(users.filter((user) => user.id !== id));
         console.error("Error deleting user:", error);
         toast.error(
           "An error occurred while deleting the user. Please try again."
@@ -92,7 +96,9 @@ function Users() {
     <>
       <div className="w-full">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-primary tracking-widest">User Management</h1>
+          <h1 className="text-3xl font-bold text-primary tracking-widest">
+            User Management
+          </h1>
           <button
             onClick={() => setShowForm(true)}
             className="bg-primary text-white px-4 py-2 rounded-full hover:bg-secondary transition duration-300 flex items-center"

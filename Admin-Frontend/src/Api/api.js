@@ -217,24 +217,20 @@ export const updatePhishingMailStatus = async (
 
 export const fetchUsers = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/staff/`, {
+  const response = await fetch(`${API_BASE_URL}/users/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,
     },
   });
-  if (!response.ok) {
-    console.error("Failed to fetch users:", response);
-    throw new Error("Failed to fetch users");
-  }
-  return response.json(); // Ensure it's returning a JSON object
+  return response;
 };
 
 export const deleteUsers = async (id) => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/users/${id}/delete/`, {
-    method: "PUT",
+  const response = await fetch(`${API_BASE_URL}/users/${id}/soft-delete/`, {
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,
@@ -259,7 +255,7 @@ export const createUser = async (formData) => {
 export const deleteLicense = async (id) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/license/${id}/`, {
-    method: "PUT",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,

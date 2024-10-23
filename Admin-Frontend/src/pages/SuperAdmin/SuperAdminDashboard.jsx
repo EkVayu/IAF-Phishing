@@ -29,12 +29,13 @@ const SuperAdminDashboard = () => {
 
         // Check if API calls were successful
         if (userResponse.ok && licenseResponse.ok) {
-          users = userResponse.json();
+          users = await userResponse.json();
           licenses = await licenseResponse.json();
         } else {
-          // If any API call fails, use generated data
-          setError("API request failure.");
-          toast.warning("API request failure.");
+          // If any API call fails,
+          // set error state and show toast
+          setError("Api error: Data not available.");
+          toast.error("Api error: Data not available.");
         }
 
         // Process user data
@@ -76,7 +77,8 @@ const SuperAdminDashboard = () => {
         setUserData(generatedData.userData);
         setLicenseData(generatedData.licenseData);
 
-        toast.error("Failed to fetch data. Using generated data.");
+        toast.error("Failed to fetch data.");
+        // setError(`Failed to fetch data: ${error.message}`);
         setLoading(false);
       }
     };
