@@ -10,6 +10,7 @@ plugin/__pycache__/
 users/migrations/
 users/__pycache__/
 eml_backup
+plugin/test
 
 
 # Ignore Python cache files
