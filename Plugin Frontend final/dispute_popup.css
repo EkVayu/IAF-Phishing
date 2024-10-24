@@ -1,0 +1,116 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #e9ecef; /* Light grey background */
+}
+
+.main-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #ffffff; /* White background for content */
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth effects */
+}
+
+.main-container:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+h1 {
+  text-align: center;
+  color: #343a40; /* Dark grey for better readability */
+  margin-bottom: 25px;
+  font-size: 26px; /* Larger heading */
+  font-weight: bold; /* Bold heading */
+}
+
+.message-id,
+.current-status,
+.emailId,
+.counter {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #495057; /* Slightly darker grey */
+}
+
+.message-id-value {
+  font-weight: bold;
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: break-word; /* Break long words */
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center; /* Centered text */
+}
+
+.status.safe {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green */
+}
+
+.status.unsafe {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24; /* Dark red */
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #6c757d; /* Soft grey */
+  font-weight: 500; /* Medium weight */
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ced4da; /* Lighter border */
+  border-radius: 5px;
+  margin-bottom: 20px;
+  resize: none;
+  transition: border-color 0.3s; /* Smooth border transition */
+  font-size: 14px; /* Base text size */
+}
+
+textarea:focus {
+  border-color: #80bdff; /* Blue border on focus */
+  outline: none;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; /* Bootstrap blue */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s; /* Transition effects */
+}
+
+.submit-btn.enabled {
+  background-color: #0056b3; /* Darker blue */
+}
+
+.submit-btn.enabled:hover {
+  background-color: #0056b3; /* Darker on hover */
+  transform: translateY(-2px); /* Lift effect on hover */
+}
+
+.submit-btn:disabled {
+  background-color: #ccc; /* Disabled state */
+  cursor: not-allowed;
+}
