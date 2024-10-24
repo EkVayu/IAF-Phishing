@@ -4,6 +4,9 @@ venv/
 myvenv/
 /static
 myenv/
+plugin/migrations
+users/migrations
+eml_backup
 
 
 # Ignore Python cache files
