@@ -51,7 +51,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
 
   const handleIssueClick = (row, buttonText) => {
     // console.log(row);
-    if (row.is_reserved === 1) {
+    if (row?.is_reserved === 1) {
       toast.warn(
         "This license cannot be allocated as it is a reserved license."
       );
