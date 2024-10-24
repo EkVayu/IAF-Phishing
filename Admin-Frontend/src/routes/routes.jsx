@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -32,9 +32,12 @@ const ConditionalPluginPopup = () => {
   const [showNotification, setShowNotification] = useState(true);
   const location = useLocation();
   const { role } = useAuth();
+
+  // Early return if on login page or user is superuser
   if (location.pathname === "/login" || role === "superuser") {
     return null;
   }
+
   return (
     <>
       {showNotification && (

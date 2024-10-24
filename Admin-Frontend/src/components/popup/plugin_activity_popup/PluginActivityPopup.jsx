@@ -3,6 +3,8 @@ import { Button } from "../../ui/button";
 import { X } from "lucide-react";
 import { FaCaretLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function PluginActivityPopup({ onClose }) {
   const [stage, setStage] = useState(1);
@@ -16,7 +18,7 @@ function PluginActivityPopup({ onClose }) {
   const disabledExtensions = [
     {
       id: 1,
-      pluginId: "98765ersdxcghu87654ewsdxcvhju7654elkoiytfvbjhuy7654e",
+      pluginId: "hi9876trdfcgvhyu765esdxokiu65rdcvhui",
       userName: "User 1",
       lastActive: "2 days ago",
       status: "Disabled",
@@ -91,57 +93,59 @@ function PluginActivityPopup({ onClose }) {
     <>
       {renderHeader("Disabled Plugin List")}
       <div className="text-secondary-foreground">
-        <table className="w-full">
-          <thead className="bg-primary text-[10px] text-white">
-            <tr>
-              <th className="py-1 px-2 text-center font-medium border">
-                Plugin Id
-              </th>
-              <th className="py-1 px-2 text-center font-medium border">
-                User Name
-              </th>
-              <th className="py-1 px-2 text-center font-medium border">
-                Last Active
-              </th>
-              <th className="py-1 px-2 text-center font-medium border">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="text-[10px]">
-            {disabledExtensions.map((ext, index) => (
-              <tr key={ext.id}>
-                <td className="py-1 px-2 text-center text-muted-foreground border relative group">
-                  <span className="cursor-pointer">
-                    {truncatePluginId(ext.pluginId)}
-                    {ext.pluginId.length > 8 && (
-                      <div className="absolute hidden group-hover:block bg-black text-white p-2 rounded text-xs -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10">
-                        {ext.pluginId}
-                      </div>
-                    )}
-                  </span>
-                </td>
-                <td className="py-1 px-2 text-center text-muted-foreground border">
-                  {ext.userName}
-                </td>
-                <td className="py-1 px-2 text-center text-muted-foreground border">
-                  {ext.lastActive}
-                </td>
-                <td className="py-1 px-2 text-center border">
-                  <button
-                    className="text-[10px] bg-primary px-2 py-1 rounded-md text-white"
-                    onClick={() => {
-                      setSelectedExtension(ext);
-                      setStage(3);
-                    }}
-                  >
-                    View
-                  </button>
-                </td>
+        <ScrollArea className="h-[200px] border-none">
+          <table className="w-full border-collapse">
+            <thead className="bg-primary text-[10px] text-white">
+              <tr>
+                <th className="py-1 px-2 text-center font-medium border">
+                  Plugin Id
+                </th>
+                <th className="py-1 px-2 text-center font-medium border">
+                  User Name
+                </th>
+                <th className="py-1 px-2 text-center font-medium border">
+                  Last Active
+                </th>
+                <th className="py-1 px-2 text-center font-medium border">
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="text-[10px]">
+              {disabledExtensions.map((ext, index) => (
+                <tr key={ext.id}>
+                  <td className="py-1 px-2 text-center text-secondary-foreground border relative group">
+                    <span className="cursor-pointer">
+                      {truncatePluginId(ext.pluginId)}
+                      {ext.pluginId.length > 8 && (
+                        <div className="absolute hidden group-hover:block bg-black text-white dark:bg-white dark:text-black p-2 rounded text-xs -top-8 -right-52  transform whitespace-nowrap z-10">
+                          {ext.pluginId}
+                        </div>
+                      )}
+                    </span>
+                  </td>
+                  <td className="py-1 px-2 text-center text-secondary-foreground border">
+                    {ext.userName}
+                  </td>
+                  <td className="py-1 px-2 text-center text-secondary-foreground border">
+                    {ext.lastActive}
+                  </td>
+                  <td className="py-1 px-2 text-center border">
+                    <button
+                      className="text-[10px] bg-primary px-2 py-1 rounded-md text-white"
+                      onClick={() => {
+                        setSelectedExtension(ext);
+                        setStage(3);
+                      }}
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ScrollArea>
       </div>
       <Link
         to={"/plugin"}
@@ -157,21 +161,52 @@ function PluginActivityPopup({ onClose }) {
   const renderStage3 = () => (
     <>
       {renderHeader("Plugin Details")}
-      <div className="p-4 text-secondary-foreground">
+      <div className="text-secondary-foreground">
         {selectedExtension && (
           <div className="space-y-3">
             <div className="p-4 border rounded-md bg-card">
               <div className="flex justify-between items-center mb-3">
                 <span className="">Plugin Id:</span>
-                <div className="relative group">
+                <div className="relative group flex items-center gap-2">
                   <span className="cursor-pointer font-medium">
                     {truncatePluginId(selectedExtension.pluginId)}
                     {selectedExtension.pluginId.length > 8 && (
-                      <div className="absolute hidden group-hover:block bg-black text-white p-2 rounded text-xs -top-8 right-0 transform whitespace-nowrap z-10">
+                      <div className="absolute hidden group-hover:block bg-black text-white dark:bg-white dark:text-black p-2 rounded text-xs -top-8 right-0 transform whitespace-nowrap z-10">
                         {selectedExtension.pluginId}
                       </div>
                     )}
                   </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-6"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedExtension.pluginId);
+                      toast.success("Copied to clipboard");
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect
+                        x="9"
+                        y="9"
+                        width="13"
+                        height="13"
+                        rx="2"
+                        ry="2"
+                      ></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </Button>
                 </div>
               </div>
 

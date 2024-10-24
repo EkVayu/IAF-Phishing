@@ -3,26 +3,83 @@ import { Link, useLocation } from "react-router-dom";
 import logoTop from "./../assets/IAF_logo.jpg";
 import logoBottom from "./../assets/logo.jpeg";
 import { useAuth } from "../context/AuthContext";
+import { MdDashboard, MdVpnKey } from "react-icons/md";
+import { IoMdPeople } from "react-icons/io";
+import { FaPlug } from "react-icons/fa";
+import { RiSpam2Fill } from "react-icons/ri";
+import { MdSpaceDashboard } from "react-icons/md";
+import { TbReportSearch } from "react-icons/tb";
+import { CgProfile } from "react-icons/cg";
+import { IoIosChatboxes } from "react-icons/io";
+import { MessageSquareLock } from "lucide-react";
+import { IoCall } from "react-icons/io5";
+import { GiRogue } from "react-icons/gi";
+import { IoMdSettings } from "react-icons/io";
+import { SiRtlzwei } from "react-icons/si";
 
 const superadminMenuItems = [
-  { title: "Dashboard", path: "/" },
-  { title: "Users", path: "/users" },
-  { title: "Licenses", path: "/licenses" },
+  { title: "Dashboard", path: "/", icon: <MdDashboard className="text-xl" /> },
+  { title: "Users", path: "/users", icon: <IoMdPeople className="text-xl" /> },
+  {
+    title: "Licenses",
+    path: "/licenses",
+    icon: <MdVpnKey className="text-xl" />,
+  },
 ];
 
 const staffMenuItems = [
-  { title: "Dashboard", path: "/" },
-  { title: "Plugin", path: "/plugin" },
-  { title: "Phishing", path: "/phishing-mails" },
-  { title: "CDR", path: "/cdr" },
-  { title: "Reports", path: "/reports" },
-  { title: "Profile", path: "/profile" },
-  { title: "SandBox", path: "/sandbox" },
-  { title: "Quarantine", path: "/quarantine" },
-  { title: "Contact", path: "/contact" },
-  { title: "Rogue DB", path: "/rogue-db" },
-  { title: "SIRTs", path: "/sirts" },
-  { title: "Settings", path: "/settings" },
+  { title: "Dashboard", path: "/", icon: <MdDashboard className="text-xl" /> },
+  {
+    title: "Plugin",
+    path: "/plugin",
+    icon: <FaPlug className="text-xl" />,
+  },
+  {
+    title: "Phishing",
+    path: "/phishing-mails",
+    icon: <RiSpam2Fill className="text-xl" />,
+  },
+  {
+    title: "CDR",
+    path: "/cdr",
+    icon: <MdSpaceDashboard className="text-xl" />,
+  },
+  {
+    title: "Reports",
+    path: "/reports",
+    icon: <TbReportSearch className="text-xl" />,
+  },
+  {
+    title: "Profile",
+    path: "/profile",
+    icon: <CgProfile className="text-xl" />,
+  },
+  {
+    title: "SandBox",
+    path: "/sandbox",
+    icon: <IoIosChatboxes className="text-xl" />,
+  },
+  {
+    title: "Quarantine",
+    path: "/quarantine",
+    icon: <MessageSquareLock className="text-xl" />,
+  },
+  {
+    title: "Contact",
+    path: "/contact",
+    icon: <IoCall className="text-xl" />,
+  },
+  {
+    title: "Rogue DB",
+    path: "/rogue-db",
+    icon: <GiRogue className="text-xl" />,
+  },
+  { title: "SIRTs", path: "/sirts", icon: <SiRtlzwei className="text-xl" /> },
+  {
+    title: "Settings",
+    path: "/settings",
+    icon: <IoMdSettings className="text-xl" />,
+  },
 ];
 
 function Sidebar() {
@@ -45,18 +102,25 @@ function Sidebar() {
             <li key={index}>
               <Link
                 to={item.path}
-                className={`block px-4 rounded-lg py-2 text-sm hover:bg-secondary dark:hover:bg-gray-700 transition duration-150 ease-in-out tracking-widest ${
-                  location.pathname === item.path ? "bg-secondary dark:bg-gray-700" : ""
+                className={`flex items-center gap-3 px-4 rounded-lg py-2 text-sm hover:bg-secondary dark:hover:bg-gray-700 transition duration-150 ease-in-out tracking-widest ${
+                  location.pathname === item.path
+                    ? "bg-secondary dark:bg-gray-700"
+                    : ""
                 }`}
               >
-                {item.title}
+                {item.icon}
+                <span>{item.title}</span>
               </Link>
             </li>
           ))}
         </ul>
       </nav>
       <div className="pb-3 mt-3 px-3">
-        <img src={logoBottom} alt="Bottom logo" className="w-16 h-16 rounded-lg" />
+        <img
+          src={logoBottom}
+          alt="Bottom logo"
+          className="w-16 h-16 rounded-lg"
+        />
       </div>
     </div>
   );

@@ -110,6 +110,7 @@ export const fetchLicenses = async () => {
   });
   return response;
 };
+
 export const createLicense = async (licenseData) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/licenses/`, {
@@ -147,7 +148,6 @@ export const fetchLicensesHistory = async (licenseId) => {
   );
   return response;
 };
-
 export const fetchCurrentUserData = async () => {
   const token = sessionStorage.getItem("token");
   const user = JSON.parse(sessionStorage.getItem("user"));
@@ -218,6 +218,7 @@ export const updatePhishingMailStatus = async (
 export const fetchUsers = async () => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/users/`, {
+  const response = await fetch(`${API_BASE_URL}/users/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -259,7 +260,7 @@ export const createUser = async (formData) => {
 export const deleteLicense = async (id) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/license/${id}/`, {
-    method: "PUT",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,

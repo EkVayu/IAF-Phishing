@@ -16,7 +16,14 @@ import { FaEye } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
+const Table = ({
+  tabData,
+  loading,
+  setLoading,
+  error,
+  setError,
+  fetchLicensesData,
+}) => {
   const [activeTab, setActiveTab] = useState(0);
   const [showLicensePopup, setShowLicensePopup] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -51,7 +58,7 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
 
   const handleIssueClick = (row, buttonText) => {
     // console.log(row);
-    if (row.is_reserved === 1) {
+    if (row?.is_reserved === 1) {
       toast.warn(
         "This license cannot be allocated as it is a reserved license."
       );
@@ -139,106 +146,47 @@ const Table = ({ tabData, loading, setLoading, error, fetchLicensesData }) => {
     try {
       const response = await fetchLicensesHistory(licenseId);
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      // Check content type before parsing
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Invalid response format from server");
       }
 
       const history = await response.json();
 
-      if (!history || history.length === 0) {
+      if (!response.ok || history.length === 0) {
+        setShowHistoryModal(true);
         setSelectedLicenseHistory({
           licenseId: licenseId,
-          history: dummyData,
+          history: `No history data available for this license`,
         });
-        toast.info("No history available. Showing dummy data.");
+        toast.info("No history data available for this license");
         setLoading(false);
-      } else {
-        setSelectedLicenseHistory({
-          licenseId: licenseId,
-          history: history,
-        });
-        toast.success("License history loaded successfully.");
-        setLoading(false);
+        return;
       }
+
+      setSelectedLicenseHistory({
+        licenseId: licenseId,
+        history: history,
+      });
+
+      setLoading(false);
       setShowHistoryModal(true);
+      toast.success("License history loaded successfully");
     } catch (error) {
+      setLoading(false);
       setShowHistoryModal(true);
       console.error("Error fetching license history:", error);
       toast.error(`Error fetching license history: ${error.message}`);
       setSelectedLicenseHistory({
         licenseId: licenseId,
-        history: dummyData,
+        history: `No history data available for this license`,
       });
+    } finally {
       setLoading(false);
+      setShowHistoryModal(true);
     }
   };
-
-  // const handleRowClick = async (event, licenseId) => {
-  //   if (event?.target?.tagName === "BUTTON") {
-  //     return;
-  //   }
-
-  //   const dummyData = [
-  //     {
-  //       license: licenseId,
-  //       plugin: "Plugin A",
-  //       allocated_to: "user1@example.com",
-  //       allocation_date: "2024-10-22T10:55:00.646615+05:30",
-  //       revoke_date: "2024-10-22T10:55:33.633906+05:30",
-  //       status: "Inactive",
-  //     },
-  //     {
-  //       license: licenseId,
-  //       plugin: null,
-  //       allocated_to: "user2@example.com",
-  //       allocation_date: "2024-10-22T10:55:50.434148+05:30",
-  //       revoke_date: "2024-10-22T10:56:05.106281+05:30",
-  //       status: "Inactive",
-  //     },
-  //     {
-  //       license: licenseId,
-  //       plugin: "Plugin B",
-  //       allocated_to: "user3@example.com",
-  //       allocation_date: "2024-10-22T10:56:19.880430+05:30",
-  //       revoke_date: null,
-  //       status: "Active",
-  //     },
-  //   ];
-
-  //   try {
-  //     const response = await fetchLicensesHistory(licenseId);
-
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     const history = await response.json();
-
-  //     if (!history || history.length === 0) {
-  //       setSelectedLicenseHistory({
-  //         licenseId: licenseId,
-  //         history: dummyData,
-  //       });
-  //       toast.info("No history available. Showing dummy data.");
-  //     } else {
-  //       setSelectedLicenseHistory({
-  //         licenseId: licenseId,
-  //         history: history,
-  //       });
-  //       toast.success("License history loaded successfully.");
-  //     }
-  //     setShowHistoryModal(true);
-  //   } catch (error) {
-  //     setShowHistoryModal(true);
-  //     console.error("Error fetching license history:", error);
-  //     // toast.error("Error fetching license history");
-  //     setSelectedLicenseHistory({
-  //       licenseId: licenseId,
-  //       history: dummyData,
-  //     });
-  //     toast.info("No history available. Showing dummy data.");
-  //   }
-  // };
 
   const handleView = (rowData) => {
     // Implement view functionality

@@ -27,9 +27,11 @@ function Licenses() {
           onClick={() => onAction(row.license_id, "toggle")}
           className={`mr-2 p-1 rounded ${
             row?.is_reserved // Safely check if is_reserved exists
+            row?.is_reserved // Safely check if is_reserved exists
               ? "text-green-600 hover:text-green-800"
               : "text-red-600 hover:text-red-800"
           }`}
+          title={`${row?.is_reserved ? "Unreserve" : "Reserve"}`}
           title={`${row?.is_reserved ? "Unreserve" : "Reserve"}`}
         >
           {row?.is_reserved ? (

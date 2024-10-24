@@ -97,7 +97,9 @@ function Users() {
     <>
       <div className="w-full">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-primary tracking-widest">User Management</h1>
+          <h1 className="text-3xl font-bold text-primary tracking-widest">
+            User Management
+          </h1>
           <button
             onClick={() => setShowForm(true)}
             className="bg-primary text-white px-4 py-2 rounded-full hover:bg-secondary transition duration-300 flex items-center"

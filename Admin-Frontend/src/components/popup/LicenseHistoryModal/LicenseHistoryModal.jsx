@@ -5,6 +5,9 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredHistory = useMemo(() => {
+    if (typeof history === "string") {
+      return [];
+    }
     return history.filter((entry) =>
       entry.allocated_to.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -35,8 +38,8 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-4/5 max-w-4xl max-h-[80vh] overflow-y-auto scroll-smooth">
         <div className="w-full flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
           <h2 className="text-gray-800 dark:text-white text-xl font-semibold w-full md:w-auto">
-            <span className="text-primary text-3xl">{licenseId}</span> : License
-            Report
+            License Id -
+            <span className="text-primary text-2xl">{licenseId}</span> : Report
           </h2>
           <div className="relative w-full md:w-auto">
             <input
@@ -64,61 +67,70 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
             </svg>
           </div>
         </div>
-        <table
-          id="license-history-table"
-          className="w-full border-collapse mb-4"
-        >
-          <thead>
-            <tr className="bg-primary text-white">
-              <th className="border border-gray-300 p-3 text-left font-bold">
-                Sr. No.
-              </th>
-              <th className="border border-gray-300 p-3 text-left font-bold">
-                Allocated To
-              </th>
-              <th className="border border-gray-300 p-3 text-left font-bold">
-                Allocation Date
-              </th>
-              <th className="border border-gray-300 p-3 text-left font-bold">
-                Revoke Date
-              </th>
-              <th className="border border-gray-300 p-3 text-left font-bold">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredHistory?.map((entry, index) => (
-              <tr key={index} className={"text-secondary-foreground text-sm"}>
-                <td className="border border-gray-300 p-3">{index + 1}</td>
-                <td className="border border-gray-300 p-3">
-                  {entry.allocated_to}
-                </td>
-                <td className="border border-gray-300 p-3">
-                  <DateFormatter dateString={entry.allocation_date} />
-                </td>
-                <td className="border border-gray-300 p-3">
-                  {entry.revoke_date ? (
-                    <DateFormatter dateString={entry.revoke_date} />
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
-                <td className="border border-gray-300 p-3">{entry.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="flex justify-end gap-4">
-          <button
-            onClick={handlePrint}
-            className="bg-blue-500 text-background py-2 px-4 rounded text-base cursor-pointer transition duration-300 hover:bg-blue-600"
+        {typeof history === "string" ? (
+          <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+            No history data available for this license
+          </div>
+        ) : (
+          <table
+            id="license-history-table"
+            className="w-full border-collapse mb-4"
           >
-            Print
-          </button>
+            <thead>
+              <tr className="bg-primary text-white">
+                <th className="border border-gray-300 p-3 text-left font-bold">
+                  Sr. No.
+                </th>
+                <th className="border border-gray-300 p-3 text-left font-bold">
+                  Allocated To
+                </th>
+                <th className="border border-gray-300 p-3 text-left font-bold">
+                  Allocation Date
+                </th>
+                <th className="border border-gray-300 p-3 text-left font-bold">
+                  Revoke Date
+                </th>
+                <th className="border border-gray-300 p-3 text-left font-bold">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredHistory?.map((entry, index) => (
+                <tr key={index} className={"text-secondary-foreground text-sm"}>
+                  <td className="border border-gray-300 p-3">{index + 1}</td>
+                  <td className="border border-gray-300 p-3">
+                    {entry.allocated_to}
+                  </td>
+                  <td className="border border-gray-300 p-3">
+                    <DateFormatter dateString={entry.allocation_date} />
+                  </td>
+                  <td className="border border-gray-300 p-3">
+                    {entry.revoke_date ? (
+                      <DateFormatter dateString={entry.revoke_date} />
+                    ) : (
+                      "N/A"
+                    )}
+                  </td>
+                  <td className="border border-gray-300 p-3">{entry.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        <div className="flex justify-end gap-4">
+          {typeof !history === "string" && (
+            <button
+              onClick={handlePrint}
+              className="bg-blue-500 text-white py-2 px-4 rounded text-base cursor-pointer transition duration-300 hover:bg-blue-600"
+            >
+              Print
+            </button>
+          )}
           <button
             onClick={onClose}
-            className="bg-red-500 text-background py-2 px-4 rounded text-base cursor-pointer transition duration-300 hover:bg-red-600"
+            className="bg-red-500 text-white py-2 px-4 rounded text-base cursor-pointer transition duration-300 hover:bg-red-600"
           >
             Close
           </button>
