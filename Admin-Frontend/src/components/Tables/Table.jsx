@@ -145,6 +145,7 @@ const Table = ({
 
     try {
       const response = await fetchLicensesHistory(licenseId);
+      console.log("history", response.json());
 
       // Check content type before parsing
       const contentType = response.headers.get("content-type");
