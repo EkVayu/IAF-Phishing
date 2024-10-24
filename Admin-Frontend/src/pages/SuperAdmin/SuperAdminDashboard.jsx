@@ -3,7 +3,7 @@ import { FaUsers } from "react-icons/fa";
 import { GrLicense } from "react-icons/gr";
 import CardComponent from "../../components/card/CardComponent";
 import ChartComponent from "../../components/chart/LineChart";
-import { fetchPhishingMails, fetchUsers, fetchLicenses } from "../../Api/api";
+import { fetchUsers, fetchLicenses } from "../../Api/api";
 import { toast } from "react-toastify";
 import SuperAdminDashboardGenerate from "../../Utils/SuperAdminDashboardGenerate";
 
@@ -20,26 +20,23 @@ const SuperAdminDashboard = () => {
         setLoading(true);
 
         // Attempt to fetch data from API
-        const [userResponse, licenseResponse, phishingMailsResponse] =
+        const [userResponse, licenseResponse] =
           await Promise.all([
             fetchUsers(),
             fetchLicenses(),
-            fetchPhishingMails(),
           ]);
 
-        let users, licenses, phishingMails;
+        let users, licenses;
 
         // Check if API calls were successful
-        if (userResponse.ok && licenseResponse.ok && phishingMailsResponse.ok) {
-          users = userResponse.results || [];
+        if (userResponse.ok && licenseResponse.ok) {
+          users = await userResponse.json();
           licenses = await licenseResponse.json();
-          phishingMails = await phishingMailsResponse.json();
         } else {
           // If any API call fails, use generated data
           const generatedData = SuperAdminDashboardGenerate();
           users = generatedData.users.results;
           licenses = await generatedData.licenses.json();
-          phishingMails = await generatedData.phishingMails.json();
           toast.warning("Using generated data due to API unavailability");
         }
 

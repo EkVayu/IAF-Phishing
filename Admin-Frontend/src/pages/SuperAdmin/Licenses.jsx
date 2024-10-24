@@ -26,30 +26,32 @@ function Licenses() {
         <button
           onClick={() => onAction(row.license_id, "toggle")}
           className={`mr-2 p-1 rounded ${
-            row.is_reserved
+            row?.is_reserved // Safely check if is_reserved exists
               ? "text-green-600 hover:text-green-800"
               : "text-red-600 hover:text-red-800"
           }`}
-          title={`${row.is_reserved ? "Unreserve" : "Reserve"}`}
+          title={`${row?.is_reserved ? "Unreserve" : "Reserve"}`}
         >
-          {row.is_reserved ? (
+          {row?.is_reserved ? (
             <FaToggleOn size={30} />
           ) : (
             <FaToggleOff size={30} />
           )}
         </button>
       ),
-    },
+    }
   ];
 
   const processLicenses = (licenses) => {
     return licenses.map((license) => ({
       ...license,
-      plugin_id: license.plugins[0]?.plugin_id || "N/A",
-      allocated_to: license.allocated_to || "N/A",
-      statusText: license.status === "1" ? "Active" : "Inactive",
+      plugin_id: license?.plugins[0]?.plugin_id || "N/A",
+      allocated_to: license?.allocated_to || "N/A",
+      statusText: license?.status === "1" ? "Active" : "Inactive",
+      is_reserved: license?.is_reserved || false,
     }));
   };
+  
 
   const getLicenses = async () => {
     try {
@@ -85,35 +87,40 @@ function Licenses() {
           (license) => license.license_id === id
         );
 
-        const response = await reserveLicense(
-          id,
-          currentLicense.is_reserved ? "0" : "1"
-        );
+        // Check if the license is already allocated and prevent reservation
+      if (currentLicense?.allocated_to !== "N/A") {
+        toast.warn(`Allocated license ${id} can't be reserved.`);
+        setUpdatingRow(null);
+        return;
+      }
+  
+        // Safeguard is_reserved field
+        const isReserved = currentLicense?.is_reserved ? "0" : "1";
+  
+        const response = await reserveLicense(id, isReserved);
         const data = await response.json();
-
+  
         if (response.ok) {
           setLicenses((prevLicenses) =>
             prevLicenses.map((license) => {
-              if (license.license_id === id) {
+              if (license?.license_id === id) {
                 return {
                   ...license,
-                  is_reserved: data.license.is_reserved,
-                  // status: data.license.status,
-                  // statusText:
-                  //   data.license.status === "1" ? "Active" : "Inactive",
+                  is_reserved: data?.license?.is_reserved,
                 };
               }
               return license;
             })
           );
-          if (data.license.is_reserved) {
+          if (data?.license?.is_reserved) {
             toast.success(`License ${id} has been reserved successfully.`);
-          } else {
+          } 
+          else {
             toast.info(`License ${id} has been unreserved.`);
           }
         } else {
           throw new Error(
-            data.message || "Failed to update license reservation."
+            data?.message || "Failed to update license reservation."
           );
         }
       } catch (error) {
@@ -124,6 +131,8 @@ function Licenses() {
       }
     }
   };
+  
+  
 
   return (
     <>
