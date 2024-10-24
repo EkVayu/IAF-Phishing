@@ -306,7 +306,18 @@ class RoughMail(models.Model):
     def __str__(self):
         return self.mailid
     
+class MachineData(models.Model):
+    machine_id = models.CharField(max_length=255)
+    system = models.CharField(max_length=100)
+    machine = models.CharField(max_length=100)
+    processor = models.CharField(max_length=255)
+    platform_version = models.CharField(max_length=100)
+    serial_number = models.CharField(max_length=100, blank=True, null=True)
+    uuid = models.CharField(max_length=100, blank=True, null=True)
+    mac_addresses = models.JSONField()  # Storing mac_addresses as a list of strings
 
+    def __str__(self):
+        return self.machine_id
 
 
 
