@@ -88,9 +88,9 @@ class UserViewset(viewsets.ViewSet):
 
     def list(self, request):
         # Fetch only non-deleted users
-        queryset = User.objects.filter(is_deleted=False)
+        queryset = User.objects.filter(is_deleted=False,is_staff=True,is_superuser=False)
         serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['delete'], url_path='soft-delete')
     def soft_delete(self, request, pk=None):
@@ -105,6 +105,8 @@ class UserViewset(viewsets.ViewSet):
         user = get_object_or_404(User, pk=pk, is_deleted=True)
         user.restore()  # This will restore the user
         return Response({"detail": "User restored successfully."}, status=status.HTTP_200_OK)
+    
+    
 
 class StaffViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
@@ -118,6 +120,9 @@ class StaffViewset(viewsets.ViewSet):
             'count': count,
             'results': serializer.data
         })
+    
+
+
 
 # Changes password
 class ChangePasswordViewset(viewsets.ViewSet):

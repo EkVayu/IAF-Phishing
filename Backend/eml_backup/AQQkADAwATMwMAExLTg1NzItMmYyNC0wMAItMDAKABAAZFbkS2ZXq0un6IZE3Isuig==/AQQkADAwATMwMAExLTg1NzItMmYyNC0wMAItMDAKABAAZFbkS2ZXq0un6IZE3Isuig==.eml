@@ -1,0 +1,588 @@
+Received: from TY0PR06MB5332.apcprd06.prod.outlook.com (::1) by
+ TYUPR06MB6002.apcprd06.prod.outlook.com with HTTPS; Wed, 23 Oct 2024 07:03:29
+ +0000
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
+ b=yw7JwdPSslZwoHk19w6hC4dEiFBH3e8KrtGl/QDSQeWbFfKHKCrUQ72YILrWmOpXJbBIvbuaTjDUxwA+anyfgaFnU149RyC6N78hZI7PFVWH6rLHYycl0NP8Xf4W94E87W4yiYkznbIvPuuhWrXXyGn0mY7+XPtV3q7yhaKiaGgF8WZSvgwKHPXr0J3Wf2t1lWHO4fnTRm15v7LO2iPst32a71njyOisHHgVPKyM1ZJp7gS0+kuXFo5QuLN6uo8XVhrfmpekObg2+Fe5R4yDXpbwm3m5d+fr2jX/XdU4q5edvyE6uxk9u36q9DjYoAxjhcCMThjHQXflqpNnf112TA==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f6654hQcv8b08DUX1DyJBgG7kv6K/37WudIEA5WkYz4=;
+ b=an3VGfqK30CgaLYY6A9hJjHcOyCSwF+8Dum1vy6ud4WxCkYIXStzqRkcfpt+3kjXc9bumc9lJ2fwvNTXbovbfi6Jhj8VgYNlU3h5bgvlPyQ72j7qAg78IDU6WIJRFmZ876ciWyJDKIGFw+rfiEoJBvPmBQW0/Xlf1NzDmUZHSLIoT5ORnHWdvrKY0O1WCgzhSmEvwZemvLqqfsipedpp8FMphlDaSUzDnDytuXuxrACrvnUsvyhM7qxr+otBF/pTHBFLxF+MVCdJWaNTSnclT5NLBkQD/G2PzLMQs202N4X1oivrCGl8ulFAjTQiqWSq3aX7rD8hbhtQu0/yPfi3nw==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 52.103.64.33) smtp.rcpttodomain=outlook.com smtp.mailfrom=outlook.com;
+ dmarc=pass (p=none sp=quarantine pct=100) action=none
+ header.from=outlook.com; dkim=pass (signature was verified)
+ header.d=outlook.com; arc=pass (0 oda=0 ltdi=1)
+Received: from DU7P251CA0005.EURP251.PROD.OUTLOOK.COM (2603:10a6:10:551::32)
+ by TY0PR06MB5332.apcprd06.prod.outlook.com (2603:1096:400:215::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.14; Wed, 23 Oct
+ 2024 07:03:26 +0000
+Received: from DB1PEPF000509EE.eurprd03.prod.outlook.com
+ (2603:10a6:10:551:cafe::60) by DU7P251CA0005.outlook.office365.com
+ (2603:10a6:10:551::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.18 via Frontend
+ Transport; Wed, 23 Oct 2024 07:03:25 +0000
+Authentication-Results: spf=pass (sender IP is 52.103.64.33)
+ smtp.mailfrom=outlook.com; dkim=pass (signature was verified)
+ header.d=outlook.com;dmarc=pass action=none
+ header.from=outlook.com;compauth=pass reason=100
+Received-SPF: Pass (protection.outlook.com: domain of outlook.com designates
+ 52.103.64.33 as permitted sender) receiver=protection.outlook.com;
+ client-ip=52.103.64.33; helo=HK3PR03CU002.outbound.protection.outlook.com;
+ pr=C
+Received: from HK3PR03CU002.outbound.protection.outlook.com (52.103.64.33) by
+ DB1PEPF000509EE.mail.protection.outlook.com (10.167.242.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8093.14 via Frontend Transport; Wed, 23 Oct 2024 07:03:25 +0000
+X-IncomingTopHeaderMarker:
+ OriginalChecksum:CCCE824DA6153DB5F46EBC407BC9192293D8A31C83B83842E39BFCD664353F15;UpperCasedChecksum:E59C26AF45E36DE96689ADE32EA7FF355AC640AD8887AF69D0318866E68287CB;SizeAsReceived:7457;Count:37
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=C9aqUJLMlXkC1ImuXRAX63x49zUV2CpDIkVTMTbty8i4vFnea+DT6+sz0Ax6AdvjOFhTswrCXC8gpAUV/ArC1t5n+rtuNgZmHikwK9FeVqRbjuqcuOVWgAyypv+wQVVIcG6l0rhYt6i1ThPXdXSlG3PqLbTt+T3qn2ifOJJf7O1thpyvsis+/QXPyApvLcnf4R3o9NGQ5XHwn1vOrucJFK/RYBMaHO0O24bTjhkTAK0Rh+EJWfAV/FEPEogZcRvaG+KQwx2T8315m5AG+G/sXgEwa+2RXBbjKpPkehdVj3AyV57MZTu5KbzA77g2jDtJa4Dv4E+e/8I4xNuRp93UXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f6654hQcv8b08DUX1DyJBgG7kv6K/37WudIEA5WkYz4=;
+ b=gv3mgm+1Thm01WsALCg4N5x2tqqlDO1GZdFQ1F1MgDm3BvZbCiafdiwrPu974Oe5bI0f724YzkthxxbAcjisbYndawFc9IRckwdeVYxZeS6KiM4ZVlyYR7gFNGYmpnsTn4jnHhvjm1BXDDkcgbLE4QFAwfAZLkNy1NbHTzxRPvH6PzuSqcCAeH3FrGcoNDowAb3esb92Dxv9p0QiaoRQ5njL0YdsZf5PjX2EfgM+BRBYGmm+b1LNfy0iWhbz7x9icTIZbhJQA1SVW9qAMTj/zcFyfI49JcIWCRGtUOZm5cCgQZPLZxdzGT3XipMddAUQVyKT+gwC4IK++8E3khUJPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f6654hQcv8b08DUX1DyJBgG7kv6K/37WudIEA5WkYz4=;
+ b=o/FC/y5PRZ57+WAI6JuMpRj24Cw4S7y5bPI2QvtIGE4+a9ClfvcY69bMDaNdmq9WlLuu+4NvTCwBD8sezxFMk2iGVHTGlsRUcLQcZggUPyMhA0rmIRgkt0PmcCisKIpxvJavm+ss3IWxRwZcLtVPjdkmU7ELTsg7PtBtQ3GCKfYtUjjxqnivY2f+V103il6pz7zr/oVbVoVEIkZvH4yvfLI0e3BhRd+RB+Lqr2U7M9rS+JW5hUkIUOCvCBwaU/XGgyIwseeRacM2er5WNWZJk55FGUSLQ/xGPwDKCfV1YroC+/N/zK57+duIBCb1BDjfngKAxOnJHn45/u/DshcjkQ==
+Received: from KL1PR02MB6627.apcprd02.prod.outlook.com (2603:1096:820:112::5)
+ by TY0PR02MB5790.apcprd02.prod.outlook.com (2603:1096:400:1b5::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.28; Wed, 23 Oct
+ 2024 07:03:21 +0000
+Received: from KL1PR02MB6627.apcprd02.prod.outlook.com
+ ([fe80::6830:9292:8be5:b567]) by KL1PR02MB6627.apcprd02.prod.outlook.com
+ ([fe80::6830:9292:8be5:b567%7]) with mapi id 15.20.8069.027; Wed, 23 Oct 2024
+ 07:03:21 +0000
+From: Neeraj Gupta <niraj54180@outlook.com>
+To: "nidhiyachouhan12@outlook.com" <nidhiyachouhan12@outlook.com>
+Subject: =?Windows-1252?Q?2004=962009:_Widespread_success?=
+Thread-Topic: =?Windows-1252?Q?2004=962009:_Widespread_success?=
+Thread-Index: AQHbJRl4ZFbkS2ZXq0un6IZE3Isuig==
+Date: Wed, 23 Oct 2024 07:03:21 +0000
+Message-ID:
+ <KL1PR02MB6627B7C2A33B510F4DB01B549A4D2@KL1PR02MB6627.apcprd02.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-traffictypediagnostic:
+ KL1PR02MB6627:EE_|TY0PR02MB5790:EE_|DB1PEPF000509EE:EE_|TY0PR06MB5332:EE_|TYUPR06MB6002:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7c67a5fb-e582-4110-9789-08dcf330ca34
+X-Microsoft-Antispam-Untrusted:
+ BCL:0;ARA:14566002|19110799003|15030799003|8062599003|8060799006|12050799009|15080799006|9000799047|9400799024|1680799051|461199028|37102599003|3412199025|440099028|4302099013|102099032|10035399004|1602099012;
+X-Microsoft-Antispam-Message-Info-Original:
+ =?us-ascii?Q?GTaJmGqpFv0/x9Ae4U5frAFO+z+RVPhw2sO5eH0dRbx0CleE8cZLr7Z+d9IK?=
+ =?us-ascii?Q?vDKK/dOUWMvDtG7uXHBl6Ehg9wz6BFkg+BjGAHFmTXr9rMka9f0slQmos0BK?=
+ =?us-ascii?Q?GpJyL/CPG8y9DyOdjfytqS4vju+VvmYUGQHVuWxe6u/kHRGtyWTXTHAKv1r7?=
+ =?us-ascii?Q?cGQhabbXAk4fEmwAoM00k7nMfyrb8uVIxtEjt4SodULJFY6bAFkyilJ2OmrO?=
+ =?us-ascii?Q?19UsKi71rLOPmH6M0p9hiYlrtp2/EsoqgPgKYug/WOpT9UO6tLmFmrj2Wawj?=
+ =?us-ascii?Q?Ty12n+orljmu0okH078bfQibdHH2/t5YGqO3X1/u78DcWT8vRjdKwLy1xN0U?=
+ =?us-ascii?Q?dVePlGMnHBtORkbRprF1Hpu0ga5JGIPYF4ET0/GK82qrBNG4P455xpGf6Xqi?=
+ =?us-ascii?Q?AsPrU6bwsaqluhqtI8oRHSPcMSy9x/KUqWOgbe30bBeeL+NBNyBaynOaW7dX?=
+ =?us-ascii?Q?uFFq+SyE/2B0z49aPjXjZRYsWZrWFo+614sBlOfBuGpSp+HfGGDGbzEHBiNC?=
+ =?us-ascii?Q?uFgjmG+SQktlmqj3iRYe7E1vZyt3ca7UxAt+s+hQlGiSPC5K9/j2gHE2U7x9?=
+ =?us-ascii?Q?rOk627WQkRkCw3NX4UY9YFIS49NR3oF2BL8LCdq2eYBzZx/0s4q2U5YBDzI/?=
+ =?us-ascii?Q?vHaFzlZW8jeivuC63yAd3N7COL/Aqqp7Ui5imzsbc8448Jn3wkqyYUnqszki?=
+ =?us-ascii?Q?nU2KY2fIkLhVqn06c1ujR8E3ruHBzD3qDTzTS2/1z0Z0cpCvE2m8PwSD1O4G?=
+ =?us-ascii?Q?zvgi3S1HYLLPWwop6SSI95AlXDlkzvqzlk1xOf4JcPmP+oo/epDrMglD28QR?=
+ =?us-ascii?Q?iOGOWU7PMLycAgPE7WFnJD+6RY3oM9MUdCuguhAg0rEdOGet+9LwrzJlxWKH?=
+ =?us-ascii?Q?TDymKJGnx4ZRqoN0SbcpDhHeU4opHUrYrKVs59FGbhWVuhJTliF0XU/U/WpZ?=
+ =?us-ascii?Q?l/eO0Fg7Qkb5a6Xy/eHSmcCTNzmxWVambdh2Kb+nmhbO/E1hFSCoQzR6hJGB?=
+ =?us-ascii?Q?bIQeZ9Sm1XytQCjbPDfUxalExo+RenkzCoLmIX+0KZyRf8I=3D?=
+X-MS-Exchange-AntiSpam-MessageData-Original-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-Original-0:
+ =?Windows-1252?Q?3c1sGjxYDY+Gae7fygLvfnPDTug7TMjsZTj9ZonXAeEBufwFfsPkn1my?=
+ =?Windows-1252?Q?RjuJavrgZ0Axezzsk1IIpmGgXuROzARxxxP7cLZUdqtnJuFAyj0p0sTQ?=
+ =?Windows-1252?Q?BsR0uBiRkJycaipVZ5CUO6yzJRKI/0iLfr9ec7lStD3uy0S8iv2jSS96?=
+ =?Windows-1252?Q?rA+vPObuHr/ygQjXa+I9IM81nuOH/g5ravbRmwtdRScquhkEtcG/J9o2?=
+ =?Windows-1252?Q?iRhMrBDiCCN+6Sm+3hjRTaFhT04iPj8/ejV/Ll6UFEVM7WVddFa1+JZu?=
+ =?Windows-1252?Q?jYH+Q2ZjOrLOMJDR/auS4L2tgQFFmX8EDV8jCqTbaJAHUgOgo0zx7zGS?=
+ =?Windows-1252?Q?7BHzI6k5MNM2sy5q5sLuCgxHFkHej3GlkfVMBDnz6ia/9o3XRZYJT8V8?=
+ =?Windows-1252?Q?WdwJgPwTKdQMmG7zYrFCJEMsDz0Lty+xZKN9P195rmhPxOZLtRa8OlsH?=
+ =?Windows-1252?Q?ompCSIAlXPYIRCUs4DsvjLQaTN3Mc0YrbSycYerLCrQAaYLBGfJMEiSw?=
+ =?Windows-1252?Q?ESt7yOABeiNYnUW4W4H+9ip9Xb/X6/8qMg893YhrfoMeHco5YwTEqFhh?=
+ =?Windows-1252?Q?NV06LUx5hykWJ/DXATKtpMoLtFYA8ID0FwOWKb26fk7jHA4J0dE+IvaU?=
+ =?Windows-1252?Q?2dq9W5ZhzfotlkQPs35mHrga8zNsPJe8ZGubjG4rZbfbrUqY6xPmqaFK?=
+ =?Windows-1252?Q?93bOZdgAJTJjvXgXl+jUur2vmESCyx1xQcXP0Hmi17nzYi+LPSs9Vuez?=
+ =?Windows-1252?Q?qEjYWrhYK7MshM9ZqozfjH8T8MMp3bGIGkND06x0mbqVzKCAr8KjhSlv?=
+ =?Windows-1252?Q?lhZc+PlTNEJSVeszcrwuHClHUO5tSGYtWTta5N2Nf+6bJCBiGjo7vjjb?=
+ =?Windows-1252?Q?1U/ESHnRC2kz/9Ge4njfT/Gsnaxcku61oFr0QXe4MrWQVLfJYFZJLVMJ?=
+ =?Windows-1252?Q?lOn0L9onsSnrIu3RZQQO6vpuzHaAt0wJgNUo4OGWZkveNrLiPOcVl5EQ?=
+ =?Windows-1252?Q?XnRBeWb3IpZlAASwihmpEdhAgUMyAOBVfypXHCXdxFteyqiUXLGgfRJQ?=
+ =?Windows-1252?Q?97fxo6rlS+4tBS9pDKI4RBi5e3AVzZZFUH131bcKrtvLeUPBFhPYHtrJ?=
+ =?Windows-1252?Q?gzVjWc0752l7VljMhNc0GllzhSX7EvMrkhZMH0e7BEov/kGecGkGux/K?=
+ =?Windows-1252?Q?2kATTer7XVuE04vLaoniu49xugnWAZyNz23zaHLJA4i4OY4WGnUSvlEQ?=
+ =?Windows-1252?Q?OTlKcJqUs6IaVH66cyNWvo0T+EMfekoDJXeknx//o2eqXM3f9m5aF7AP?=
+ =?Windows-1252?Q?Q0K/85mrEQx/tPKwu9qBtQmj0C4=3D?=
+Content-Type: multipart/alternative;
+	boundary="_000_KL1PR02MB6627B7C2A33B510F4DB01B549A4D2KL1PR02MB6627apcp_"
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR02MB5790
+X-IncomingHeaderCount: 37
+Return-Path: niraj54180@outlook.com
+X-MS-Exchange-Organization-ExpirationStartTime: 23 Oct 2024 07:03:25.6191
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id:
+ 7c67a5fb-e582-4110-9789-08dcf330ca34
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ DB1PEPF000509EE.eurprd03.prod.outlook.com
+X-MS-Exchange-Transport-CrossTenantHeadersPromoted:
+ DB1PEPF000509EE.eurprd03.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Exchange-Organization-AuthSource:
+ DB1PEPF000509EE.eurprd03.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-UserLastLogonTime: 10/23/2024 7:01:28 AM
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+ 988d2035-0c8d-416f-cd7a-08dcf330c78f
+X-MS-Exchange-EOPDirect: true
+X-Sender-IP: 52.103.64.33
+X-SID-PRA: NIRAJ54180@OUTLOOK.COM
+X-SID-Result: PASS
+X-MS-Exchange-Organization-SCL: 5
+X-Microsoft-Antispam:
+ BCL:0;ARA:1444111002|10300799029|47200799018|19300799018|461199028|7140799003|58200799015|9000799047|1680799051|9400799024|18301999012|1370799030|1360799030|1380799030|3412199025|440099028|4302099013|1602099012;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2024 07:03:25.1191
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c67a5fb-e582-4110-9789-08dcf330ca34
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-AuthSource:
+ DB1PEPF000509EE.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR06MB5332
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:04.0361080
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.8093.014
+X-Microsoft-Antispam-Mailbox-Delivery:
+	wl:1;pcwl:1;ucf:0;jmr:0;ex:0;auth:1;dest:I;OFR:TrustedSenderList;ENG:(5062000308)(920221119095)(90000117)(920221120095)(91040095)(9050020)(9060121)(9100341)(944500132)(2008001181)(4810010)(4910033)(9930004)(9610028)(9545005)(10172021)(9414026)(9310011)(9220031)(120001);
+X-Message-Delivery: Vj0xLjE7dXM9MDtsPTA7YT0wO0Q9MTtHRD0xO1NDTD0tMQ==
+X-Microsoft-Antispam-Message-Info:
+	=?Windows-1252?Q?tZ19Y8T32pfTmxLaKEtEm5w207ADJOEI8l1oEzajXBAM140yUASz1a9H?=
+ =?Windows-1252?Q?PszepIiZvOPN2X2cQ0JPs4ndIVQvVAcfyQWXCmsPrFxtm6sffIvqCJPB?=
+ =?Windows-1252?Q?+pKUb+wC1FZ+PaR5tCazSiPPubTwzx8F6q8uWpignOg9bDAE1ur1tIGO?=
+ =?Windows-1252?Q?2S6xF/vByIXM3idVsrmzT86tAe/r8+2FCR/stU0ge6MQfpi9hdl3fZjx?=
+ =?Windows-1252?Q?GWeaWzo7AUIrpXvdj8zByOf4xFu1rvEuDhARHK5ptDPXQCePYxZTKpN3?=
+ =?Windows-1252?Q?leGVX7DI3+7GTmoubb5kvdlHpnQHAb46q8xQHikNGJj8TLedpb7pcB2j?=
+ =?Windows-1252?Q?xsnUyMHibmlCjeXeK8IUaKw/Z++zgYthmDYQ3hkJRfROIht2s5myyahg?=
+ =?Windows-1252?Q?BFjxXYLTmaIWbEG0nQU6GKzs88c+K9YnrGVRYk4iwSboRxsV/WjqgGMH?=
+ =?Windows-1252?Q?JPuHJjVIydD787mXhxU2cX42xar3MH4KfBDsHRMWULAKd671vg4bm0oW?=
+ =?Windows-1252?Q?b6Ykq/hHeaZ1lf3HYMQWA1+QopYAnnxevyUpr3r9zOTfkcfKHkHZIVWa?=
+ =?Windows-1252?Q?bOSo3DqlinZym/F4dZW8NgBnnX5tURxdqxJB3nb2KCA5mpLGi8sOChiS?=
+ =?Windows-1252?Q?SRFw3maMHAVsb0CT6Kq9XdTDyh00BUVtxeKOCDBx67Ss4+/y7KChu8k4?=
+ =?Windows-1252?Q?1zZ1U8qS6JJVHYTcgJijMchtq+y7K98DVLJUcZNx56prxuAW0rRMFGhS?=
+ =?Windows-1252?Q?2WWlspRn9DsVNNpQUbg8dTCCGRRuNtaENM9fF4mJThMGJkMst8p++wVT?=
+ =?Windows-1252?Q?j/GuBh1ImKuG6gkDxnx7rUjuD1PEPHWJjqY0FHaGp/LksE5LvFfIF7TQ?=
+ =?Windows-1252?Q?akBUhO/rFVMGqxI1wPLZu6sob+PNm9UdSviW5C56Iie8I3Eysv9Wjtyk?=
+ =?Windows-1252?Q?iMFwuzLAIhdCyQgZuc5Ajyt25FMrKXejBlbhrd5akWJiTj7trvsupZZ+?=
+ =?Windows-1252?Q?BXbLsaunczshMsbTsWj3i2dXVWpgZ+gHQ7nmFZKgCZMUKtFhGN4RPPUi?=
+ =?Windows-1252?Q?bcfvER01IaOPr3xkX/AHkYZmNNfIKreQKRcKfnSKKhIv4GfCpFwM2p8o?=
+ =?Windows-1252?Q?r/+Rgg3V2TKPtO2rE3ZR+4hUDgKSK62UlVXziTEvZtBI8agG7/tBN9I/?=
+ =?Windows-1252?Q?HkqQCmPXdeEoQ5n7YuJu3JPn85z1Ajzd9jlXekJS8/Qz90bn0gzPGfex?=
+ =?Windows-1252?Q?4x8TLc7n8TBng4vt7tJXvdLZP/dB1uG1jaJH9rgbRc6Htv/pYDQpKXst?=
+ =?Windows-1252?Q?jcNCtbzh/fDwU0GzGm5xfHx9TY6cMZzfCxOBvR6KNX3Vlf1dyp0PRk8O?=
+ =?Windows-1252?Q?EdWheGzivIa+xzIoCXL04P7lg0dSZNmSZCRhEMx4a0T8yZFcQUG0HZic?=
+ =?Windows-1252?Q?xQyK6+jUy2aS6G/lkN+HKrm82PgICe20d46HISpNe9n4R6ZpyNklLEzA?=
+ =?Windows-1252?Q?fSpBiG96TUUdXb+ybljwp4Rhh6nOVripAC11ZaCbPDfX3vh3hh5cu0D0?=
+ =?Windows-1252?Q?63RomA1O0pCpS6YEScFAO9hRxQ1nVzzZhe1QvKmV/l3IJNAXQb9u7i7i?=
+ =?Windows-1252?Q?D88E/BrP4dBtaZm+WZ+Hxo003Slm7XPSWqXEiM/kz4u1ECWcp73029mN?=
+ =?Windows-1252?Q?3YPGRn9fn6QMcw2AYEvlXpXdpV0TJy4QicsBDufeV+otAgaOE9rSqIw9?=
+ =?Windows-1252?Q?AO4zLXX/jMoDuZ78Nup6XZzk0wKwt1vjiJSM1/0oSVUqzLoT9GctVWeX?=
+ =?Windows-1252?Q?0IcBh87qm5Q0CT8pdxQfH0b+sj7YdFuMHJh86NnVrSa7GCr79C/u48fO?=
+ =?Windows-1252?Q?KBEMVzK3GuKDBVmSFCWICdu7wGuqeNJwO1EWjPN7KP9jsJXxoeUgo0AZ?=
+ =?Windows-1252?Q?iy2jpBWrV61x6k+HOZffVFxY1C4PzGRKKpusfVT1SYa9/hO66xAZoX4j?=
+ =?Windows-1252?Q?+2pqdU36Vmqu6JMNjrb1zckOFSp2SQuWcYDgQu4H4BqFAI0OeXGZkUQH?=
+ =?Windows-1252?Q?mZMPGwfWT/gnoWgsi6ylFb5wxkk7+iGSOdE5tmQ1VxSNtzsUHsh8ynuX?=
+ =?Windows-1252?Q?WC8Z1jcdvRduIyk1DzcdRic9767qgdoO304zMb9F4gk3cehzgYE8TzNW?=
+ =?Windows-1252?Q?UfgkiZeOrveOo9QRqcBNgaS+qWHQv8Nq4WFi6cbYGZuyBNoGVS1PcQox?=
+ =?Windows-1252?Q?umhSpgvJgcdsrpkvIUwwm/coB9qu0KFanW0jDa5No/u+rhum0mlqsVLB?=
+ =?Windows-1252?Q?1SHnYuQ+I1ecLp2fXH5IVf172ACqGQC9rKf5V7fLDpDFGQgQgNB60MJP?=
+ =?Windows-1252?Q?zF3dytOI66FsgCXGGNL4578MnMswvtnXQ6DXqd4jx8wHFkLnhmn28Gmq?=
+ =?Windows-1252?Q?8GxfU0futCb8rU/se4b93YDhN0t3lK/G8f8+AvaO/8wSWynst0lbTwyR?=
+ =?Windows-1252?Q?GLVveih7ANqA7LgkG0GHsua/yze5t28pR2QpjyZi3yIDc81aOylSvxJM?=
+ =?Windows-1252?Q?+xPPc+HqKjFAUAjm6YKgNvCg7+ma9DRaFwM5oTVdgVun20MH8e5o4P+A?=
+ =?Windows-1252?Q?uikxGjQOPv2l817RNw/9jpKm+4vTBzLBzK8PFappB+BQU/NxwgB5mL3H?=
+ =?Windows-1252?Q?svQ9qSD2vCFXUMqdsxLfQIGhPml9Xd6GEqoufZB/3aeNWcDSO8hobzNa?=
+ =?Windows-1252?Q?2Ui7SmIalATuuH/sbnQgDPqYW6InxqIwNvc3UQjOutOr2G+ihHyEIJ+V?=
+ =?Windows-1252?Q?9FvZAiYK26U7QD9W5pnBN1LuxjW+VTd8vS09tW9x1ZyVOxSlCGnpY0tT?=
+ =?Windows-1252?Q?Awmh2bF2M3HzHYhyz1Lunt1yBt/+kH/O2mBOYfb57p36t8Qib9lW8fjb?=
+ =?Windows-1252?Q?s656mSuL43f/pLgB3dg6yHEfBd/tMT+kCH5xKNFxTDL1Dbg9ivc59WWO?=
+ =?Windows-1252?Q?+7jNteSu?=
+MIME-Version: 1.0
+
+--_000_KL1PR02MB6627B7C2A33B510F4DB01B549A4D2KL1PR02MB6627apcp_
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+
+In 2000, Bachchan made his film debut playing the male lead in J. P. Dutta<=
+https://en.wikipedia.org/wiki/J._P._Dutta>'s war drama Refugee<https://en.w=
+ikipedia.org/wiki/Refugee_(2000_film)> opposite Kareena Kapoor<https://en.w=
+ikipedia.org/wiki/Kareena_Kapoor>, who was also making her debut in the fil=
+m. Although the film was an average at the box office,[13]<https://en.wikip=
+edia.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13> both Bac=
+hchan and Kapoor received positive reviews for their performances. Film cri=
+tic Taran Adarsh<https://en.wikipedia.org/wiki/Taran_Adarsh> of Bollywood H=
+ungama<https://en.wikipedia.org/wiki/Bollywood_Hungama> wrote that he "has =
+all it takes to emerge a competent actor in years to come. Even in his debu=
+t-making film, Abhishek comes across as a fine actor and lives up to his fa=
+mily name."[14]<https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-1=
+4> Bachachn next appeared opposite Keerthi Reddy<https://en.wikipedia.org/w=
+iki/Keerthi_Reddy> in Tera Jadoo Chal Gayaa<https://en.wikipedia.org/wiki/T=
+era_Jadoo_Chal_Gayaa>, portraying an artist who falls in a one-sided love. =
+The movie was neither commercially nor critically well-received.[13]<https:=
+//en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13=
+>[15]<https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-15> His thi=
+rd release of the year, Dhai Akshar Prem Ke<https://en.wikipedia.org/wiki/D=
+hai_Akshar_Prem_Ke>, was a remake of the 1995 American film A Walk in the C=
+louds<https://en.wikipedia.org/wiki/A_Walk_in_the_Clouds> and turned out to=
+ be a box office flop.[13]<https://en.wikipedia.org/wiki/Abhishek_Bachchan#=
+cite_note-Bachchan-Filmography-13> In 2001, he starred in Bas Itna Sa Khwaa=
+b Hai<https://en.wikipedia.org/wiki/Bas_Itna_Sa_Khwaab_Hai>, which failed t=
+o gain a wide audience theatrically.[16]<https://en.wikipedia.org/wiki/Abhi=
+shek_Bachchan#cite_note-16> He also shot for a cameo in the 2001 film Kabhi=
+ Khushi Kabhie Gham...<https://en.wikipedia.org/wiki/Kabhi_Khushi_Kabhie_Gh=
+am...>, a scene which was later edited out of the film.[17]<https://en.wiki=
+pedia.org/wiki/Abhishek_Bachchan#cite_note-17>
+In 2002, Bachchan had four film releases, the first of which was the romant=
+ic drama Haan Maine Bhi Pyaar Kiya<https://en.wikipedia.org/wiki/Haan_Maine=
+_Bhi_Pyaar_Kiya>, opposite Karisma Kapoor<https://en.wikipedia.org/wiki/Kar=
+isma_Kapoor> and Akshay Kumar<https://en.wikipedia.org/wiki/Akshay_Kumar>.[=
+18]<https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-18> He then m=
+ade a cameo in the Bengali film Desh<https://en.wikipedia.org/wiki/Desh_(fi=
+lm)>, which starred his mother Jaya Bachchan.[19]<https://en.wikipedia.org/=
+wiki/Abhishek_Bachchan#cite_note-19> His next role was in the comedy drama =
+Shararat<https://en.wikipedia.org/wiki/Shararat_(2002_film)>, followed by O=
+m Jai Jagadish<https://en.wikipedia.org/wiki/Om_Jai_Jagadish>, where he was=
+ part of an ensemble cast. Both movies failed commercially.[13]<https://en.=
+wikipedia.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13> Bac=
+hchan's performance in Sooraj R. Barjatya<https://en.wikipedia.org/wiki/Soo=
+raj_R._Barjatya>'s romantic dramedy Main Prem Ki Diwani Hoon<https://en.wik=
+ipedia.org/wiki/Main_Prem_Ki_Diwani_Hoon> (2003) earned him his first nomin=
+ation for the Filmfare Award for Best Supporting Actor<https://en.wikipedia=
+.org/wiki/Filmfare_Award_for_Best_Supporting_Actor>,[20]<https://en.wikiped=
+ia.org/wiki/Abhishek_Bachchan#cite_note-20> although the film was a flop.[1=
+3]<https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmo=
+graphy-13> In the same year, Bachchan starred alongside Lara Dutta<https://=
+en.wikipedia.org/wiki/Lara_Dutta> in the drama Mumbai Se Aaya Mera Dost<htt=
+ps://en.wikipedia.org/wiki/Mumbai_Se_Aaya_Mera_Dost>. The movie did not per=
+form well commercially and received negative reviews.[13]<https://en.wikipe=
+dia.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13>[21]<https=
+://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-21> He then starred op=
+posite Aishwarya Rai<https://en.wikipedia.org/wiki/Aishwarya_Rai> in Kuch N=
+aa Kaho<https://en.wikipedia.org/wiki/Kuch_Naa_Kaho> and joined Ajay Devgn<=
+https://en.wikipedia.org/wiki/Ajay_Devgn> and Bipasha Basu<https://en.wikip=
+edia.org/wiki/Bipasha_Basu> in Zameen<https://en.wikipedia.org/wiki/Zameen_=
+(2003_film)>. Neither of these films fared well critically or commercially.=
+[22]<https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-Box_Office_2=
+003-22>[23]<https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-23> F=
+or his final release of 2003, Bachchan appeared among an ensemble cast in L=
+OC: Kargil<https://en.wikipedia.org/wiki/LOC:_Kargil>, portraying Vikram Ba=
+tra<https://en.wikipedia.org/wiki/Vikram_Batra>.[24]<https://en.wikipedia.o=
+rg/wiki/Abhishek_Bachchan#cite_note-24> It received mixed to negative revie=
+ws and was not a commercial success.[13]<https://en.wikipedia.org/wiki/Abhi=
+shek_Bachchan#cite_note-Bachchan-Filmography-13>[25]<https://en.wikipedia.o=
+rg/wiki/Abhishek_Bachchan#cite_note-25>[26]<https://en.wikipedia.org/wiki/A=
+bhishek_Bachchan#cite_note-26>
+[https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Bachchan_Parivar=
+.jpg/220px-Bachchan_Parivar.jpg]
+
+--_000_KL1PR02MB6627B7C2A33B510F4DB01B549A4D2KL1PR02MB6627apcp_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div class=3D"elementToProof" style=3D"font-family: Aptos, Aptos_EmbeddedFo=
+nt, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; c=
+olor: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0.5em 0px 1em; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFont=
+Service, Calibri, Helvetica, sans-serif; font-size: 12pt;">
+<span style=3D"color: rgb(0, 0, 0);">In 2000, Bachchan made his film debut =
+playing the male lead in
+</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wiki=
+pedia.org/wiki/J._P._Dutta" id=3D"OWA7a3d34fd-a610-fe07-afeb-96324caba84b" =
+class=3D"OWAAutoLink" title=3D"J. P. Dutta" style=3D"color: rgb(51, 102, 20=
+4); border-radius: 0px;">J. P. Dutta</a></span><span style=3D"color: rgb(0,=
+ 0, 0);">'s
+ war drama </span><span style=3D"color: rgb(51, 102, 204);"><i><a href=3D"h=
+ttps://en.wikipedia.org/wiki/Refugee_(2000_film)" id=3D"OWA4148a5a4-f7d3-48=
+ce-bbd0-9820b0532fb0" class=3D"OWAAutoLink" title=3D"Refugee (2000 film)" s=
+tyle=3D"color: rgb(51, 102, 204); border-radius: 0px;">Refugee</a></i></spa=
+n><span style=3D"color: rgb(0, 0, 0);">&nbsp;opposite
+</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wiki=
+pedia.org/wiki/Kareena_Kapoor" id=3D"OWA89f0491c-893b-122b-3c36-4c83e7ec3d6=
+a" class=3D"mw-redirect OWAAutoLink" title=3D"Kareena Kapoor" style=3D"colo=
+r: rgb(51, 102, 204); border-radius: 0px;">Kareena
+ Kapoor</a></span><span style=3D"color: rgb(0, 0, 0);">, who was also makin=
+g her debut in the film. Although the film was an average at the box office=
+,</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wik=
+ipedia.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13" id=3D"=
+OWA44a3db4e-790c-152d-220f-fa727708e809" class=3D"OWAAutoLink" style=3D"col=
+or: rgb(51, 102, 204); border-radius: 0px;">[13]</a></span><span style=3D"c=
+olor: rgb(0, 0, 0);">&nbsp;both
+ Bachchan and Kapoor received positive reviews for their performances. Film=
+ critic
+</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wiki=
+pedia.org/wiki/Taran_Adarsh" id=3D"OWAc60f5ff9-23e0-19f4-c5c9-d1ed743cda7e"=
+ class=3D"OWAAutoLink" title=3D"Taran Adarsh" style=3D"color: rgb(51, 102, =
+204); border-radius: 0px;">Taran Adarsh</a></span><span style=3D"color: rgb=
+(0, 0, 0);">&nbsp;of
+</span><span style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.w=
+ikipedia.org/wiki/Bollywood_Hungama" id=3D"OWA661476d4-68ea-23dc-e4b5-0b4c1=
+73c9895" class=3D"OWAAutoLink" title=3D"Bollywood Hungama" style=3D"color: =
+rgb(51, 102, 204); border-radius: 0px;">Bollywood
+ Hungama</a></i></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;wrote tha=
+t he &quot;has all it takes to emerge a competent actor in years to come. E=
+ven in his debut-making film, Abhishek comes across as a fine actor and liv=
+es up to his family name.&quot;</span><span style=3D"color: rgb(51, 102, 20=
+4);"><a href=3D"https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-1=
+4" id=3D"OWAef816976-a060-f284-c327-fe3666d43ac6" class=3D"OWAAutoLink" sty=
+le=3D"color: rgb(51, 102, 204); border-radius: 0px;">[14]</a></span><span s=
+tyle=3D"color: rgb(0, 0, 0);">&nbsp;Bachachn
+ next appeared opposite </span><span style=3D"color: rgb(51, 102, 204);"><a=
+ href=3D"https://en.wikipedia.org/wiki/Keerthi_Reddy" id=3D"OWAc437e2f0-226=
+2-2278-0d07-07a934adb189" class=3D"OWAAutoLink" title=3D"Keerthi Reddy" sty=
+le=3D"color: rgb(51, 102, 204); border-radius: 0px;">Keerthi
+ Reddy</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;in </span><span=
+ style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.wikipedia.org=
+/wiki/Tera_Jadoo_Chal_Gayaa" id=3D"OWAdc5a1d82-82e0-fcb5-9fa0-7a769841478b"=
+ class=3D"OWAAutoLink" title=3D"Tera Jadoo Chal Gayaa" style=3D"color: rgb(=
+51, 102, 204); border-radius: 0px;">Tera
+ Jadoo Chal Gayaa</a></i></span><span style=3D"color: rgb(0, 0, 0);">, port=
+raying an artist who falls in a one-sided love. The movie was neither comme=
+rcially nor critically well-received.</span><span style=3D"color: rgb(51, 1=
+02, 204);"><a href=3D"https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_=
+note-Bachchan-Filmography-13" id=3D"OWAf74b93c1-039c-d19c-bc5b-3cbbed478e8b=
+" class=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 204); border-radius: 0=
+px;">[13]</a><a href=3D"https://en.wikipedia.org/wiki/Abhishek_Bachchan#cit=
+e_note-15" id=3D"OWA337f6019-407a-be50-615a-7a2194e77b8b" class=3D"OWAAutoL=
+ink" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">[15]</a></span=
+><span style=3D"color: rgb(0, 0, 0);">&nbsp;His
+ third release of the year, </span><span style=3D"color: rgb(51, 102, 204);=
+"><i><a href=3D"https://en.wikipedia.org/wiki/Dhai_Akshar_Prem_Ke" id=3D"OW=
+A497b221a-88dc-607e-e3a1-db90df61f62c" class=3D"OWAAutoLink" title=3D"Dhai =
+Akshar Prem Ke" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">Dha=
+i
+ Akshar Prem Ke</a></i></span><span style=3D"color: rgb(0, 0, 0);">, was a =
+remake of the 1995 American film
+</span><span style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.w=
+ikipedia.org/wiki/A_Walk_in_the_Clouds" id=3D"OWA0329194d-886c-a892-6bc4-ab=
+c4a86cf574" class=3D"OWAAutoLink" title=3D"A Walk in the Clouds" style=3D"c=
+olor: rgb(51, 102, 204); border-radius: 0px;">A
+ Walk in the Clouds</a></i></span><span style=3D"color: rgb(0, 0, 0);">&nbs=
+p;and turned out to be a box office flop.</span><span style=3D"color: rgb(5=
+1, 102, 204);"><a href=3D"https://en.wikipedia.org/wiki/Abhishek_Bachchan#c=
+ite_note-Bachchan-Filmography-13" id=3D"OWA311c10cd-3f09-70d0-aebf-b838d6b9=
+d5c2" class=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 204); border-radiu=
+s: 0px;">[13]</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;In
+ 2001, he starred in </span><span style=3D"color: rgb(51, 102, 204);"><i><a=
+ href=3D"https://en.wikipedia.org/wiki/Bas_Itna_Sa_Khwaab_Hai" id=3D"OWA576=
+71650-fdc8-4f2c-6002-bc4bc7bc6e65" class=3D"OWAAutoLink" title=3D"Bas Itna =
+Sa Khwaab Hai" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">Bas
+ Itna Sa Khwaab Hai</a></i></span><span style=3D"color: rgb(0, 0, 0);">, wh=
+ich failed to gain a wide audience theatrically.</span><span style=3D"color=
+: rgb(51, 102, 204);"><a href=3D"https://en.wikipedia.org/wiki/Abhishek_Bac=
+hchan#cite_note-16" id=3D"OWAc99fadf7-b564-1a36-44fe-5a7691373137" class=3D=
+"OWAAutoLink" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">[16]<=
+/a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;He
+ also shot for a cameo in the 2001 film </span><span style=3D"color: rgb(51=
+, 102, 204);"><i><a href=3D"https://en.wikipedia.org/wiki/Kabhi_Khushi_Kabh=
+ie_Gham..." id=3D"OWA69f47be4-e736-17fb-8136-0a0851f17d81" class=3D"OWAAuto=
+Link" title=3D"Kabhi Khushi Kabhie Gham..." style=3D"color: rgb(51, 102, 20=
+4); border-radius: 0px;">Kabhi
+ Khushi Kabhie Gham...</a></i></span><span style=3D"color: rgb(0, 0, 0);">,=
+ a scene which was later edited out of the film.</span><span style=3D"color=
+: rgb(51, 102, 204);"><a href=3D"https://en.wikipedia.org/wiki/Abhishek_Bac=
+hchan#cite_note-17" id=3D"OWA6b15ba3c-28c8-35eb-d4da-1eebdebb6188" class=3D=
+"OWAAutoLink" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">[17]<=
+/a></span></div>
+<div style=3D"text-align: left; text-indent: 0px; margin: 0.5em 0px 1em; fo=
+nt-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helveti=
+ca, sans-serif; font-size: 12pt;">
+<span style=3D"color: rgb(0, 0, 0);">In 2002, Bachchan had four film releas=
+es, the first of which was the romantic drama
+</span><span style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.w=
+ikipedia.org/wiki/Haan_Maine_Bhi_Pyaar_Kiya" id=3D"OWA57fe30bd-4e22-1740-e3=
+a4-40125a0d4521" class=3D"OWAAutoLink" title=3D"Haan Maine Bhi Pyaar Kiya" =
+style=3D"color: rgb(51, 102, 204); border-radius: 0px;">Haan
+ Maine Bhi Pyaar Kiya</a></i></span><span style=3D"color: rgb(0, 0, 0);">, =
+opposite
+</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wiki=
+pedia.org/wiki/Karisma_Kapoor" id=3D"OWA38948530-e2a2-9d9d-51ae-bc296f814a4=
+7" class=3D"OWAAutoLink" title=3D"Karisma Kapoor" style=3D"color: rgb(51, 1=
+02, 204); border-radius: 0px;">Karisma Kapoor</a></span><span style=3D"colo=
+r: rgb(0, 0, 0);">&nbsp;and
+</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wiki=
+pedia.org/wiki/Akshay_Kumar" id=3D"OWA4ca80926-5575-67fe-1bd0-740678d67ee5"=
+ class=3D"OWAAutoLink" title=3D"Akshay Kumar" style=3D"color: rgb(51, 102, =
+204); border-radius: 0px;">Akshay Kumar</a></span><span style=3D"color: rgb=
+(0, 0, 0);">.</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"ht=
+tps://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-18" id=3D"OWA9c982e=
+56-e49f-48b7-0826-b6ba765b3414" class=3D"OWAAutoLink" style=3D"color: rgb(5=
+1, 102, 204); border-radius: 0px;">[18]</a></span><span style=3D"color: rgb=
+(0, 0, 0);">&nbsp;He
+ then made a cameo in the Bengali film </span><span style=3D"color: rgb(51,=
+ 102, 204);"><i><a href=3D"https://en.wikipedia.org/wiki/Desh_(film)" id=3D=
+"OWA7c1a6074-6afb-fd65-71e9-fe63a40b3045" class=3D"OWAAutoLink" title=3D"De=
+sh (film)" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">Desh</a>=
+</i></span><span style=3D"color: rgb(0, 0, 0);">,
+ which starred his mother Jaya Bachchan.</span><span style=3D"color: rgb(51=
+, 102, 204);"><a href=3D"https://en.wikipedia.org/wiki/Abhishek_Bachchan#ci=
+te_note-19" id=3D"OWA742c65b1-6322-a6cb-3440-4504d6f72f1c" class=3D"OWAAuto=
+Link" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">[19]</a></spa=
+n><span style=3D"color: rgb(0, 0, 0);">&nbsp;His
+ next role was in the comedy drama </span><span style=3D"color: rgb(51, 102=
+, 204);"><i><a href=3D"https://en.wikipedia.org/wiki/Shararat_(2002_film)" =
+id=3D"OWAce254bf2-5851-9798-296b-8ff3e7f8f094" class=3D"OWAAutoLink" title=
+=3D"Shararat (2002 film)" style=3D"color: rgb(51, 102, 204); border-radius:=
+ 0px;">Shararat</a></i></span><span style=3D"color: rgb(0, 0, 0);">,
+ followed by </span><span style=3D"color: rgb(51, 102, 204);"><i><a href=3D=
+"https://en.wikipedia.org/wiki/Om_Jai_Jagadish" id=3D"OWA996df34b-3f44-23e4=
+-5070-8c0d176eae6f" class=3D"OWAAutoLink" title=3D"Om Jai Jagadish" style=
+=3D"color: rgb(51, 102, 204); border-radius: 0px;">Om
+ Jai Jagadish</a></i></span><span style=3D"color: rgb(0, 0, 0);">, where he=
+ was part of an ensemble cast. Both movies failed commercially.</span><span=
+ style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wikipedia.org/wi=
+ki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13" id=3D"OWA51dccb79-1=
+c9f-9c0d-ea14-4b670647c61c" class=3D"OWAAutoLink" style=3D"color: rgb(51, 1=
+02, 204); border-radius: 0px;">[13]</a></span><span style=3D"color: rgb(0, =
+0, 0);">&nbsp;Bachchan's
+ performance in </span><span style=3D"color: rgb(51, 102, 204);"><a href=3D=
+"https://en.wikipedia.org/wiki/Sooraj_R._Barjatya" id=3D"OWAa3f3968b-0965-4=
+4a9-5ced-5fb44515e1b8" class=3D"mw-redirect OWAAutoLink" title=3D"Sooraj R.=
+ Barjatya" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">Sooraj
+ R. Barjatya</a></span><span style=3D"color: rgb(0, 0, 0);">'s romantic dra=
+medy </span>
+<span style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.wikipedi=
+a.org/wiki/Main_Prem_Ki_Diwani_Hoon" id=3D"OWAde383162-7ac9-49a8-2c36-cdabb=
+9475bb2" class=3D"OWAAutoLink" title=3D"Main Prem Ki Diwani Hoon" style=3D"=
+color: rgb(51, 102, 204); border-radius: 0px;">Main
+ Prem Ki Diwani Hoon</a></i></span><span style=3D"color: rgb(0, 0, 0);">&nb=
+sp;(2003) earned him his first nomination for the
+</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wiki=
+pedia.org/wiki/Filmfare_Award_for_Best_Supporting_Actor" id=3D"OWA206eb18f-=
+5b06-0a79-16ed-4acb29a39e8f" class=3D"OWAAutoLink" title=3D"Filmfare Award =
+for Best Supporting Actor" style=3D"color: rgb(51, 102, 204); border-radius=
+: 0px;">Filmfare
+ Award for Best Supporting Actor</a></span><span style=3D"color: rgb(0, 0, =
+0);">,</span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://e=
+n.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-20" id=3D"OWA945c1dc1-05ff=
+-9aa5-224c-a5b618259cf3" class=3D"OWAAutoLink" style=3D"color: rgb(51, 102,=
+ 204); border-radius: 0px;">[20]</a></span><span style=3D"color: rgb(0, 0, =
+0);">&nbsp;although
+ the film was a flop.</span><span style=3D"color: rgb(51, 102, 204);"><a hr=
+ef=3D"https://en.wikipedia.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Fi=
+lmography-13" id=3D"OWAaa6446de-2fd3-31ab-9bde-81d7a75a309e" class=3D"OWAAu=
+toLink" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">[13]</a></s=
+pan><span style=3D"color: rgb(0, 0, 0);">&nbsp;In
+ the same year, Bachchan starred alongside </span><span style=3D"color: rgb=
+(51, 102, 204);"><a href=3D"https://en.wikipedia.org/wiki/Lara_Dutta" id=3D=
+"OWA29bcc56e-049c-249b-8568-2e87621b17de" class=3D"OWAAutoLink" title=3D"La=
+ra Dutta" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">Lara
+ Dutta</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;in the drama </=
+span><span style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.wik=
+ipedia.org/wiki/Mumbai_Se_Aaya_Mera_Dost" id=3D"OWAf5ff81fe-a90f-0e80-79ce-=
+d7fcd9d4a2a1" class=3D"OWAAutoLink" title=3D"Mumbai Se Aaya Mera Dost" styl=
+e=3D"color: rgb(51, 102, 204); border-radius: 0px;">Mumbai
+ Se Aaya Mera Dost</a></i></span><span style=3D"color: rgb(0, 0, 0);">. The=
+ movie did not perform well commercially and received negative reviews.</sp=
+an><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wikipedi=
+a.org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13" id=3D"OWA3c=
+d045b2-a9a5-c388-1809-911be3756cb8" class=3D"OWAAutoLink" style=3D"color: r=
+gb(51, 102, 204); border-radius: 0px;">[13]</a><a href=3D"https://en.wikipe=
+dia.org/wiki/Abhishek_Bachchan#cite_note-21" id=3D"OWA0e8b324d-2132-4d35-a7=
+dd-b2cd99c97797" class=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 204); b=
+order-radius: 0px;">[21]</a></span><span style=3D"color: rgb(0, 0, 0);">&nb=
+sp;He
+ then starred opposite </span><span style=3D"color: rgb(51, 102, 204);"><a =
+href=3D"https://en.wikipedia.org/wiki/Aishwarya_Rai" id=3D"OWA4ec7302c-cf44=
+-fe06-69e2-3467c46c8ede" class=3D"mw-redirect OWAAutoLink" title=3D"Aishwar=
+ya Rai" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">Aishwarya
+ Rai</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;in </span><span s=
+tyle=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.wikipedia.org/w=
+iki/Kuch_Naa_Kaho" id=3D"OWA924d4338-9944-d68d-5894-21819ae143a2" class=3D"=
+OWAAutoLink" title=3D"Kuch Naa Kaho" style=3D"color: rgb(51, 102, 204); bor=
+der-radius: 0px;">Kuch
+ Naa Kaho</a></i></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;and join=
+ed </span><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.w=
+ikipedia.org/wiki/Ajay_Devgn" id=3D"OWA258c5dad-1b80-c39f-2f8d-2c9a0b4cb1cd=
+" class=3D"OWAAutoLink" title=3D"Ajay Devgn" style=3D"color: rgb(51, 102, 2=
+04); border-radius: 0px;">Ajay
+ Devgn</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;and </span><spa=
+n style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wikipedia.org/w=
+iki/Bipasha_Basu" id=3D"OWAf435987f-23e5-ec33-a9f6-b07c5c18007b" class=3D"O=
+WAAutoLink" title=3D"Bipasha Basu" style=3D"color: rgb(51, 102, 204); borde=
+r-radius: 0px;">Bipasha
+ Basu</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;in </span><span =
+style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.wikipedia.org/=
+wiki/Zameen_(2003_film)" id=3D"OWA4314f821-ba82-3dee-b43f-71fd51643357" cla=
+ss=3D"OWAAutoLink" title=3D"Zameen (2003 film)" style=3D"color: rgb(51, 102=
+, 204); border-radius: 0px;">Zameen</a></i></span><span style=3D"color: rgb=
+(0, 0, 0);">.
+ Neither of these films fared well critically or commercially.</span><span =
+style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wikipedia.org/wik=
+i/Abhishek_Bachchan#cite_note-Box_Office_2003-22" id=3D"OWAec708d92-7a6f-7c=
+d2-8022-8903425a5175" class=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 20=
+4); border-radius: 0px;">[22]</a><a href=3D"https://en.wikipedia.org/wiki/A=
+bhishek_Bachchan#cite_note-23" id=3D"OWAa800a0db-4fad-965b-b646-0f8c029ee9e=
+5" class=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 204); border-radius: =
+0px;">[23]</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;For
+ his final release of 2003, Bachchan appeared among an ensemble cast in </s=
+pan><span style=3D"color: rgb(51, 102, 204);"><i><a href=3D"https://en.wiki=
+pedia.org/wiki/LOC:_Kargil" id=3D"OWAe35b530c-8ad8-71ec-caed-a15b854e2039" =
+class=3D"OWAAutoLink" title=3D"LOC: Kargil" style=3D"color: rgb(51, 102, 20=
+4); border-radius: 0px;">LOC:
+ Kargil</a></i></span><span style=3D"color: rgb(0, 0, 0);">, portraying </s=
+pan><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wikiped=
+ia.org/wiki/Vikram_Batra" id=3D"OWA892bef23-bd87-5238-b5e5-f4167b9a6aa4" cl=
+ass=3D"OWAAutoLink" title=3D"Vikram Batra" style=3D"color: rgb(51, 102, 204=
+); border-radius: 0px;">Vikram
+ Batra</a></span><span style=3D"color: rgb(0, 0, 0);">.</span><span style=
+=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wikipedia.org/wiki/Abh=
+ishek_Bachchan#cite_note-24" id=3D"OWA63f9be0c-fe91-3ab2-3966-af3545d3d813"=
+ class=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 204); border-radius: 0p=
+x;">[24]</a></span><span style=3D"color: rgb(0, 0, 0);">&nbsp;It
+ received mixed to negative reviews and was not a commercial success.</span=
+><span style=3D"color: rgb(51, 102, 204);"><a href=3D"https://en.wikipedia.=
+org/wiki/Abhishek_Bachchan#cite_note-Bachchan-Filmography-13" id=3D"OWA18bf=
+5929-55c1-e365-9898-1c1f424d87bd" class=3D"OWAAutoLink" style=3D"color: rgb=
+(51, 102, 204); border-radius: 0px;">[13]</a><a href=3D"https://en.wikipedi=
+a.org/wiki/Abhishek_Bachchan#cite_note-25" id=3D"OWA52fe62e4-919c-7df1-8393=
+-3f83a470466e" class=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 204); bor=
+der-radius: 0px;">[25]</a><a href=3D"https://en.wikipedia.org/wiki/Abhishek=
+_Bachchan#cite_note-26" id=3D"OWA4666668d-b8e6-1b16-82f5-349704c57b55" clas=
+s=3D"OWAAutoLink" style=3D"color: rgb(51, 102, 204); border-radius: 0px;">[=
+26]</a></span></div>
+<div class=3D"elementToProof" style=3D"font-family: Aptos, Aptos_EmbeddedFo=
+nt, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; c=
+olor: rgb(0, 0, 0);">
+<img id=3D"image_0" style=3D"max-width: 236px;" src=3D"https://upload.wikim=
+edia.org/wikipedia/commons/thumb/0/08/Bachchan_Parivar.jpg/220px-Bachchan_P=
+arivar.jpg"></div>
+</body>
+</html>
+
+--_000_KL1PR02MB6627B7C2A33B510F4DB01B549A4D2KL1PR02MB6627apcp_--

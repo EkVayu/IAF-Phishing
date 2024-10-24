@@ -2,6 +2,7 @@ from pathlib import Path
 from environs import Env
 import logging
 import os
+from corsheaders.defaults import default_headers
 # import distutils.util
 
 env = Env()
@@ -55,14 +56,15 @@ INSTALLED_APPS = [
     'users',
     'plugin',
     'knox',
-    # 'corsheaders',
+    'corsheaders',
     'drf_yasg',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -176,3 +178,8 @@ DEFAULT_FROM_EMAIL = 'ekvayu.com'
 
 DEBUG = True
 APPEND_SLASH = False
+
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'content-disposition',
+]

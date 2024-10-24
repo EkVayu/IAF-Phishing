@@ -1,0 +1,2007 @@
+Received: from TYSPR06MB6338.apcprd06.prod.outlook.com (2603:1096:400:433::6)
+ by TYUPR06MB6002.apcprd06.prod.outlook.com with HTTPS; Wed, 23 Oct 2024
+ 07:44:35 +0000
+Received: from DS7P220CA0004.NAMP220.PROD.OUTLOOK.COM (2603:10b6:8:1ca::11) by
+ TYSPR06MB6338.apcprd06.prod.outlook.com (2603:1096:400:433::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8093.16; Wed, 23 Oct 2024 07:44:33 +0000
+Received: from CY4PEPF0000EDD4.namprd03.prod.outlook.com
+ (2603:10b6:8:1ca:cafe::d1) by DS7P220CA0004.outlook.office365.com
+ (2603:10b6:8:1ca::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.17 via Frontend
+ Transport; Wed, 23 Oct 2024 07:44:32 +0000
+Authentication-Results: spf=pass (sender IP is 130.248.129.101)
+ smtp.mailfrom=notificationmail.microsoft.com; dkim=pass (signature was
+ verified) header.d=notificationmail.microsoft.com;dmarc=pass action=none
+ header.from=notificationmail.microsoft.com;compauth=pass reason=100
+Received-SPF: Pass (protection.outlook.com: domain of
+ notificationmail.microsoft.com designates 130.248.129.101 as permitted
+ sender) receiver=protection.outlook.com; client-ip=130.248.129.101;
+ helo=r101.notificationmail.microsoft.com; pr=C
+Received: from r101.notificationmail.microsoft.com (130.248.129.101) by
+ CY4PEPF0000EDD4.mail.protection.outlook.com (10.167.241.200) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8093.14 via Frontend Transport; Wed, 23 Oct 2024 07:44:32 +0000
+X-IncomingTopHeaderMarker:
+ OriginalChecksum:0D197A07D220A89DBBE15FD3A382725B1627C0E97527B2088A7978C6D953075B;UpperCasedChecksum:6B722379C3288C9A1FEDED7F85FFF0AAF27D39D129BAE7AB16D46E63BBBA8120;SizeAsReceived:1782;Count:14
+Return-Path: bounce@notificationmail.microsoft.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=notificationmail.microsoft.com; s=mscom; t=1729669472;
+	bh=VutLphTuKTlEIRS/2I5oi3YVv/jGoiUqssXGAe/kwFs=;
+	h=From:Date:Subject:To:MIME-Version:Message-ID:Content-Type;
+	b=njs2SHLHOTJNdu3jXNUV1YQktFRwGzF+t20zS29YXY9omTXnhGuLVI0Boes4hwkWP
+	 yao0/ruAhTJvDiu7LZ+qef1dZcOKJuX8uWDfiNtpwDpWIVd9cI5X1f3mbsOQ/JRdU2
+	 XAhXuXwvxifH77GZvSd+/34nI1sBZhFIDlRrXsdM=
+X-MSFBL: hrkoZ2U7224B5h+7NDle37Wx2zEqxXTE+0DdBZ7xmFY=|eyJiIjoiYXp1cmVfbXN
+	jb21fcHJvZDhfZGVmYXVsdF9tb21lbnR1bTQ2X210YTAwOV8xMzAuMjQ4LjEyOS4
+	xMDEiLCJyY3B0X21ldGEiOnsgImluIjogIm1zY29tX21rdF9wcm9kOCIsICJyIjo
+	gIm5pZGhpeWFjaG91aGFuMTJAb3V0bG9vay5jb20iLCAibSI6ICIyMjc3MDk2MDQ
+	1IiwgImQiOiAiMTk5Njc0NjMwNiIsICJpIjogIkVBNzZBREU5NTc3NkQyRUM3RjA
+	wMDEwMUBBZG9iZU9yZyIgfSwiZyI6ImRlZmF1bHRfN2RiY2NmMTQtMGU2My00MTE
+	1LWI3N2UtNTk2OGJjMzYxZGE2IiwiciI6Im5pZGhpeWFjaG91aGFuMTJAb3V0bG9
+	vay5jb20ifQ==
+Received: from [10.182.124.226] ([10.182.124.226:40083] helo=r92.engagement.microsoft.com)
+	by momentum46.or1.cpt.adobe.net (envelope-from <bounce@notificationmail.microsoft.com>)
+	(ecelerity 4.2.38.999 r(:)) with ESMTP
+	id D1/4A-14358-F59A8176; Wed, 23 Oct 2024 00:44:32 -0700
+From: "Microsoft" <Microsoft@notificationmail.microsoft.com>
+Date: Wed, 23 Oct 2024 00:44:29 -0700
+Subject: =?windows-1252?Q?_____Get_to_know_your_OneDrive_=96_How_to_back_?=
+ =?windows-1252?Q?up_your_PC_and_mobile?=
+To: <nidhiyachouhan12@outlook.com>
+Reply-To: "noreply" <replies@microsoft.com>
+X-mailer: nlserver, Build 7.0.0.10695
+Message-ID: <AC70000000087B9BA6D7703EE42mscom_mkt_prod8@notificationmail.microsoft.com>
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-IncomingHeaderCount: 14
+X-MS-Exchange-Organization-ExpirationStartTime: 23 Oct 2024 07:44:32.3450
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id:
+ bda18edf-9bb9-4c41-1848-08dcf336887d
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic:
+ CY4PEPF0000EDD4:EE_|TYSPR06MB6338:EE_|TYUPR06MB6002:EE_
+X-MS-Exchange-Organization-AuthSource:
+ CY4PEPF0000EDD4.namprd03.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-UserLastLogonTime: 10/23/2024 7:41:51 AM
+X-MS-Office365-Filtering-Correlation-Id: bda18edf-9bb9-4c41-1848-08dcf336887d
+X-MS-Exchange-EOPDirect: true
+X-Sender-IP: 130.248.129.101
+X-SID-PRA: MICROSOFT@NOTIFICATIONMAIL.MICROSOFT.COM
+X-SID-Result: PASS
+X-MS-Exchange-Organization-SCL: 1
+X-Microsoft-Antispam:
+ BCL:4;ARA:1444111002|1680799051|9400799024|9000799047|461199028|8301999021|6401999021|68400799013|5301999021|970799054|3412199025|440099028|1370799030|1360799030|1380799030|4302099013|56899033|1602099012|21101999012;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2024 07:44:32.1575
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: bda18edf-9bb9-4c41-1848-08dcf336887d
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-AuthSource:
+ CY4PEPF0000EDD4.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+ 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYSPR06MB6338
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:03.0375478
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.8093.014
+X-Microsoft-Antispam-Mailbox-Delivery:
+	ucf:0;jmr:0;ex:0;auth:1;dest:I;ENG:(5062000308)(920221119095)(90000117)(920221120095)(90005022)(91005020)(90014020)(91030020)(91040095)(9050020)(9100341)(944500132)(4810010)(4910033)(9575002)(10195002)(9320005)(120001);
+X-Message-Delivery: Vj0xLjE7dXM9MDtsPTA7YT0wO0Q9MTtHRD0xO1NDTD0z
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?R2hsMDBoTnJmdWFsVXA0dkRtc0Q4dkF4ZXBWTmdGUG96L1c1ZytwK0tuM00r?=
+ =?utf-8?B?dGxWVVRjd0xzZU9YY2ovdEFtcHlQVCtKdSs4cGlMZ0xKSjRieEhDM2pyMGFw?=
+ =?utf-8?B?QWhCSWlWT3BBTVk5RCthRXd2SEQxK1F5blNlYm1qa1dDcjdkZDJFUi9aQkVC?=
+ =?utf-8?B?Q1VpUDFSWHVjc1d5VGd6bmd1YSs4RmQ4UENZRk1VNE9HWHJLc3Z4M1ppbjdF?=
+ =?utf-8?B?aDR0WEd3dXFXbXdSZTVhSGd2OGZPNXR5eWNNQlNvb1d2QklEelR5VVhBYkdC?=
+ =?utf-8?B?N0k2ZWplUFBVakJKRDA2c0ltT2l4akFKTXhXT0dUdGxmdXpnbUd0L1NKd1pv?=
+ =?utf-8?B?cWEzditycW9FUEFaZUVkcXFkNnJYcWszV1BQbUZmTTBLTHBEaGhCbTRmOEtM?=
+ =?utf-8?B?cTFrQW9oUDJxT3lNdWE5Z3FLY1RTdDJlbzgwNWZWamJZWUJWV1VrajV4Z3FQ?=
+ =?utf-8?B?Q0NFTHQxZGpqUzh5ZDFVTXRFR0F1VXlRVGxJZW5kTUprUU1aUk4yT0FwOGpP?=
+ =?utf-8?B?RGJVdUhEd2VZZTdkWVZDNTBMRlExWHB0L2VQV01qMEd5dEFOQk80RjBtOXQ2?=
+ =?utf-8?B?L3BHcEwxMG5JSlR3ZUVIRUh6WmZzU1JzdkdZRW5lKzF5eW9SNlB6eWpyZHJv?=
+ =?utf-8?B?RTlwZldwaWdHdkE5b2IwN1VqM2trWVJKVWd5VlFBUm0rN2NGQzJGQmk2VitZ?=
+ =?utf-8?B?Y2ViSzlNOWRPaVVvaVFwNHBvSnMxVGdJbmxOYTEvU2x2clE3NVR1Z09jWkYz?=
+ =?utf-8?B?NGViN3RzUjlQV3Ixb2R3aVVHaHI0UnJpUm8xL29QU2RDOWx2YkxDUC9SQ3hl?=
+ =?utf-8?B?T1Z2VjIrbkIvdnFJa1hXdVlYaFhHeEJGMlNCRWU5dWs4WnA4SEZtcHNsWmkw?=
+ =?utf-8?B?VlcrNTVnbVRXMnJhaDdieXJLOEpXc05GKzdMSGhOMkdRSUR6dlBlejJJcldL?=
+ =?utf-8?B?aUVUYUVpL1J6Q3I1dGN3K3BiSUFRRHI3ejlmZUdiMFJUN0JBZU9PSlVKQ3Ja?=
+ =?utf-8?B?VXkzZkNYV2lIUVBudG5IZk1nSUZKUGZrdGxlQ01qemFTYTdCL1pFc3JoSS8v?=
+ =?utf-8?B?d2hCdVhkT2hKaUhwNDdNV2ZIU2VJcW14bCs5UUU4WERLRG1naGE5czRvWHpr?=
+ =?utf-8?B?a2kzLzA0dHVaZWZ4YmxBY1NoMlN2MForR0QzNGhPanR4bTN2Q2RENjF2U3hw?=
+ =?utf-8?B?OTVXNXBCcWpXUFJRNW5oL0sxUGNTS2YvcmtCd2h0WmNRb0wvVmNWTzdXaEpp?=
+ =?utf-8?B?STFCcTNyd0lOQi83dVA5dzBmSEVGVGd4emhsaUlyYTA2MlEvWE51TkRYa3B5?=
+ =?utf-8?B?Wm45dlpwUkxsY3dzWXU5cG9XKzZuZmFNbUpWTWJFUlYxN0kyYmpISGJyQmZR?=
+ =?utf-8?B?c3E2blVBVWFUeks4bkdQK29SV1h2S0FkemVZdnBEWmhSUjljNk5tdGRpTy9Y?=
+ =?utf-8?B?enhDMjlONEkxenJNM3RvTG13OGZhMmVKWmY3QmdRQnkyTkVFMmtJai9tM09l?=
+ =?utf-8?B?bGxxaHErZzJ1bXRoOG0yVWVmSU1zMSs1U0tGSHVQWkQ1TURKald2S3dYUzhQ?=
+ =?utf-8?B?MFNqL3BsOFRMQkc5N0FXbDg5TFJzUXViRVovWnJTbnpPOUV0SWVVOENCek4x?=
+ =?utf-8?B?blFWeXFaUUtyS1pNZXhydWgwSklkQzJDRFhRdlVZbnQ5YzU0VWFUVVlWUFRD?=
+ =?utf-8?B?VXVCV0IyYjd6dzQ3TEJEajN6aGZrbkFmS3JwZm5XaEcvaWRHS0ZVdFN2eXN3?=
+ =?utf-8?B?cmcyWjc4OHJXM3pCVUVQc2l6SDA1WGdzTFQyVzNlZHB0bW1VNjNabnVuaVZ3?=
+ =?utf-8?B?S0xUWGdGeFdXOHY2bFJuNnB2bE5DUCtaZE92R1hwTE9BSkY3aThFRit5eHZG?=
+ =?utf-8?B?cVUwT0tYSDRvam5DRGhsMFF1RFBIVXYrQmh5bkVJSGlyYzVSUmFDVEw1eUhn?=
+ =?utf-8?B?OHNEekJUdTNDcE84bjEzdVZSeFpaekZxbEp2MTNjVjMrTjVsWlRKblhCQnBW?=
+ =?utf-8?B?TVA5eXlxakZBVWsyY0VDYzYwNE9kNGJ5Vmh3WnUyd3JKYVJHdFQ1b1Z1OXA0?=
+ =?utf-8?B?QjJYUFJTc2kxU3FkcDRMZFFmNHE0ejBYUkw4eXI2bllFUytzQzlDWVNwRzM3?=
+ =?utf-8?B?dkVHejRVRC9HeTNuZnFjWGFSWXVHOFBVWVB6MUNRT0RkTDBGV0NiMytVRnkw?=
+ =?utf-8?B?blRGTGVaTEoyVEFvMjB3aWplUktaeG9jRk8xQUlpSlNtWXBzWUx6WlF0enhL?=
+ =?utf-8?B?bXI1ZDlDb09Pc0dIeExvNHQ3anF5dTFGZjZyTExrSDdyWmRjdHRsM0oreWlJ?=
+ =?utf-8?B?d1VLNzYyUWtVY3AvVENSN3M2MUdsTnlQV3BIVWJXMThEUDREMG5qY0pmQUhH?=
+ =?utf-8?B?VC9CYlhCaDd1V1p4YUR6d2c5bk9iNGYzUlg5N1I5c0I0NHRmRXp1YVdjQldq?=
+ =?utf-8?Q?P6rwIHkeYAoHdVFukdQ7a/uxhq0cBi45RkE=3D?=
+MIME-Version: 1.0
+
+<!DOCTYPE HTML><html xmlns=3D"http://www.w3.org/1999/xhtml" xmlns:o=3D"urn:=
+schemas-microsoft-com:office:office" xmlns:v=3D"urn:schemas-microsoft-com:v=
+ml" dir=3D"ltr" lang=3D"en-us"><head><!--[if gte mso 9]>       <xml>       =
+   <o:OfficeDocumentSettings>             <o:PixelsPerInch>96</o:PixelsPerI=
+nch>          </o:OfficeDocumentSettings>       </xml>     <![endif]-->
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8">  =
+   <meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">     <meta na=
+me=3D"HandheldFriendly" content=3D"true">     <meta name=3D"x-apple-disable=
+-message-reformatting">  <title>Get to know your OneDrive =E2=80=93 How to =
+back up your PC and mobile&nbsp;</title>  <link rel=3D"canonical" href=3D"/=
+content/campaigns/microsoft-365-consumer/en-us/ado152959-m365-recurring-cge=
+onedriveengagementfreewelcomeemailre/introducing-microsoft-designer--your-n=
+ew-ai-powered-graphic-desi.html">  <link rel=3D"shortcut icon" href=3D"/app=
+s/settings/wcm/designs/default/favicon.ico">  <meta name=3D"description" co=
+ntent=3D"ADO-152959-ENUS ">  <meta name=3D"viewport" content=3D"width=3Ddev=
+ice-width, initial-scale=3D1.0">      <meta name=3D"format-detection" conte=
+nt=3D"telephone=3Dno">     <meta name=3D"format-detection" content=3D"date=
+=3Dno">     <meta name=3D"format-detection" content=3D"address=3Dno">     <=
+meta name=3D"format-detection" content=3D"email=3Dno">                     =
+                                                      <style media=3D"all" =
+type=3D"text/css">      @-ms-viewport { width: device-width;}     </style> =
+    <style type=3D"text/css">   .desktop-block { display:block; }      .rtl=
+-template,  .rtl-template td { direction: rtl !important; text-align: right=
+ !important; }    .rtl-template .text-rtl-center td, .rtl-template .hero-te=
+xt-center{text-align:center !important}   .rtl-template .btn-rtl th { direc=
+tion: rtl !important; }         .rtl-template ul { margin: 0 !important; pa=
+dding-right: 22px !important;text-align: right !important;direction: rtl !i=
+mportant; }         .rtl-template ol { margin-top: 0 !important;margin-bott=
+om:0 !important; padding-right: 22px !important;text-align: right !importan=
+t;}         .rtl-template .social-icons { padding-left: 12px !important; pa=
+dding-right: 0 !important; }         .rtl-template .text-align-right th { t=
+ext-align: right !important;padding-right:0px !important; padding-left:3px =
+!important; }   .rtl-template .txt-align-right, .rtl-template .block-text-a=
+lign-right {text-align: right !important;}   .rtl-template li { padding: 0 =
+12px 8px 0 !important; }   .rtl-template .rating-thumbs-up { padding-left: =
+30px; padding-right: 0; }   .rtl-template .reward-tile-card {padding-left: =
+20px; padding-right: 0; }         .rtl-template .ribbon-cta .block-max-widt=
+h {text-align: left !important;}   .rtl-template .block-max-width, .rtl-tem=
+plate .btn-block-right {text-align: right !important;}   .rtl-template .blo=
+ck-max-width-center {text-align: center !important;}   u+.rtl-template a { =
+color:#0067B8 !important; }    .rtl-template .table-ruler td, .rtl-template=
+ .table-ruler th, .rtl-template .table-zebra td, .rtl-template .table-zebra=
+ th,    .rtl-template .table-hr-icon td, .rtl-template .table-zebra-icon td=
+ { padding: 20px 20px 20px 0 !important; text-align: right !important; }   =
+.rtl-template .table-ruler-mobile th, .rtl-template .table-zebra-mobile th =
+{ text-align: right !important;  }   .rtl-template .text-rtl-center td {tex=
+t-align: center !important;}      .rtl-template .text-rtl-center .img-wrapp=
+er img {display:block; margin:0 auto;}   .email-table .text-center p,.email=
+-table .text-center td {text-align:center !important;}         .email-table=
+ .text-center img {Margin:0 auto;margin:0 auto;}           .email-table .te=
+xt-left p,.email-table .text-left td {text-align:left !important;}         =
+.email-table .text-right p,.email-table .text-right td {text-align:right !i=
+mportant;}         .rtl-template .email-table .text-center p,.rtl-template =
+.email-table .text-center td {direction: rtl !important;text-align: center =
+!important;}   .rtl-template .btn-rtl th {direction: rtl !important;}    .r=
+tl-template .tile-headline, .rtl-template .tile-paragraph { padding: 0 20px=
+ 0 20px;}   .rtl-template .small-tile-image { padding: 20px 20px 0px 20px;}=
+   .rtl-template .tile-button { padding: 0 20px 20px 20px; }   .rtl-templat=
+e .padd-left-right-40 { padding: 0 40px 0 40px !important;}   .rtl-template=
+ .padd-left-20 { padding-left: 20px !important; padding-right: 0 !important=
+;}   .rtl-template .intro-tile-image {padding:10px 10px 10px 20px}   .rtl-t=
+emplate .intro-tile-text {padding:0 0 0 10px}         .rtl-template .image-=
+tile-10 { padding:10px 10px 0px 0px !important;}         .rtl-template .ima=
+ge-tile-20 {padding: 20px 20px 0px 0px !important;}         .footer-address=
+-center td,.footer-address-center td p,.footer-address-center td p a{text-a=
+lign:center !important;direction:ltr !important;}    table.groupthree a {te=
+xt-decoration: underline !important;}   .txt-center ul li, .txt-center ol l=
+i{text-align: center !important; list-style-position: inside;}          bod=
+y {margin:0;padding:0;}          table td {border-collapse:collapse;margin:=
+0;padding:0;}          table td p {margin:0;padding:0;}    table td p a {co=
+lor:#0067B8;text-decoration:underline;font-weight: normal;}    table th {fo=
+nt-weight: normal !important;}    .table-width{width:200px!important;height=
+:27px!important;}      .mobile-social-padd-right{padding-right:40px;}      =
+    .desktopHidden, .desktop-hidden, .autopreview, .spacer-desktop-hide, .t=
+able-ruler-mobile, .table-zebra-mobile {display: none !important;}         =
+ .gutter {padding:0 30px;}    .tile-pad-large-4 {padding-left: 50px !import=
+ant; padding-right: 50px !important;}                  .tile-pad-large {pad=
+ding-left: 30px !important; padding-right: 30px !important;}               =
+   .tile-pad-small-v1 {padding-left: 50px !important; padding-right: 50px !=
+important;}                  .tile-pad-small-v2 {padding-left: 84px !import=
+ant; padding-right: 84px !important;}                  .tile-pad-small-v3 {=
+padding-left: 119px !important; padding-right: 119px !important;}          =
+        .tile-pad-small-v5 {padding-left: 154px !important; padding-right: =
+154px !important;}    .padd-left-right-40 { padding:0 40px 0 40px !importan=
+t;}    .padd-left-right-20 { padding:0 20px 0 20px !important;}    .padd-le=
+ft-right-10 { padding:0 10px 0 10px !important;}    .padd-left-right-28 { p=
+adding:0 28px 0 28px !important;}    .padd-right-26 { padding:0 26px 0 0 !i=
+mportant;}    .padd-left-26 { padding:0 0 0 26px !important;}    .tile-smal=
+l-box .btn-block {vertical-align:top}       .tile-image {padding: 10px 20px=
+ 10px 10px;}    .reward-tile-card {padding-right: 20px;}          .lg-tile-=
+image, .lg-tile-headline, .lg-tile-paragraph, .lg-tile-button {padding: 0 4=
+0px 0 40px;}          .tile-headline, .tile-paragraph { padding: 0 20px 0 2=
+0px;}          .small-tile-image { padding: 20px 20px 0px 20px;}          .=
+tile-button { padding: 0 20px 20px 20px;}             .tile-txt-small {font=
+-family: 'Segoe=C2=A0UI', Helvetica, Arial, sans-serif; font-size: 12px; fo=
+nt-style: normal; color: #505050; line-height: 16px; letter-spacing: -0.01e=
+m; text-align: center; padding-left: 5px; padding-right: 5px; word-wrap: br=
+eak-word; word-break: break-all;}          .tile-txt-large {font-family: 'S=
+egoe UI', Helvetica, Arial, sans-serif; font-size: 14px; font-style: normal=
+; color: #505050; line-height: 20px; letter-spacing: -0.01em; text-align: c=
+enter; padding-left: 10px; padding-right: 10px; word-wrap: break-word; word=
+-break: break-all;}           .boxed-list-wrapper {padding: 20px 30px 0;}  =
+  .block-padd-top-30 {padding-top: 0px;}    .rating-thumbs-up {padding-righ=
+t: 30px;}    .text-card-padding {padding: 0 80px 0px 80px;}          .rte-s=
+pacer-20 p,.rte-spacer-20 ul,.rte-spacer-20 ol {padding-bottom: 20px !impor=
+tant;}    .rte-spacer-10 p,.rte-spacer-10 ul,.rte-spacer-10 ol {padding-bot=
+tom: 10px !important;}          .rte-footerspacer-10 p,.rte-footerspacer-10=
+ ul,.rte-footerspacer-10 ol {padding-top: 10px !important;}    .semibold{fo=
+nt-weight:600;}    .strikethrough { text-decoration: line-through;}     /* =
+Tabular Data Start */    .spacer-ln-ht-0 {line-height: 0px;font-size: 0px;}=
+    .table-ruler-mobile td, .table-ruler-mobile th, .table-zebra-mobile td,=
+ .table-zebra-mobile th, .table-hr-icon td, .table-zebra-icon td {         =
+height: 30px !important; padding: 20px 0 20px 20px !important; text-align: =
+left !important; word-wrap: break-word !important; overflow-wrap: break-wor=
+d !important; }     .table-ruler th, .table-ruler td { height: 30px !import=
+ant; padding: 20px 0 20px 20px !important; text-align: left !important; wor=
+d-wrap: break-word !important; overflow-wrap: break-word !important; }     =
+.table-zebra th, .table-zebra td { height: 30px !important; padding: 20px 0=
+ 20px 20px !important; text-align: left !important; word-wrap: break-word !=
+important; overflow-wrap: break-word !important; }           .table-ruler t=
+h, .table-ruler td, .table-ruler-mobile th, .table-ruler-mobile td, .table-=
+hr-icon td {           border-bottom: 1px solid #E0E0E0 !important;}       =
+   .table-zebra-mobile th, .table-zebra-mobile td {border-bottom : 1px soli=
+d #ffffff !important;}          .table-ruler-mobile, .table-hr-icon {border=
+-top: 1px solid #E0E0E0;}          .table-ruler-mobile th, .table-zebra-mob=
+ile th {font-weight: 600 !important;}          .table-zebra-icon .odd-row t=
+d, .table-zebra .odd-row td, .table-zebra-mobile .odd-row td {background-co=
+lor: #F6F6F6;}          .table-zebra th, .table-zebra-mobile th {background=
+-color: #e7e7e7;}    .hero-text-center {text-align: center !important;paddi=
+ng: 0 30px !important;}    .intro-tile-image { padding:10px 20px 10px 10px =
+!important;}    .intro-tile-text  {padding:0 10px 0 0}    .intro-tile-text-=
+20 {padding: 0 20px 0 0;}          .intro-tile-image-20 {padding: 20px 20px=
+ 20px 20px !important;}          .image-tile-10 { padding:10px 0px 0px 10px=
+ !important;}          .image-tile-20 {padding: 20px 0px 0px 20px !importan=
+t;}          .email-table th table td { font-weight:600 !important;}       =
+   /* Tabular Data Ends */          @media only screen and (max-width: 640p=
+x) {          .mobileHide {display:none;line-height:0; mso-hide: all;max-he=
+ight: 0; max-width: 0; width:0;}          }     /* Responsive classes for m=
+obile starts here */          @media only screen and (max-width: 480px) {  =
+           .wrapper, .table-hr-icon, .table-zebra-icon, .email-table {width=
+: 100%!important;}          /* Stack */    .text-card-padding {padding: 0px=
+ 40px 0px 40px !important;}          img.photo {display:block !important; w=
+idth:100% !important; height:auto !important;}          .block, .block-text=
+-align-right, .desktopHidden {width:100% !important; display:block !importa=
+nt;}          .blockLast {width:100% !important; display:block !important; =
+padding-bottom:20px !important;}    .app-download-block th, .btn-block, .bt=
+n-block-right {display: block !important; width: auto !important;}    .bloc=
+k-max-width, .block-max-width-center{ max-width: none !important; display: =
+block !important; width: auto !important;}          .addressText {font-size=
+:10px !important;}    .mobileHidden, .table-ruler, .table-zebra {display: n=
+one !important;}       .mobileBody {width:288px !important;}          .mobi=
+leBodyPadding {padding:10px 20px 35px 20px !important; width:288px !importa=
+nt;}          .mobileNoPadding {padding:0 !important;}          .mobileGutt=
+er {width:15px !important;}    .mobile-block-padd-top-30 {display: block !i=
+mportant;padding-top: 30px;width: 100%;}          .mobileCTA {width:258px !=
+important;}          .mobileCTABody {margin:0 auto !important;}          .m=
+obileHeight {height:auto !important;}          .mobileOnly,           .mobi=
+leOnly img,           .mobileOnly,           .mobileOnly {display:block !im=
+portant; margin:0 !important; padding:20px 0 0 0 !important; overflow:visib=
+le !important; width:auto !important; max-height:inherit !important; height=
+:1px !important; position: relative !important; top: 0px !important; border=
+-bottom:1px solid #1e90ff;}          .mobileTopPad5 { padding-top: 5px !imp=
+ortant; }          .mobileTopPad10 { padding-top: 10px !important; }       =
+    .mobileWidthAdj { width: 70px !important; }           .mobileBody { wid=
+th: 288px !important;}          .hide{display:none;}          .show{display=
+:none;}          .desktophide{display:block!important;}          .mobileFon=
+t{font-size:30px!important;line-height:30px!important;}          .mobilepad=
+ding-right{padding-right:40px;}          .icon-top-padding{padding-top:40px=
+!important;}          .w-100p{width:100%!important;}          .p-0{padding:=
+0!important;}          .flex{display:block!important;width:100%!important;b=
+ox-sizing:border-box!important;}          .thold{display:table!important;wi=
+dth:100%!important;}          .thead{display:table-header-group!important;w=
+idth:100%!important;}          .trow{display:table-row!important;width:100%=
+!important;}          .tfoot{display:table-footer-group!important;width:100=
+%!important;}          .pr-24{padding-right:24px!important;}          .mobi=
+le-padding-20{padding-left:20px!important; padding-right:20px!important;}  =
+        .mobile-padding-rght-20{padding-left:0px!important; padding-right:2=
+0px!important;}          .mobile-social-table{text-align:center!important;}=
+          .mobile-social-padd-btm{padding-bottom:35px!important;}    .mobil=
+e-social-padd-btm-top{padding-bottom:35px!important;}          .mobile-soci=
+al-marg-btm{margin-top:20px!important;}    .mobile-social-inline{display:in=
+line-block!important; padding-right:2px!important;}    .mobile-social-margi=
+n-lft{margin-left:10px!important;}       .logo-mobile-img{width:85px!import=
+ant;height:18px!important;}    .mobile-monthly-padd-left{padding-left:20px!=
+important;}    .secondary-logo-padd-left{ padding-left:0px!important;}     =
+     .secondary-logo-padd-left-20{ padding-left:20px!important;}          .=
+mobile-txt-center {text-align: center!important;}          .social-text-pad=
+-rght{padding-right:20px!important;padding-bottom:0px!important;}    .follo=
+wus-pad-top{padding-top:20px!important;}    .banner-image-txt-only{max-heig=
+ht: 48.4%!important;}    .banner-hero-imghgt-mobile{height: 160px!important=
+;}         .card-padding {padding-left: 20px!important; padding-right: 20px=
+!important; padding-top: 40px!important; padding-bottom: 40px!important;}  =
+ .thead {display: table-header-group!important; width: 100%!important;}   .=
+mobile-card-table {width: 100%!important;}   .mobile-txt-center {text-align=
+: center!important;}   .mobile-card-img-size {width: 100%!important;}   .tf=
+oot {display: table-footer-group!important; width: 100%!important;}   .mobi=
+le-card-padding-top-padd {padding-top: 40px!important;}   .mobile-card-marg=
+in-btm40 {margin-bottom: 40px!important;}   .mobile-card-margin-btm30 {marg=
+in-bottom: 40px!important;}   .mobile-cta-padd-bottom{padding-bottom:40px!i=
+mportant;}   .tile-pad-large-4 {padding-left: 20px !important; padding-righ=
+t: 20px !important;}   .tile-pad-large {padding-left: 60px !important; padd=
+ing-right: 60px !important;}   .tile-pad-small-v1 {padding-left: 20px !impo=
+rtant; padding-right: 20px !important;}   .tile-pad-small-v2 {padding-left:=
+ 20px !important; padding-right: 20px !important;}   .tile-pad-small-v3 {pa=
+dding-left: 20px !important; padding-right: 20px !important;}   .tile-pad-s=
+mall-v5 {padding-left: 55px !important; padding-right: 55px !important;}   =
+.mob-padd-top-zero {padding-top: 0px !important;}         .boxed-list-wrapp=
+er {padding: 20px 20px 0 !important;}         .gutter {padding:0 20px!impor=
+tant;}   .mobile-padding-left-20{padding-left:24px;}   .mobile-text-only-pa=
+d{padding-left: 0px !important;}   .mob-gutter { padding-left: 20px !import=
+ant; padding-right: 20px !important; }   .block-padd-top-30 { display: bloc=
+k !important; padding-top: 30px; }   .mobile-bottom-padding-20 { padding: 0=
+ 0 20px 0 !important;}   .learn-more-img{padding-top:40px; width: 100%;}   =
+.hero-mobile { width: 100% !important; max-width: 100% !important; height: =
+auto !important;}         .hero-text-center {padding: 0 20px !important;}  =
+   /*Tabular Data Starts */          .spacer-mob-30 {height: 30px !importan=
+t;}          .spacer-mob-20 {height: 20px !important;}                  .ta=
+ble-zebra-mobile, .table-ruler-mobile {display: table !important;}         =
+ .table-ruler-mobile td, .table-zebra-mobile td, .table-ruler-mobile th, .t=
+able-zebra-mobile th {padding: 20px !important;}          .table-hr-icon td=
+, .table-zebra-icon td {min-width: 16px !important; max-width: 150px !impor=
+tant;}          /*Tabular Data Ends */   .hero-xl-mobile,.hero-custom,.hero=
+-lg-mobile,.hero-md-mobile,.hero-sm-mobile {width: 100% !important; max-wid=
+th: 100% !important; height: auto !important;}   .rtl-template .block-text-=
+align-right { text-align: right !important;}         .thold { display: tabl=
+e !important; width: 100% !important; }   .thead { display: table-header-gr=
+oup !important; width: 100% !important; }   .tfoot { display: table-footer-=
+group !important; width: 100% !important; }   .email-banner-image { display=
+: block !important; margin-left: auto; margin-right: auto}         .email-b=
+anner-padding { padding-left:20px !important; padding-right:20px !important=
+; }           }    /* Responsive classes for mobile Ends here */           =
+   ul { margin:0 !important;padding-left:22px !important;text-align: left !=
+important;}          ol { margin-top:0 !important;margin-bottom:0 !importan=
+t;padding-left:22px !important;text-align: left !important;}    li{padding:=
+ 0 0 8px 12px !important;margin: 0 !important;}    li a {text-decoration: u=
+nderline; color: #0067B8;}          *[class].gmailfix {display:none; displa=
+y:none!important;}       </style>      <!--[if gte mso 16]>   <style type=
+=3D"text/css">   p { mso-hyphenate: none;}         .rtl-template,         .=
+rtl-template td{         direction: ltr !important;         text-align: rig=
+ht !important;         }         .rtl-template p {         direction: rtl !=
+important;         text-align: right !important;         }         .text-rt=
+l-center .list-item-right p {   text-align: right !important;   direction: =
+rtl !important;   }         .rtl-template .email-header p {         directi=
+on: rtl !important;         text-align: left !important;         }         =
+.email-table th table td {   font-weight:600 !important;   }   .text-rtl-ce=
+nter p,         .rtl-template .email-table .text-center p,         .rtl-tem=
+plate .email-table .text-center td {    direction: rtl !important;    text-=
+align: center !important;   }   .email-table .text-center p,   .email-table=
+ .text-center td {    text-align:center !important;   }         .email-tabl=
+e .text-left p,         .email-table .text-left td {          text-align:le=
+ft !important;         }         .footer-address-center td,   .footer-addre=
+ss-center td p,   .footer-address-center td p a{     text-align:center !imp=
+ortant;     direction:ltr !important;   }    .cta-button{   font-weight:nor=
+mal !important;   }   li           {          margin: 0 0 8px 0 !important;=
+          text-align: left !important;          }          div.list ul li {=
+          mso-special-format: bullet;          }          div.list {       =
+   margin: 0 0 0 -20px;          }          div li.list-bottom{            =
+ margin-bottom: 28px !important;          }          .rtl-template li      =
+     {          margin: 0 0 8px 0 !important;          text-align: right !i=
+mportant;          direction : rtl !important;          }         .rtl-temp=
+late div.list           {          Margin: 0 -20px 0 0;          }    .rtl-=
+template .footeraddressrtl p,          .rtl-template .footeraddressrtl  {  =
+        direction: ltr !important;           text-align:right !important;  =
+        }          .footeraddressrtl {          mso-padding-alt: 0 30px !im=
+portant;          }          .text-rtl-center .footeraddressrtl p,         =
+  .rtl-template .footeraddressrtl  {           direction: ltr !important;  =
+          text-align:center !important;           }          .text-rtl-cent=
+er .txt-align-right td {     text-align:right !important;    }    .txt-cent=
+er ul li,          .txt-center ol li          {             text-align:cent=
+er !important;          }     .rte-spacer-20 p     {    mso-margin-bottom-a=
+lt: 20px;    }    .rte-spacer-10 p     {          mso-margin-bottom-alt: 10=
+px;          }          .rte-footerspacer-10 p {          mso-margin-top-al=
+t: 10px;          }          .rtl-template th.tileimage {           directi=
+on: ltr !important;          }       .table-hr-icon td,          .table-zeb=
+ra-icon td,          .table-zebra td,          .table-zebra th,          .t=
+able-zebra-mobile td,          .table-zebra-mobile th,          .table-rule=
+r td,          .table-ruler th,          .table-ruler-mobile td,          .=
+table-ruler-mobile th          {    mso-padding-alt: 20px 0 20px 20px !impo=
+rtant;          }    .rtl-template .table-ruler th,    .rtl-template .table=
+-zebra th {    direction: rtl !important;    }    .rtl-template .rating-thu=
+mbs-down {    padding-left:1px;        }    table {    border-spacing: 0;  =
+   mso-margin-bottom-alt: 0;     mso-margin-top-alt: 0;     mso-table-lspac=
+e: 0pt;     mso-table-rspace: 0pt;   }   td ,th {   mso-table-lspace: 0pt !=
+important;   mso-table-rspace: 0pt !important;   }   .mso-line-ht-rule {   =
+  mso-line-height-rule: exactly;   }         .hero-text-center p{          =
+   text-align: center !important;         }         </style>  <![endif]--> =
+         </head>        <body dir=3D"ltr" style=3D"font-family:Segoe UI, He=
+lvetica, Arial, sans-serif; font-size:12px; color:#4d4d4d; background-color=
+:#ffffff; line-height:20px; -webkit-text-size-adjust: none;">        <div s=
+tyle=3D"display:none;font-size:1px;color:#ffffff;line-height:1px;max-height=
+:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;">Go to your OneD=
+rive</div>    <div style=3D"display:none;font-size:1px;color:#ffffff;line-h=
+eight:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:a=
+ll;">     =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C =
+&nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nb=
+sp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp;=
+ =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =
+=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=
+=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F=
+ =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =
+=E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=
+=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=
+=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C=
+ &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &n=
+bsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp=
+; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =
+=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=
+=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F=
+ =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =
+=E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=
+=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp;=CD=8F =E2=80=
+=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C=
+ &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &n=
+bsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp=
+; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =
+=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=
+=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F=
+ =E2=80=8C &nbsp;=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=
+=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=
+=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C=
+ &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &n=
+bsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp=
+; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =
+=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp;=CD=8F =E2=80=8C &nbsp; =CD=
+=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F=
+ =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =
+=E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=
+=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=
+=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C=
+ &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &n=
+bsp;=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp;=
+ =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =
+=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=
+=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F=
+ =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =
+=E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=
+=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=
+=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C=
+ &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &n=
+bsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp=
+; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =
+=CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=
+=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F=
+ =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =
+=E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=
+=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=8C &nbsp; =CD=8F =E2=80=
+=8C &nbsp;    </div>       <!--Gmail App Scaling Fix Don't Remove these &nb=
+sp; s its required for gmail apps -->       <div class=3D"gmailfix" style=
+=3D"white-space:nowrap; font:15px courier; line-height:0;">          &nbsp;=
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;     =
+      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;=
+ &nbsp;           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  =
+     </div>       <!--PARENT TABLE Starts Here -->                <table bo=
+rder=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"660" align=3D"cente=
+r" class=3D"wrapper" style=3D"width:660px; margin:0 auto;" role=3D"presenta=
+tion">              <tbody>         <tr>                <td>               =
+    <!--SECONDARY TABLE FOR OTHER COMPONENT Starts here -->       <!--[if g=
+te mso 16]>                   <table cellspacing=3D"0" cellpadding=3D"0" cl=
+ass=3D"" align=3D"" style=3D"width:660px; margin:0 auto; margin-top:2px;"> =
+      <![endif]-->       <!--[if !mso]><!-->       <table cellspacing=3D"0"=
+ cellpadding=3D"0" class=3D" wrapper" style=3D"width:660px; margin:0 auto; =
+margin-top:2px;" role=3D"presentation">       <!--<![endif]-->             =
+         <tbody>          <!-- Eyebrow component starts-->       <tr>      =
+    <td>                                 <table cellspacing=3D"0" cellpaddi=
+ng=3D"0" border=3D"0" width=3D"100%" style=3D"background-color: #f2f2f2;" r=
+ole=3D"presentation">             <tbody>                 <tr>             =
+        <td>                                                               =
+                <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" wid=
+th=3D"100%" style=3D"background-color: #f2f2f2;" role=3D"presentation">    =
+                             <tbody>                                     <t=
+r>                                         <td class=3D"mobile-padding-20" =
+align=3D"center" style=3D"color:#000000; font-family:Segoe UI, Helvetica, A=
+rial, sans-serif; font-size:10px; line-height:14px;letter-spacing: -0.02em;=
+padding:10px 30px 10px 30px;">                                             =
+<p style=3D"color:#000000; font-family:Segoe UI, Helvetica, Arial, sans-ser=
+if; font-size:10px; line-height:14px;margin:0;padding:0;letter-spacing: -0.=
+02em;">                                                                    =
+                                  <u><a aria-label=3D"Go to your Onedrive" =
+href=3D"https://t.notificationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42=
+,7703ee44&amp;e=3Db2NpZD0&amp;s=3DIc2UFj0AB6dAWDY3KsACpZyhHBH6guEcksNdYiUaF=
+6M" class=3D"ms-rte-link" target=3D"_blank" style=3D"color: rgb(0,0,0);">Go=
+ to your OneDrive</a></u> |                                                =
+                                                  <a href=3D"https://t.noti=
+ficationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703ee45&amp;e=3Db2Np=
+ZD0mcDE9QFpwdXFNOXRxeHo3WWNzUXB2ZlZ1a1hWWktTV21VdHpEanhaT0FFMWlaMl9hc0Joc2J=
+yaEUtSExrS0xuWjNRWGNpdHMzSll4bEdncDRQTnhERTdtMnZJM1hYTUhUWTFFSVFzNGRVLXNkUz=
+RCT1d1dXY&amp;s=3DlJkwi4RUApRvUg37_SMOZDQvq5mvgjiK-rryuNZXw4U" style=3D"whi=
+te-space: nowrap;font-weight:400;color:#000000;">                          =
+                           View in browser                                 =
+                </a>                                             </p>      =
+                                   </td>                                   =
+  </tr>                                 </tbody>                           =
+  </table>                                              </td>              =
+   </tr>             </tbody>         </table>              </td>       </t=
+r>       <!-- Eyebrow component ends-->                             <!-- HE=
+ADER SECTION STARTS HERE-->                       <tr>                     =
+   <td>                                         <table width=3D"100%" cells=
+pacing=3D"0" cellpadding=3D"0" border=3D"0" bgcolor=3D"#f2f2f2" role=3D"pre=
+sentation">    <tbody>             <tr>        <td height=3D"20px">&nbsp;</=
+td>    </tr>      <tr>      <td class=3D"gutter">               <a target=
+=3D"_blank" href=3D"https://t.notificationmail.microsoft.com/r/?id=3Dh87b9b=
+a6d,7703ee42,7703ef90&amp;e=3Db2NpZD0&amp;s=3Dnzg2U4MNGGITDJza4lQ-O1Sc0eLv1=
+qxK_-JNZuID9YE"><img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image/m=
+icrosoftcorp/ADO-152959-OneDrive%20107X17?scl=3D1&amp;fmt=3Dpng-alpha" alt=
+=3D"OneDrive Logo" style=3D"display:block; height:20px;" height=3D"20">    =
+     </a>                    </td>     </tr>         <tr>        <td height=
+=3D"20px">&nbsp;</td>    </tr>         </tbody>   </table>                 =
+                             </td>                       </tr>             =
+          <!-- HEADER SECTION ENDS HERE-->       <tr>                      =
+  <td>                                                          <table clas=
+s=3D"tile-small-box" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=
+=3D"100%" style=3D"background-color: #FFFFFF;" role=3D"presentation">      =
+    <tbody>                                                                =
+                   <tr>             <td height=3D"20">&nbsp;</td>         <=
+/tr>                                                                       =
+   <!-- Multifield Starts -->                                              =
+  <tr>                      <td class=3D"gutter">                         <=
+table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" wi=
+dth=3D"100%" role=3D"presentation">                            <tr>        =
+                       <td>                                  <table class=
+=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%=
+" role=3D"presentation">                                     <tbody>       =
+                                 <tr>                                      =
+                                                                           =
+  <th width=3D"100%" class=3D"btn-block" align=3D"center" bgcolor=3D"#FFFFF=
+F" style=3D" #ffffff; word-break:break-word; word-wrap:break-word; overflow=
+-wrap:break-word;">                                                        =
+                                                                           =
+                     <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0=
+" width=3D"100%" style=3D"background-color: #BBDEF1" role=3D"presentation">=
+   <tbody>      <tr>    <th dir=3D"ltr" class=3D"tileimage btn-block" align=
+=3D"center" style=3D"word-break:break-word; word-wrap:break-word; overflow-=
+wrap:break-word;">     <table dir=3D"ltr" border=3D"0" cellspacing=3D"0" ce=
+llpadding=3D"0" width=3D"100%" role=3D"presentation">      <tbody>      <tr=
+ style=3D"display:table; width:100%;">               <th width=3D"290" clas=
+s=3D"btn-block" align=3D"center" style=3D"word-break:break-word; word-wrap:=
+break-word;">         <table border=3D"0" cellspacing=3D"0" cellpadding=3D"=
+0" width=3D"100%" role=3D"presentation">          <tbody>          <tr>    =
+       <td>                         <a target=3D"_blank" href=3D"https://t.=
+notificationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703ef91&amp;e=3D=
+b2NpZD0&amp;s=3D06AOjQhqf3Mjd398dykblOQblljV0TAY_n9FVtcMFow"><img src=3D"ht=
+tps://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/ADO152959_M365_C2=
+_OneDrive_Hero_Androi_580x580?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Phone and=
+ tablet with OneDrive files" style=3D"vertical-align: bottom;" border=3D"0"=
+ class=3D"hero-mobile" height=3D"290" width=3D"290">              </a>     =
+                              </td>          </tr>          </tbody>       =
+  </table>        </th>                 <th class=3D"mobileHidden" style=3D=
+"padding-right: 20px;"></th>                <th class=3D"desktopHidden" hei=
+ght=3D"20">&nbsp;</th>              <th width=3D"290" class=3D"tfoot" align=
+=3D"center" style=3D"; word-break:break-word; word-wrap:break-word;">      =
+  <table dir=3D"ltr" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=
+=3D"100%" role=3D"presentation">         <tbody>                           =
+                                     <tr>                                  =
+<td height=3D"10" style=3D"font-size:0px;line-height:0px" class=3D"spacer-l=
+n-ht-0">&nbsp;</td>             </tr>                              <tr>    =
+       <td>                                                                =
+                                                                       <p s=
+tyle=3D"color:#000000;                         font-family:Segoe UI, Helvet=
+ica, Arial, sans-serif;font-style: normal;font-weight:600; font-size:24px;l=
+ine-height:30px;letter-spacing:-0.02em; margin:0; padding:0;" role=3D"headi=
+ng" aria-level=3D"7"> Hi nidhi,<br> Welcome to your<br> OneDrive </p>      =
+                                                               </td>       =
+   </tr>                                               <tr>             <td=
+ height=3D"20">&nbsp;</td>         </tr>                <tr>           <td>=
+                                                                           =
+                                                                           =
+     <p style=3D"color:#000000;                         font-family:Segoe U=
+I, Helvetica, Arial, sans-serif;font-style: normal; font-weight:600;font-si=
+ze: 18px;line-height:24px;letter-spacing: -0.02em; margin:0; padding:0;" ro=
+le=3D"heading" aria-level=3D"7"> Keep what=E2=80=99s important<br> protecte=
+d and accessible<br> across all your devices. </p>                         =
+                        </td>          </tr>                               =
+     <!-- FIRST ADDITIONAL ELEMENT STARTS -->                              =
+                                                                    <!-- FI=
+RST   ADDITIONAL ELEMENT ENDS -->         <!-- SECOND ADDITIONAL ELEMENT ST=
+ARTS -->                                                                   =
+          <!-- SECOND ADDITIONAL ELEMENT ENDS -->         <!-- THIRD ADDITI=
+ONAL ELEMENT STARTS -->                  <!-- THIRD ADDITIONAL ELEMENT ENDS=
+ -->                            <tr>             <td height=3D"20">&nbsp;</=
+td>         </tr>               </tbody>        </table>       </th>       =
+      </tr>      </tbody>     </table>    </th>   </tr>   </tbody>  </table=
+>                                                                          =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                 </th>                     =
+                                                                           =
+                                 </tr>                                     =
+</tbody>                                  </table>                         =
+      </td>                            </tr>                         </tabl=
+e>                      </td>                   </tr>                      =
+                                       <!-- Multifield Ends -->            =
+           </tbody>       </table>                              <table clas=
+s=3D"tile-small-box" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=
+=3D"100%" style=3D"background-color: #FFFFFF;" role=3D"presentation">      =
+    <tbody>                                                                =
+                   <tr>             <td height=3D"20">&nbsp;</td>         <=
+/tr>                                                                       =
+   <!-- Multifield Starts -->                                              =
+  <tr>                      <td class=3D"gutter">                         <=
+table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" wi=
+dth=3D"100%" role=3D"presentation">                            <tr>        =
+                       <td>                                  <table class=
+=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%=
+" role=3D"presentation">                                     <tbody>       =
+                                 <tr>                                      =
+                                                                           =
+  <th width=3D"100%" class=3D"btn-block" align=3D"center" bgcolor=3D"#FFFFF=
+F" style=3D" #000000; word-break:break-word; word-wrap:break-word; overflow=
+-wrap:break-word;">                                                        =
+                                                                    <table =
+border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"ba=
+ckground-color: #FFFFFF" role=3D"presentation">   <tbody>                  =
+   <!-- FIRST ADDITIONAL ELEMENT STARTS -->                                =
+                      <tr>                                  <td height=3D"1=
+0" style=3D"font-size:0px;line-height:0px" class=3D"spacer-ln-ht-0">&nbsp;<=
+/td>             </tr>                          <tr>                      <=
+td align=3D"center" style=3D"color:292827;font-family:Segoe UI, Helvetica, =
+Arial, sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-=
+height: 24px;letter-spacing: -0.02em;margin:0; padding:0;">         <!--[if=
+ mso]>         <div class=3D"list">         <![endif]-->         <p>OneDriv=
+e keeps your picture-perfect moments protected, and helps you rediscover me=
+mories from a lifetime of photos and videos.</p><p><br _rte_temp_br=3D"brEO=
+B"></p><p>Plus, it=E2=80=99s the simplest way to back up your Windows PC, a=
+nd if something happens to your device, have peace of mind knowing your stu=
+ff is secure in the cloud.</p><p><br _rte_temp_br=3D"brEOB"></p><p>Secure a=
+nd accessible, OneDrive=E2=80=99s got it.</p>         <!--[if mso]>        =
+ </div>         <![endif]-->        </td>             </tr>                =
+               <!-- FIRST   ADDITIONAL ELEMENT ENDS -->   <!-- SECOND ADDIT=
+IONAL ELEMENT STARTS -->                                   <tr>            =
+ <td height=3D"20">&nbsp;</td>         </tr>           <tr>      <td align=
+=3D"center">       <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+align=3D"center" role=3D"presentation">        <tbody>        <tr>         =
+<td>                                          <table border=3D"0" cellpaddi=
+ng=3D"0" cellspacing=3D"0" width=3D"100%" style=3D"background-color: ;" rol=
+e=3D"presentation">       <tbody>          <tr>             <td class=3D"bt=
+n-rtl">                <table border=3D"0" cellspacing=3D"0" cellpadding=3D=
+"0" align=3D"center" role=3D"presentation">        <tr>                    =
+ <td>                         <table border=3D"0" cellspacing=3D"0" cellpad=
+ding=3D"0" align=3D"center" role=3D"presentation">                   <tbody=
+>                      <tr>                                                =
+                                                                           =
+                                                                           =
+                <!--[if mso]>                                  <td class=3D=
+"btn-block" >                                  <![endif]-->                =
+                                                     <!-- hide from outlook=
+ -->                                  <!--[if !mso]><\!-->                 =
+                 <td class=3D"btn-block">                                  =
+   <!-- <![endif]-->                                     <table class=3D"bt=
+n-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"center" ro=
+le=3D"presentation">                                        <tbody>        =
+                                   <tr>                                    =
+          <td>                                                 <table borde=
+r=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" dir=3D"ltr" role=
+=3D"presentation">                                                         =
+                                      <th class=3D"block-max-width-center" =
+align=3D"center" style=3D"border-radius:2px; font-family:Segoe UI, Helvetic=
+a, Arial, sans-serif; font-style: normal; font-weight:600 !important; font-=
+size:18px; line-height:24px; mso-line-height-rule: exactly; padding:8px 20p=
+x; min-width:100px; max-width:280px; border: 1px solid #0078d4;" bgcolor=3D=
+"#0078d4">                 <a href=3D"https://t.notificationmail.microsoft.=
+com/r/?id=3Dh87b9ba6d,7703ee42,7703ef92&amp;e=3Db2NpZD0&amp;s=3Dk24a7lUA6Zp=
+ZWpEGOARVMqjKSDW0bu4l_0P3yZmd-WE" title=3D"Go to your OneDrive " style=3D"t=
+ext-decoration:none; ; color : #ffffff;" aria-label=3D"Go to your OneDrive"=
+ target=3D"_blank"><strong class=3D"cta-button" style=3D"color : #ffffff; f=
+ont-weight:600;">Go to your OneDrive </strong>                 </a>        =
+     </th>                                                                 =
+   </table>                                              </td>             =
+                              </tr>                                        =
+</tbody>                                     </table>                      =
+            </td>                                                          =
+                                                                           =
+    </tr>                   </tbody>      </table>                 </td>   =
+             </tr>                </table>             </td>          </tr>=
+       </tbody>    </table>          </td>        </tr>                </tb=
+ody>       </table>      </td>     </tr>                      <!-- SECOND A=
+DDITIONAL ELEMENT ENDS -->   <!-- THIRD ADDITIONAL ELEMENT STARTS -->      =
+<!-- THIRD ADDITIONAL ELEMENT ENDS -->                      <tr>           =
+  <td height=3D"20">&nbsp;</td>         </tr>         </tbody>  </table>   =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                         </=
+th>                                                                        =
+                                                         </tr>             =
+                        </tbody>                                  </table> =
+                              </td>                            </tr>       =
+                  </table>                      </td>                   </t=
+r>                                                             <!-- Multifi=
+eld Ends -->                                                               =
+    <tr>             <td height=3D"20">&nbsp;</td>         </tr>           =
+                                                  </tbody>       </table>  =
+                            <table class=3D"tile-small-box" border=3D"0" ce=
+llspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"background-color:=
+ #ffffff;" role=3D"presentation">          <tbody>                         =
+                           <!-- Multifield Starts -->                      =
+                          <tr>                      <td class=3D"gutter">  =
+                       <table class=3D"btn-rtl" border=3D"0" cellspacing=3D=
+"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation">                =
+            <tr>                               <td>                        =
+          <table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpaddi=
+ng=3D"0" width=3D"100%" role=3D"presentation">                             =
+        <tbody>                                        <tr>                =
+                                                                           =
+                        <th width=3D"100%" class=3D"btn-block" align=3D"cen=
+ter" bgcolor=3D"#ffffff" style=3D" #C8C6C4; word-break:break-word; word-wra=
+p:break-word; overflow-wrap:break-word;">                                  =
+                                                                           =
+                                    <table border=3D"0" cellspacing=3D"0" c=
+ellpadding=3D"0" width=3D"100%" style=3D"background-color: #ffffff" role=3D=
+"presentation">   <tbody>      <tr>    <th dir=3D"ltr" class=3D"tileimage b=
+tn-block" align=3D"center" style=3D"word-break:break-word; word-wrap:break-=
+word; overflow-wrap:break-word;">     <table dir=3D"ltr" border=3D"0" cells=
+pacing=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation">      <=
+tbody>      <tr style=3D"display:table; width:100%;">       <th width=3D"29=
+0" class=3D"tfoot" align=3D"center" style=3D"; word-break:break-word; word-=
+wrap:break-word;">        <table dir=3D"ltr" border=3D"0" cellspacing=3D"0"=
+ cellpadding=3D"0" width=3D"100%" role=3D"presentation">         <tbody>   =
+      <tr class=3D"desktopHidden">          <td height=3D"20">&nbsp;</td>  =
+       </tr>                                                        <tr>   =
+          <td height=3D"20">&nbsp;</td>         </tr>                <tr>  =
+         <td>                                                              =
+                                                                           =
+        <p style=3D"color:292827;                         font-family:Segoe=
+ UI, Helvetica, Arial, sans-serif; font-style: normal;font-weight:600;font-=
+size: 21px;line-height:28px;letter-spacing: -0.02em;margin:0; padding:0;" r=
+ole=3D"heading" aria-level=3D"4"> Back up what=E2=80=99s important </p>    =
+                                                       </td>          </tr>=
+                                    <!-- FIRST ADDITIONAL ELEMENT STARTS --=
+>                                                                          =
+    <tr>                                  <td height=3D"10" style=3D"font-s=
+ize:0px;line-height:0px" class=3D"spacer-ln-ht-0">&nbsp;</td>             <=
+/tr>                                <tr>                                   =
+     <td style=3D"color:292827;font-family:Segoe UI, Helvetica, Arial, sans=
+-serif;font-style: normal;font-weight: 400;font-size: 16px;line-height: 24p=
+x;letter-spacing: -0.02em;margin:0; padding:0;">               <!--[if mso]=
+>               <div class=3D"list">               <![endif]-->            =
+   <p>Automatically back up your photos, videos, and files from your PC or =
+Mac, and mobile devices.</p>               <!--[if mso]>               </di=
+v>               <![endif]-->              </td>                         </=
+tr>                                                                        =
+       <!-- FIRST   ADDITIONAL ELEMENT ENDS -->         <!-- SECOND ADDITIO=
+NAL ELEMENT STARTS -->                                                     =
+      <tr>             <td height=3D"20">&nbsp;</td>         </tr>         =
+        <tr>            <td>             <table border=3D"0" cellspacing=3D=
+"0" cellpadding=3D"0" role=3D"presentation">              <tbody>          =
+    <tr>               <td>                                                =
+<table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"100%" styl=
+e=3D"background-color: ;" role=3D"presentation">       <tbody>          <tr=
+>             <td class=3D"btn-rtl">                <table border=3D"0" cel=
+lspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation">        <=
+tr>                     <td>                         <table border=3D"0" ce=
+llspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation">        =
+           <tbody>                      <tr>                               =
+                                                                           =
+                                                                           =
+                                                                <!--[if mso=
+]>                                  <td class=3D"btn-block">               =
+                   <![endif]-->                                            =
+                        <!--[if !mso]><\!-->                               =
+   <td class=3D"btn-block">                                     <!-- <![end=
+if]-->                                     <table class=3D"btn-rtl" border=
+=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation"=
+>                                        <tbody>                           =
+                <tr>                                              <td>     =
+                                            <table border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" width=3D"100%" dir=3D"ltr" role=3D"presentation"> =
+                                                                           =
+            <th class=3D"block-max-width" align=3D"left" style=3D"font-fami=
+ly:Segoe UI, Helvetica, Arial, sans-serif; font-style: normal; font-weight:=
+600 !important; font-size:16px; line-height:24px;  max-width:280px; padding=
+:8px 0; letter-spacing: -0.02em;">                 <a href=3D"https://t.not=
+ificationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703ef93&amp;e=3Db2N=
+pZD0&amp;s=3DaLCTPw5ZrjyvHqf70wMAI0bqRXqHBS68eJjZHWcUlC8" title=3D"Back up =
+your PC" style=3D"text-decoration:none;; color:#0078d4;" aria-label=3D"Back=
+ up your PC" target=3D"_blank"><strong class=3D"cta-button" style=3D"color:=
+#0078d4; text-decoration:underline;font-weight:600;">Back up your PC</stron=
+g><strong style=3D"color:#0078d4; text-decoration:none; font-weight:600;">&=
+nbsp;=E2=9D=AF</strong>                 </a>             </th>             =
+                                                        </table>           =
+                                   </td>                                   =
+        </tr>                                        </tbody>              =
+                       </table>                                  </td>     =
+                                                                           =
+                          </tr>                   </tbody>      </table>   =
+              </td>                </tr>                </table>           =
+  </td>          </tr>       </tbody>    </table>                </td>     =
+         </tr>                            </tbody>             </table>    =
+        </td>           </tr>                                              =
+            <!-- SECOND ADDITIONAL ELEMENT ENDS -->         <!-- THIRD ADDI=
+TIONAL ELEMENT STARTS -->                                                  =
+         <tr>             <td height=3D"20">&nbsp;</td>         </tr>      =
+           <tr>            <td>             <table border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" role=3D"presentation">              <tbody>       =
+       <tr>               <td>                                             =
+   <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"100%" s=
+tyle=3D"background-color: ;" role=3D"presentation">       <tbody>          =
+<tr>             <td class=3D"btn-rtl">                <table border=3D"0" =
+cellspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation">      =
+  <tr>                     <td>                         <table border=3D"0"=
+ cellspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation">     =
+              <tbody>                      <tr>                            =
+                                                                           =
+                                                                           =
+                                    <!--[if mso]>                          =
+           <td class=3D"btn-block" width=3D"100%">                         =
+               <![endif]-->                                                =
+                                                      <!--[if !mso]><\!--> =
+                                 <td class=3D"btn-block">                  =
+                   <!-- <![endif]-->                                     <t=
+able class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" ali=
+gn=3D"" role=3D"presentation">                                        <tbod=
+y>                                           <tr>                          =
+                    <td>                                                 <t=
+able border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" dir=3D=
+"ltr" role=3D"presentation">                                               =
+                                         <th class=3D"block-max-width" alig=
+n=3D"left" style=3D"font-family:Segoe UI, Helvetica, Arial, sans-serif; fon=
+t-style: normal; font-weight:600 !important; font-size:16px; line-height:24=
+px;  max-width:280px; padding:8px 0; letter-spacing: -0.02em;">            =
+     <a href=3D"https://t.notificationmail.microsoft.com/r/?id=3Dh87b9ba6d,=
+7703ee42,7703ef94&amp;e=3Db2NpZD0&amp;s=3DB9VwAovKNCypHGSWTScvIEEvmf5SIIzA6=
+Nr85_9etV8" title=3D"Back up with the OneDrive mobile app" style=3D"text-de=
+coration:none;; color:#0078d4;" aria-label=3D"Back up with the OneDrive mob=
+ile app" target=3D"_blank"><strong class=3D"cta-button" style=3D"color:#007=
+8d4; text-decoration:underline;font-weight:600;">Back up with the OneDrive =
+mobile app</strong><strong style=3D"color:#0078d4; text-decoration:none; fo=
+nt-weight:600;">&nbsp;=E2=9D=AF</strong>                 </a>             <=
+/th>                                                                     </=
+table>                                              </td>                  =
+                         </tr>                                        </tbo=
+dy>                                     </table>                           =
+       </td>                                                               =
+                                           </tr>                   </tbody>=
+      </table>                 </td>                </tr>                </=
+table>             </td>          </tr>       </tbody>    </table>         =
+       </td>              </tr>                            </tbody>        =
+     </table>            </td>           </tr>                             =
+                             <!-- THIRD ADDITIONAL ELEMENT ENDS -->        =
+                    <tr>             <td height=3D"20">&nbsp;</td>         =
+</tr>               </tbody>        </table>       </th>               <th =
+class=3D"mobileHidden" style=3D"padding-right: 20px;"></th>        <th widt=
+h=3D"290" class=3D"btn-block thead" align=3D"center" style=3D"word-break:br=
+eak-word; word-wrap:break-word;">         <table border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation">          <tb=
+ody>          <tr>           <td>                         <a target=3D"_bla=
+nk" href=3D"https://t.notificationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703=
+ee42,7703ef95&amp;e=3Db2NpZD0&amp;s=3Dh_jd--MDAtxz1Qh3S3zcSLqFqwxKJDS6lJ2W0=
+oPOXv8"><img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image/microsoft=
+corp/Image1_New@4x?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"PC monitor with pict=
+ures and files on it" style=3D"vertical-align: bottom;" border=3D"0" class=
+=3D"hero-mobile" height=3D"290" width=3D"290">              </a>           =
+                        </td>          </tr>          </tbody>         </ta=
+ble>        </th>             </tr>      </tbody>     </table>    </th>   <=
+/tr>   </tbody>  </table>                                                  =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+     </th>                                                                 =
+                                                                </tr>      =
+                               </tbody>                                  </=
+table>                               </td>                            </tr>=
+                         </table>                      </td>               =
+    </tr>                                                             <!-- =
+Multifield Ends -->                                                        =
+           <tr>             <td height=3D"20">&nbsp;</td>         </tr>    =
+                                                         </tbody>       </t=
+able>                              <table class=3D"tile-small-box" border=
+=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"backgrou=
+nd-color: #ffffff;" role=3D"presentation">          <tbody>                =
+                                    <!-- Multifield Starts -->             =
+                                   <tr>                      <td class=3D"g=
+utter">                         <table class=3D"btn-rtl" border=3D"0" cells=
+pacing=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation">       =
+                     <tr>                               <td>               =
+                   <table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" =
+cellpadding=3D"0" width=3D"100%" role=3D"presentation">                    =
+                 <tbody>                                        <tr>       =
+                                                                           =
+                                 <th width=3D"100%" class=3D"btn-block" ali=
+gn=3D"center" bgcolor=3D"#ffffff" style=3D" #C8C6C4; word-break:break-word;=
+ word-wrap:break-word; overflow-wrap:break-word;">                         =
+                                                                           =
+                                             <table border=3D"0" cellspacin=
+g=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"background-color: #ffffff=
+" role=3D"presentation">   <tbody>      <tr>    <th dir=3D"ltr" class=3D"ti=
+leimage btn-block" align=3D"center" style=3D"word-break:break-word; word-wr=
+ap:break-word; overflow-wrap:break-word;">     <table dir=3D"ltr" border=3D=
+"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation=
+">      <tbody>      <tr style=3D"display:table; width:100%;">       <th wi=
+dth=3D"290" class=3D"tfoot" align=3D"center" style=3D"; word-break:break-wo=
+rd; word-wrap:break-word;">        <table dir=3D"ltr" border=3D"0" cellspac=
+ing=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation">         <=
+tbody>         <tr class=3D"desktopHidden">          <td height=3D"20">&nbs=
+p;</td>         </tr>                                                      =
+  <tr>             <td height=3D"20">&nbsp;</td>         </tr>             =
+   <tr>           <td>                                                     =
+                                                                           =
+                 <p style=3D"color:292827;                         font-fam=
+ily:Segoe UI, Helvetica, Arial, sans-serif; font-style: normal;font-weight:=
+600;font-size: 21px;line-height:28px;letter-spacing: -0.02em;margin:0; padd=
+ing:0;" role=3D"heading" aria-level=3D"4"> Access your files from any devic=
+e </p>                                                           </td>     =
+     </tr>                                    <!-- FIRST ADDITIONAL ELEMENT=
+ STARTS -->                                                                =
+              <tr>                                  <td height=3D"10" style=
+=3D"font-size:0px;line-height:0px" class=3D"spacer-ln-ht-0">&nbsp;</td>    =
+         </tr>                                <tr>                         =
+               <td style=3D"color:292827;font-family:Segoe UI, Helvetica, A=
+rial, sans-serif;font-style: normal;font-weight: 400;font-size: 16px;line-h=
+eight: 24px;letter-spacing: -0.02em;margin:0; padding:0;">               <!=
+--[if mso]>               <div class=3D"list">               <![endif]-->  =
+             <p>Your files are available across all your devices, wherever =
+you go, and you can even access them offline.</p>               <!--[if mso=
+]>               </div>               <![endif]-->              </td>      =
+                   </tr>                                                   =
+                            <!-- FIRST   ADDITIONAL ELEMENT ENDS -->       =
+  <!-- SECOND ADDITIONAL ELEMENT STARTS -->                                =
+                           <tr>             <td height=3D"20">&nbsp;</td>  =
+       </tr>                 <tr>            <td>             <table border=
+=3D"0" cellspacing=3D"0" cellpadding=3D"0" role=3D"presentation">          =
+    <tbody>              <tr>               <td>                           =
+                     <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0=
+" width=3D"100%" style=3D"background-color: ;" role=3D"presentation">      =
+ <tbody>          <tr>             <td class=3D"btn-rtl">                <t=
+able border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"pr=
+esentation">        <tr>                     <td>                         <=
+table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"p=
+resentation">                   <tbody>                      <tr>          =
+                                                                           =
+                                                                           =
+                                                                           =
+          <!--[if mso]>                                  <td class=3D"btn-b=
+lock">                                  <![endif]-->                       =
+                                             <!--[if !mso]><\!-->          =
+                        <td class=3D"btn-block">                           =
+          <!-- <![endif]-->                                     <table clas=
+s=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"" r=
+ole=3D"presentation">                                        <tbody>       =
+                                    <tr>                                   =
+           <td>                                                 <table bord=
+er=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" dir=3D"ltr" rol=
+e=3D"presentation">                                                        =
+                                <th class=3D"block-max-width" align=3D"left=
+" style=3D"font-family:Segoe UI, Helvetica, Arial, sans-serif; font-style: =
+normal; font-weight:600 !important; font-size:16px; line-height:24px;  max-=
+width:280px; padding:8px 0; letter-spacing: -0.02em;">                 <a h=
+ref=3D"https://t.notificationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,=
+7703ef96&amp;e=3Db2NpZD0&amp;s=3DQWS-uqknX1wDb9kVIQsxLhXd7ZYLnVJeeP5nSV7piP=
+E" title=3D"Go to your OneDrive" style=3D"text-decoration:none;; color:#007=
+8d4;" aria-label=3D"Go to your OneDrive" target=3D"_blank"><strong class=3D=
+"cta-button" style=3D"color:#0078d4; text-decoration:underline;font-weight:=
+600;">Go to your OneDrive</strong><strong style=3D"color:#0078d4; text-deco=
+ration:none; font-weight:600;">&nbsp;=E2=9D=AF</strong>                 </a=
+>             </th>                                                        =
+             </table>                                              </td>   =
+                                        </tr>                              =
+          </tbody>                                     </table>            =
+                      </td>                                                =
+                                                          </tr>            =
+       </tbody>      </table>                 </td>                </tr>   =
+             </table>             </td>          </tr>       </tbody>    </=
+table>                </td>              </tr>                            <=
+/tbody>             </table>            </td>           </tr>              =
+                                            <!-- SECOND ADDITIONAL ELEMENT =
+ENDS -->         <!-- THIRD ADDITIONAL ELEMENT STARTS -->                  =
+<!-- THIRD ADDITIONAL ELEMENT ENDS -->                            <tr>     =
+        <td height=3D"20">&nbsp;</td>         </tr>               </tbody> =
+       </table>       </th>               <th class=3D"mobileHidden" style=
+=3D"padding-right: 20px;"></th>        <th width=3D"290" class=3D"btn-block=
+ thead" align=3D"center" style=3D"word-break:break-word; word-wrap:break-wo=
+rd;">         <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=
+=3D"100%" role=3D"presentation">          <tbody>          <tr>           <=
+td>                         <a target=3D"_blank" href=3D"https://t.notifica=
+tionmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703ef97&amp;e=3Db2NpZD0&=
+amp;s=3DoK8ScNJTgpVZWVqw1rNHU2Yh4Dnfs-PSMly4BdtVAqA"><img src=3D"https://cd=
+n-dynmedia-1.microsoft.com/is/image/microsoftcorp/Image2_New@4x?scl=3D1&amp=
+;fmt=3Dpng-alpha" alt=3D"Phone with OneDrive files and photographs" style=
+=3D"vertical-align: bottom;" border=3D"0" class=3D"hero-mobile" height=3D"2=
+90" width=3D"290">              </a>                                   </td=
+>          </tr>          </tbody>         </table>        </th>           =
+  </tr>      </tbody>     </table>    </th>   </tr>   </tbody>  </table>   =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                    </th>                  =
+                                                                           =
+                                    </tr>                                  =
+   </tbody>                                  </table>                      =
+         </td>                            </tr>                         </t=
+able>                      </td>                   </tr>                   =
+                                          <!-- Multifield Ends -->         =
+                                                          <tr>             =
+<td height=3D"20">&nbsp;</td>         </tr>                                =
+                             </tbody>       </table>                       =
+       <table class=3D"tile-small-box" border=3D"0" cellspacing=3D"0" cellp=
+adding=3D"0" width=3D"100%" style=3D"background-color: #ffffff;" role=3D"pr=
+esentation">          <tbody>                                              =
+      <!-- Multifield Starts -->                                           =
+     <tr>                      <td class=3D"gutter">                       =
+  <table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0"=
+ width=3D"100%" role=3D"presentation">                            <tr>     =
+                          <td>                                  <table clas=
+s=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100=
+%" role=3D"presentation">                                     <tbody>      =
+                                  <tr>                                     =
+                                                                           =
+   <th width=3D"100%" class=3D"btn-block" align=3D"center" bgcolor=3D"#ffff=
+ff" style=3D" #C8C6C4; word-break:break-word; word-wrap:break-word; overflo=
+w-wrap:break-word;">                                                       =
+                                                                           =
+               <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" widt=
+h=3D"100%" style=3D"background-color: #ffffff" role=3D"presentation">   <tb=
+ody>      <tr>    <th dir=3D"ltr" class=3D"tileimage btn-block" align=3D"ce=
+nter" style=3D"word-break:break-word; word-wrap:break-word; overflow-wrap:b=
+reak-word;">     <table dir=3D"ltr" border=3D"0" cellspacing=3D"0" cellpadd=
+ing=3D"0" width=3D"100%" role=3D"presentation">      <tbody>      <tr style=
+=3D"display:table; width:100%;">       <th width=3D"290" class=3D"tfoot" al=
+ign=3D"center" style=3D"; word-break:break-word; word-wrap:break-word;">   =
+     <table dir=3D"ltr" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" wi=
+dth=3D"100%" role=3D"presentation">         <tbody>         <tr class=3D"de=
+sktopHidden">          <td height=3D"20">&nbsp;</td>         </tr>         =
+                                               <tr>             <td height=
+=3D"20">&nbsp;</td>         </tr>                <tr>           <td>       =
+                                                                           =
+                                                               <p style=3D"=
+color:text-picker;                         font-family:Segoe UI, Helvetica,=
+ Arial, sans-serif; font-style: normal;font-weight:600;font-size: 21px;line=
+-height:28px;letter-spacing: -0.02em;margin:0; padding:0;" role=3D"heading"=
+ aria-level=3D"4"> Share and relive moments </p>                           =
+                                </td>          </tr>                       =
+             <!-- FIRST ADDITIONAL ELEMENT STARTS -->                      =
+                                                        <tr>               =
+                   <td height=3D"10" style=3D"font-size:0px;line-height:0px=
+" class=3D"spacer-ln-ht-0">&nbsp;</td>             </tr>                   =
+             <tr>                                        <td style=3D"color=
+:text-picker;font-family:Segoe UI, Helvetica, Arial, sans-serif;font-style:=
+ normal;font-weight: 400;font-size: 16px;line-height: 24px;letter-spacing: =
+-0.02em;margin:0; padding:0;">               <!--[if mso]>               <d=
+iv class=3D"list">               <![endif]-->               <p>Easily redis=
+cover a lifetime of precious memories and securely share them with the peop=
+le who matter most.</p>               <!--[if mso]>               </div>   =
+            <![endif]-->              </td>                         </tr>  =
+                                                                           =
+  <!-- FIRST   ADDITIONAL ELEMENT ENDS -->         <!-- SECOND ADDITIONAL E=
+LEMENT STARTS -->                                                          =
+ <tr>             <td height=3D"20">&nbsp;</td>         </tr>              =
+   <tr>            <td>             <table border=3D"0" cellspacing=3D"0" c=
+ellpadding=3D"0" role=3D"presentation">              <tbody>              <=
+tr>               <td>                                                <tabl=
+e border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"100%" style=3D"=
+background-color: ;" role=3D"presentation">       <tbody>          <tr>    =
+         <td class=3D"btn-rtl">                <table border=3D"0" cellspac=
+ing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation">        <tr>  =
+                   <td>                         <table border=3D"0" cellspa=
+cing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation">             =
+      <tbody>                      <tr>                                    =
+                                                                           =
+                                                                           =
+                                                           <!--[if mso]>   =
+                               <td class=3D"btn-block">                    =
+              <![endif]-->                                                 =
+                   <!--[if !mso]><\!-->                                  <t=
+d class=3D"btn-block">                                     <!-- <![endif]--=
+>                                     <table class=3D"btn-rtl" border=3D"0"=
+ cellspacing=3D"0" cellpadding=3D"0" align=3D"" role=3D"presentation">     =
+                                   <tbody>                                 =
+          <tr>                                              <td>           =
+                                      <table border=3D"0" cellspacing=3D"0"=
+ cellpadding=3D"0" width=3D"100%" dir=3D"ltr" role=3D"presentation">       =
+                                                                           =
+      <th class=3D"block-max-width" align=3D"left" style=3D"font-family:Seg=
+oe UI, Helvetica, Arial, sans-serif; font-style: normal; font-weight:600 !i=
+mportant; font-size:16px; line-height:24px;  max-width:280px; padding:8px 0=
+; letter-spacing: -0.02em;">                 <a href=3D"https://t.notificat=
+ionmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703ef98&amp;e=3Db2NpZD0&a=
+mp;s=3DDxf5yZSUW5sxzW9qROt2vAaRSNQmV0rnpOzkYwjHkAg" title=3D"Download the m=
+obile app" style=3D"text-decoration:none;; color:#0078d4;" aria-label=3D"Do=
+wnload the mobile app" target=3D"_blank"><strong class=3D"cta-button" style=
+=3D"color:#0078d4; text-decoration:underline;font-weight:600;">Download the=
+ mobile app</strong><strong style=3D"color:#0078d4; text-decoration:none; f=
+ont-weight:600;">&nbsp;=E2=9D=AF</strong>                 </a>             =
+</th>                                                                     <=
+/table>                                              </td>                 =
+                          </tr>                                        </tb=
+ody>                                     </table>                          =
+        </td>                                                              =
+                                            </tr>                   </tbody=
+>      </table>                 </td>                </tr>                <=
+/table>             </td>          </tr>       </tbody>    </table>        =
+        </td>              </tr>                            </tbody>       =
+      </table>            </td>           </tr>                            =
+                              <!-- SECOND ADDITIONAL ELEMENT ENDS -->      =
+   <!-- THIRD ADDITIONAL ELEMENT STARTS -->                  <!-- THIRD ADD=
+ITIONAL ELEMENT ENDS -->                            <tr>             <td he=
+ight=3D"20">&nbsp;</td>         </tr>               </tbody>        </table=
+>       </th>               <th class=3D"mobileHidden" style=3D"padding-rig=
+ht: 20px;"></th>        <th width=3D"290" class=3D"btn-block thead" align=
+=3D"center" style=3D"word-break:break-word; word-wrap:break-word;">        =
+ <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" rol=
+e=3D"presentation">          <tbody>          <tr>           <td>          =
+               <a target=3D"_blank" href=3D"https://t.notificationmail.micr=
+osoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703ef99&amp;e=3Db2NpZD0&amp;s=3DbyKiS=
+cOvqSjKg6jGQmDEn55YiOU_aeonSmtvZZKlLOM"><img src=3D"https://cdn-dynmedia-1.=
+microsoft.com/is/image/microsoftcorp/Image3_New@4x?scl=3D1&amp;fmt=3Dpng-al=
+pha" alt=3D"Phone with photos being shared via OneDrive mobile app" style=
+=3D"vertical-align: bottom;" border=3D"0" class=3D"hero-mobile" height=3D"2=
+90" width=3D"290">              </a>                                   </td=
+>          </tr>          </tbody>         </table>        </th>           =
+  </tr>      </tbody>     </table>    </th>   </tr>   </tbody>  </table>   =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                    </th>                  =
+                                                                           =
+                                    </tr>                                  =
+   </tbody>                                  </table>                      =
+         </td>                            </tr>                         </t=
+able>                      </td>                   </tr>                   =
+                                          <!-- Multifield Ends -->         =
+                                                          <tr>             =
+<td height=3D"20">&nbsp;</td>         </tr>                                =
+                             </tbody>       </table>                       =
+       <table class=3D"tile-small-box" border=3D"0" cellspacing=3D"0" cellp=
+adding=3D"0" width=3D"100%" style=3D"background-color: #ffffff;" role=3D"pr=
+esentation">          <tbody>                                              =
+      <!-- Multifield Starts -->                                           =
+     <tr>                      <td class=3D"gutter">                       =
+  <table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0"=
+ width=3D"100%" role=3D"presentation">                            <tr>     =
+                          <td>                                  <table clas=
+s=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100=
+%" role=3D"presentation">                                     <tbody>      =
+                                  <tr>                                     =
+                                                                           =
+   <th width=3D"100%" class=3D"btn-block" align=3D"center" bgcolor=3D"#ffff=
+ff" style=3D" #C8C6C4; word-break:break-word; word-wrap:break-word; overflo=
+w-wrap:break-word;">                                                       =
+                                                                           =
+               <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" widt=
+h=3D"100%" style=3D"background-color: #ffffff" role=3D"presentation">   <tb=
+ody>      <tr>    <th dir=3D"ltr" class=3D"tileimage btn-block" align=3D"ce=
+nter" style=3D"word-break:break-word; word-wrap:break-word; overflow-wrap:b=
+reak-word;">     <table dir=3D"ltr" border=3D"0" cellspacing=3D"0" cellpadd=
+ing=3D"0" width=3D"100%" role=3D"presentation">      <tbody>      <tr style=
+=3D"display:table; width:100%;">       <th width=3D"290" class=3D"tfoot" al=
+ign=3D"center" style=3D"; word-break:break-word; word-wrap:break-word;">   =
+     <table dir=3D"ltr" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" wi=
+dth=3D"100%" role=3D"presentation">         <tbody>         <tr class=3D"de=
+sktopHidden">          <td height=3D"20">&nbsp;</td>         </tr>         =
+                                               <tr>             <td height=
+=3D"20">&nbsp;</td>         </tr>                <tr>           <td>       =
+                                                                           =
+                                                               <p style=3D"=
+color:text-picker;                         font-family:Segoe UI, Helvetica,=
+ Arial, sans-serif; font-style: normal;font-weight:600;font-size: 21px;line=
+-height:28px;letter-spacing: -0.02em;margin:0; padding:0;" role=3D"heading"=
+ aria-level=3D"4"> An extra layer of security </p>                         =
+                                  </td>          </tr>                     =
+               <!-- FIRST ADDITIONAL ELEMENT STARTS -->                    =
+                                                          <tr>             =
+                     <td height=3D"10" style=3D"font-size:0px;line-height:0=
+px" class=3D"spacer-ln-ht-0">&nbsp;</td>             </tr>                 =
+               <tr>                                        <td style=3D"col=
+or:text-picker;font-family:Segoe UI, Helvetica, Arial, sans-serif;font-styl=
+e: normal;font-weight: 400;font-size: 16px;line-height: 24px;letter-spacing=
+: -0.02em;margin:0; padding:0;">               <!--[if mso]>               =
+<div class=3D"list">               <![endif]-->               <p>Your Perso=
+nal Vault is protected by identity verification, so you can store your most=
+ sensitive files in the cloud and access them wherever you go.</p>         =
+      <!--[if mso]>               </div>               <![endif]-->        =
+      </td>                         </tr>                                  =
+                                             <!-- FIRST   ADDITIONAL ELEMEN=
+T ENDS -->         <!-- SECOND ADDITIONAL ELEMENT STARTS -->               =
+                                            <tr>             <td height=3D"=
+20">&nbsp;</td>         </tr>                 <tr>            <td>         =
+    <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" role=3D"present=
+ation">              <tbody>              <tr>               <td>          =
+                                      <table border=3D"0" cellpadding=3D"0"=
+ cellspacing=3D"0" width=3D"100%" style=3D"background-color: ;" role=3D"pre=
+sentation">       <tbody>          <tr>             <td class=3D"btn-rtl"> =
+               <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" alig=
+n=3D"" role=3D"presentation">        <tr>                     <td>         =
+                <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" ali=
+gn=3D"" role=3D"presentation">                   <tbody>                   =
+   <tr>                                                                    =
+                                                                           =
+                                                                           =
+                           <!--[if mso]>                                  <=
+td class=3D"btn-block">                                  <![endif]-->      =
+                                                              <!--[if !mso]=
+><\!-->                                  <td class=3D"btn-block">          =
+                           <!-- <![endif]-->                               =
+      <table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=
+=3D"0" align=3D"" role=3D"presentation">                                   =
+     <tbody>                                           <tr>                =
+                              <td>                                         =
+        <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"10=
+0%" dir=3D"ltr" role=3D"presentation">                                     =
+                                                   <th class=3D"block-max-w=
+idth" align=3D"left" style=3D"font-family:Segoe UI, Helvetica, Arial, sans-=
+serif; font-style: normal; font-weight:600 !important; font-size:16px; line=
+-height:24px;  max-width:280px; padding:8px 0; letter-spacing: -0.02em;">  =
+               <a href=3D"https://t.notificationmail.microsoft.com/r/?id=3D=
+h87b9ba6d,7703ee42,7703ef9a&amp;e=3Db2NpZD0&amp;s=3DabZfMf980TZplEBrUwi9w9W=
+A8cxV-7igBXGo2R9vF_g" title=3D"Go to your Personal Vault" style=3D"text-dec=
+oration:none;; color:#0078d4;" aria-label=3D"Go to your Personal Vault" tar=
+get=3D"_blank"><strong class=3D"cta-button" style=3D"color:#0078d4; text-de=
+coration:underline;font-weight:600;">Go to your Personal Vault</strong><str=
+ong style=3D"color:#0078d4; text-decoration:none; font-weight:600;">&nbsp;=
+=E2=9D=AF</strong>                 </a>             </th>                  =
+                                                   </table>                =
+                              </td>                                        =
+   </tr>                                        </tbody>                   =
+                  </table>                                  </td>          =
+                                                                           =
+                     </tr>                   </tbody>      </table>        =
+         </td>                </tr>                </table>             </t=
+d>          </tr>       </tbody>    </table>                </td>          =
+    </tr>                            </tbody>             </table>         =
+   </td>           </tr>                                                   =
+       <!-- SECOND ADDITIONAL ELEMENT ENDS -->         <!-- THIRD ADDITIONA=
+L ELEMENT STARTS -->                  <!-- THIRD ADDITIONAL ELEMENT ENDS --=
+>                            <tr>             <td height=3D"20">&nbsp;</td>=
+         </tr>               </tbody>        </table>       </th>          =
+     <th class=3D"mobileHidden" style=3D"padding-right: 20px;"></th>       =
+ <th width=3D"290" class=3D"btn-block thead" align=3D"center" style=3D"word=
+-break:break-word; word-wrap:break-word;">         <table border=3D"0" cell=
+spacing=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation">      =
+    <tbody>          <tr>           <td>                         <a target=
+=3D"_blank" href=3D"https://t.notificationmail.microsoft.com/r/?id=3Dh87b9b=
+a6d,7703ee42,7703ef9b&amp;e=3Db2NpZD0&amp;s=3DzcdypHs25WsZQsrEqjFiMkcVBRw5G=
+MJFZy-SFo_vbLw"><img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image/m=
+icrosoftcorp/Image4_New@4x?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Vault with f=
+iles and photos in it" style=3D"vertical-align: bottom;" border=3D"0" class=
+=3D"hero-mobile" height=3D"290" width=3D"290">              </a>           =
+                        </td>          </tr>          </tbody>         </ta=
+ble>        </th>             </tr>      </tbody>     </table>    </th>   <=
+/tr>   </tbody>  </table>                                                  =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+     </th>                                                                 =
+                                                                </tr>      =
+                               </tbody>                                  </=
+table>                               </td>                            </tr>=
+                         </table>                      </td>               =
+    </tr>                                                             <!-- =
+Multifield Ends -->                                                        =
+           <tr>             <td height=3D"40">&nbsp;</td>         </tr>    =
+                                                         </tbody>       </t=
+able>                              <table class=3D"tile-small-box" border=
+=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"backgrou=
+nd-color: #F2F2F2;" role=3D"presentation">          <tbody>                =
+                                                                   <tr>    =
+         <td height=3D"40">&nbsp;</td>         </tr>                       =
+                                         <tr style=3D"text-align:center" al=
+ign=3D"center">                   <td class=3D"gutter" style=3D"text-align:=
+center !important">                                                        =
+                                                                     <p sty=
+le=3D"color:#000000;                         font-family:Segoe UI, Helvetic=
+a, Arial, sans-serif;font-style: normal;font-weight:600; font-size:32px;lin=
+e-height:40px;letter-spacing:-0.02em;margin:0; padding:0;" role=3D"heading"=
+ aria-level=3D"3"> Need more space? </p>                                   =
+                                                              </td>        =
+        </tr>                                   <tr>             <td height=
+=3D"20">&nbsp;</td>         </tr>                                          =
+      <tr class=3D"txt-center" style=3D"text-align:center" align=3D"center"=
+>                   <td class=3D"hero-text-center" style=3D"color:#000000;f=
+ont-family:Segoe UI, Helvetica, Arial, sans-serif; font-style: normal; font=
+-weight: 400; font-size: 16px; line-height: 24px; letter-spacing: -0.02em; =
+margin:0; ">                      <!--[if mso]>                      <div c=
+lass=3D"list">                      <![endif]-->                      <p>Ch=
+oose the cloud storage upgrade that works best for you.</p>                =
+      <!--[if mso]>                      </div>                      <![end=
+if]-->                   </td>                </tr>                        =
+           <tr>             <td height=3D"20">&nbsp;</td>         </tr>    =
+                            <!-- Multifield Starts -->                     =
+                           <tr>                      <td class=3D"gutter"> =
+                        <table class=3D"btn-rtl" border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation">             =
+               <tr>                               <td>                     =
+             <table class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" width=3D"100%" role=3D"presentation">                          =
+           <tbody>                                        <tr>             =
+                                                                           =
+                           <th width=3D"290" class=3D"btn-block" align=3D"c=
+enter" bgcolor=3D"#F2F2F2" style=3D"border-radius: 2px; border: 1px solid #=
+d2d2d2; word-break:break-word; word-wrap:break-word; overflow-wrap:break-wo=
+rd;">                                                                      =
+                                                                           =
+                                          <table border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"background-color: #F2F2F2;=
+ text-align:center;" role=3D"presentation">   <tbody>              <tr>    =
+ <td style=3D"padding-top:20px !important;mso-padding-top-alt:20px">       =
+                                                                           =
+                                               <p style=3D"color:#000000;  =
+                       font-family:Segoe UI, Helvetica, Arial, sans-serif;f=
+ont-style: normal;font-weight:600; font-size:24px;line-height:30px;letter-s=
+pacing:-0.02em; margin:0; padding:0;" role=3D"heading" aria-level=3D"3"> 10=
+0 GB<br> of cloud storage </p>                                             =
+                  </td>    </tr>                             <tr>          =
+   <td height=3D"20">&nbsp;</td>         </tr>          <tr>     <td>      =
+                                                                           =
+                                                                    <p styl=
+e=3D"color:#000000;                         font-family:Segoe UI, Helvetica=
+, Arial, sans-serif;font-style: normal; font-weight:600;font-size: 18px;lin=
+e-height:24px;letter-spacing: -0.02em; margin:0; padding:0;" role=3D"headin=
+g" aria-level=3D"3"> <span style=3D"color: rgb(41,40,39);">Microsoft 365 Ba=
+sic</span> </p>                                           </td>    </tr>   =
+         <!-- FIRST ADDITIONAL ELEMENT STARTS -->                          =
+                 <tr>             <td height=3D"20">&nbsp;</td>         </t=
+r>                 <tr>       <td style=3D"text-align:center" align=3D"cent=
+er">             <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" wi=
+dth=3D"100%" style=3D"text-align:center" align=3D"center" role=3D"presentat=
+ion">         <tbody>                                           <tr>       =
+              <td class=3D"btn-block" bgcolor=3D"#F2F2F2">                 =
+        <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"10=
+0%" align=3D"center" role=3D"presentation">                             <tb=
+ody>                                 <tr>                                  =
+   <td class=3D"btn-block" style=3D"word-break:break-word; word-wrap:break-=
+word; overflow-wrap:break-word;" bgcolor=3D"#F2F2F2">                      =
+                   <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+align=3D"center" role=3D"presentation">                                    =
+         <tbody>                                                 <tr>      =
+                                                                           =
+                             <th class=3D"desktop-block">                  =
+                                           <table border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" role=3D"presentation">                            =
+                                     <tbody>                               =
+                                      <tr>                                 =
+                                                                           =
+                                          <th align=3D"center" width=3D"40"=
+ style=3D"word-break:break-word; word-wrap:break-word; overflow-wrap:break-=
+word;">                                                                    =
+             <a target=3D"_blank">                                         =
+                                                 <img src=3D"https://cdn-dy=
+nmedia-1.microsoft.com/is/image/microsoftcorp/Outlook_130x130_101681?scl=3D=
+1&amp;fmt=3Dpng-alpha" alt=3D"Outlook Icon" border=3D"0" height=3D"40" widt=
+h=3D"40">                                                                  =
+                </a>                                                       =
+                          <p style=3D"color:#000000; font-family:Segoe UI, =
+Helvetica, Arial, sans-serif; font-style:normal; font-weight:normal; font-s=
+ize:14px; line-height:18px; letter-spacing:-0.02em; margin:0; padding:0">  =
+                                                                           =
+                                                                           =
+              </p>                                                         =
+                    </th>                                                  =
+                                                                           =
+                         <th align=3D"center" width=3D"40" style=3D"word-br=
+eak:break-word; word-wrap:break-word; overflow-wrap:break-word;">          =
+                                                                       <a t=
+arget=3D"_blank">                                                          =
+                                <img src=3D"https://cdn-dynmedia-1.microsof=
+t.com/is/image/microsoftcorp/OneDrive_130x130_101681?scl=3D1&amp;fmt=3Dpng-=
+alpha" alt=3D"OneDrive Icon" border=3D"0" height=3D"40" width=3D"40">      =
+                                                                           =
+ </a>                                                                      =
+           <p style=3D"color:#000000; font-family:Segoe UI, Helvetica, Aria=
+l, sans-serif; font-style:normal; font-weight:normal; font-size:14px; line-=
+height:18px; letter-spacing:-0.02em; margin:0; padding:0">                 =
+                                                                           =
+                                                                          <=
+/p>                                                                        =
+     </th>                                                                 =
+                                                                           =
+  </tr>                                                                 </t=
+body>                                                             </table> =
+                                                        </th>              =
+                                                                           =
+                                                                  </tr>    =
+                                         </tbody>                          =
+               </table>                                     </td>          =
+                       </tr>                             </tbody>          =
+               </table>                     </td>                 </tr>    =
+                  </tbody>     </table>        </td>      </tr>            =
+            <!-- FIRST   ADDITIONAL ELEMENT ENDS -->   <!-- SECOND ADDITION=
+AL ELEMENT STARTS -->      <!-- SECOND ADDITIONAL ELEMENT ENDS -->   <!-- T=
+HIRD ADDITIONAL ELEMENT STARTS -->                                   <tr>  =
+           <td height=3D"20">&nbsp;</td>         </tr>           <tr>      =
+<td>       <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" style=3D=
+"text-align:center" align=3D"center" role=3D"presentation">        <tbody> =
+       <tr>         <td>                                          <table bo=
+rder=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"100%" style=3D"back=
+ground-color: ;" role=3D"presentation">       <tbody>          <tr>        =
+     <td class=3D"btn-rtl">                <table border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" align=3D"center" role=3D"presentation">        <tr=
+>                     <td>                         <table border=3D"0" cell=
+spacing=3D"0" cellpadding=3D"0" align=3D"center" role=3D"presentation">    =
+               <tbody>                      <tr>                           =
+                                                                           =
+                                                                           =
+                                                                    <!--[if=
+ mso]>                                  <td class=3D"btn-block">           =
+                       <![endif]-->                                        =
+                            <!--[if !mso]><\!-->                           =
+       <td class=3D"btn-block">                                     <!-- <!=
+[endif]-->                                     <table class=3D"btn-rtl" bor=
+der=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"center" role=3D"pres=
+entation">                                        <tbody>                  =
+                         <tr>                                              =
+<td>                                                 <table border=3D"0" ce=
+llspacing=3D"0" cellpadding=3D"0" width=3D"100%" dir=3D"ltr" role=3D"presen=
+tation">                                                                   =
+                     <th class=3D"block-max-width" align=3D"center" style=
+=3D"font-family:Segoe UI, Helvetica, Arial, sans-serif; font-style: normal;=
+ font-weight:600 !important; font-size:16px; line-height:24px;  max-width:2=
+80px; padding:8px 0; letter-spacing: -0.02em;">                 <a href=3D"=
+https://t.notificationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703ef9=
+c&amp;e=3Db2NpZD0mcDE9ZW4tVVMmcDI9&amp;s=3DhVCmFdDEXhLI7Su2y87YHpYRRal5JqkR=
+fq9wQZOhCWs" title=3D"Learn more" style=3D"text-decoration:none;; color:#00=
+67B8;" aria-label=3D"Learn more, opens a new window" target=3D"_blank"><str=
+ong class=3D"cta-button" style=3D"color:#0067B8; text-decoration:underline;=
+font-weight:600;">Learn more</strong><strong style=3D"color:#0067B8; text-d=
+ecoration:none; font-weight:600;">&nbsp;=E2=9D=AF</strong>                 =
+</a>             </th>                                                     =
+                </table>                                              </td>=
+                                           </tr>                           =
+             </tbody>                                     </table>         =
+                         </td>                                             =
+                                                             </tr>         =
+          </tbody>      </table>                 </td>                </tr>=
+                </table>             </td>          </tr>       </tbody>   =
+ </table>          </td>        </tr>                </tbody>       </table=
+>      </td>     </tr>                      <!-- THIRD ADDITIONAL ELEMENT E=
+NDS -->          <td style=3D"font-size:0; line-height:">&nbsp;</td>      <=
+/tbody>  </table>                                                          =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                              </th>                                        =
+                                                                           =
+                                                                           =
+      <th class=3D"mobileHidden" style=3D"padding-right: 20px;"></th>      =
+                                                                           =
+                 <th class=3D"desktopHidden" height=3D"20">&nbsp;</th>     =
+                                                                           =
+                                                                           =
+      <th width=3D"290" class=3D"btn-block" align=3D"center" bgcolor=3D"#F2=
+F2F2" style=3D"border-radius: 2px; border: 1px solid #d2d2d2; word-break:br=
+eak-word; word-wrap:break-word; overflow-wrap:break-word;">                =
+                                                                           =
+                                                                           =
+                                                                      <tabl=
+e border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"=
+background-color: #F2F2F2; text-align:center;" role=3D"presentation">   <tb=
+ody>              <tr>     <td class=3D"padd-left-right-20" style=3D"paddin=
+g-top:20px !important;mso-padding-top-alt:20px">                           =
+                                                                           =
+                           <p style=3D"color:#000000;                      =
+   font-family:Segoe UI, Helvetica, Arial, sans-serif;font-style: normal;fo=
+nt-weight:600; font-size:24px;line-height:30px;letter-spacing:-0.02em; marg=
+in:0; padding:0;" role=3D"heading" aria-level=3D"2"> 1 TB<br> of cloud stor=
+age </p>                                                               </td=
+>    </tr>                             <tr>             <td height=3D"20">&=
+nbsp;</td>         </tr>          <tr>     <td class=3D"padd-left-right-20"=
+>                                                                          =
+                                                                           =
+<p style=3D"color:#000000;                         font-family:Segoe UI, He=
+lvetica, Arial, sans-serif;font-style: normal; font-weight:600;font-size: 1=
+8px;line-height:24px;letter-spacing: -0.02em; margin:0; padding:0;" role=3D=
+"heading" aria-level=3D"3"> <span style=3D"color: rgb(41,40,39);">Microsoft=
+ 365 Personal</span> </p>                                           </td>  =
+  </tr>            <!-- FIRST ADDITIONAL ELEMENT STARTS -->                =
+                           <tr>             <td height=3D"20">&nbsp;</td>  =
+       </tr>                 <tr>       <td class=3D"padd-left-right-20" st=
+yle=3D"text-align:center" align=3D"center">             <table border=3D"0"=
+ cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"text-align:cen=
+ter" align=3D"center" role=3D"presentation">         <tbody>               =
+                            <tr>                     <td class=3D"btn-block=
+" bgcolor=3D"#F2F2F2">                         <table border=3D"0" cellspac=
+ing=3D"0" cellpadding=3D"0" width=3D"100%" align=3D"center" role=3D"present=
+ation">                             <tbody>                                =
+ <tr>                                     <td class=3D"btn-block" style=3D"=
+word-break:break-word; word-wrap:break-word; overflow-wrap:break-word;" bgc=
+olor=3D"#F2F2F2">                                         <table border=3D"=
+0" cellspacing=3D"0" cellpadding=3D"0" align=3D"center" role=3D"presentatio=
+n">                                             <tbody>                    =
+                             <tr>                                          =
+                                                                           =
+                                              <!--[if !gte mso 9]><!-- --> =
+                                                        <th class=3D"deskto=
+pHidden desktop-block">                                                    =
+         <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" role=3D"pr=
+esentation">                                                               =
+  <tbody>                                                                  =
+   <tr>                                                                    =
+                                                                           =
+       <th align=3D"center" width=3D"40" style=3D"word-break:break-word; wo=
+rd-wrap:break-word; overflow-wrap:break-word;">                            =
+                                                     <a target=3D"_blank"> =
+                                                                           =
+              <img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image/mic=
+rosoftcorp/Word_130x130_101681?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Word Ico=
+n" border=3D"0" height=3D"40" width=3D"40">                                =
+                                                  </a>                     =
+                                                            <p style=3D"col=
+or:#000000; font-family:Segoe UI, Helvetica, Arial, sans-serif; font-style:=
+normal; font-weight:normal; font-size:14px; line-height:18px; letter-spacin=
+g:-0.02em; margin:0; padding:0">                                           =
+                                                                           =
+                                                </p>                       =
+                                                      </th>                =
+                                                                           =
+                                                           <th align=3D"cen=
+ter" width=3D"40" style=3D"word-break:break-word; word-wrap:break-word; ove=
+rflow-wrap:break-word;">                                                   =
+                              <a target=3D"_blank">                        =
+                                                                  <img src=
+=3D"https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/Excel_130x1=
+30_101681?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Excel Icon" border=3D"0" heig=
+ht=3D"40" width=3D"40">                                                    =
+                              </a>                                         =
+                                        <p style=3D"color:#000000; font-fam=
+ily:Segoe UI, Helvetica, Arial, sans-serif; font-style:normal; font-weight:=
+normal; font-size:14px; line-height:18px; letter-spacing:-0.02em; margin:0;=
+ padding:0">                                                               =
+                                                                           =
+                            </p>                                           =
+                                  </th>                                    =
+                                                                           =
+                                       <th align=3D"center" width=3D"40" st=
+yle=3D"word-break:break-word; word-wrap:break-word; overflow-wrap:break-wor=
+d;">                                                                       =
+          <a target=3D"_blank">                                            =
+                                              <img src=3D"https://cdn-dynme=
+dia-1.microsoft.com/is/image/microsoftcorp/PowerPoint_130x130_101681?scl=3D=
+1&amp;fmt=3Dpng-alpha" alt=3D"PowerPoint Icon" border=3D"0" height=3D"40" w=
+idth=3D"40">                                                               =
+                   </a>                                                    =
+                             <p style=3D"color:#000000; font-family:Segoe U=
+I, Helvetica, Arial, sans-serif; font-style:normal; font-weight:normal; fon=
+t-size:14px; line-height:18px; letter-spacing:-0.02em; margin:0; padding:0"=
+>                                                                          =
+                                                                           =
+                 </p>                                                      =
+                       </th>                                               =
+                                                                           =
+                            <th align=3D"center" width=3D"40" style=3D"word=
+-break:break-word; word-wrap:break-word; overflow-wrap:break-word;">       =
+                                                                          <=
+a target=3D"_blank">                                                       =
+                                   <img src=3D"https://cdn-dynmedia-1.micro=
+soft.com/is/image/microsoftcorp/Outlook_130x130_101681?scl=3D1&amp;fmt=3Dpn=
+g-alpha" alt=3D"Outlook Icon" border=3D"0" height=3D"40" width=3D"40">     =
+                                                                           =
+  </a>                                                                     =
+            <p style=3D"color:#000000; font-family:Segoe UI, Helvetica, Ari=
+al, sans-serif; font-style:normal; font-weight:normal; font-size:14px; line=
+-height:18px; letter-spacing:-0.02em; margin:0; padding:0">                =
+                                                                           =
+                                                                           =
+</p>                                                                       =
+      </th>                                                                =
+                                                                           =
+           <th align=3D"center" width=3D"40" style=3D"word-break:break-word=
+; word-wrap:break-word; overflow-wrap:break-word;">                        =
+                                                         <a target=3D"_blan=
+k">                                                                        =
+                  <img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image=
+/microsoftcorp/OneDrive_130x130_101681?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"=
+OneDrive Icon" border=3D"0" height=3D"40" width=3D"40">                    =
+                                                              </a>         =
+                                                                        <p =
+style=3D"color:#000000; font-family:Segoe UI, Helvetica, Arial, sans-serif;=
+ font-style:normal; font-weight:normal; font-size:14px; line-height:18px; l=
+etter-spacing:-0.02em; margin:0; padding:0">                               =
+                                                                           =
+                                                            </p>           =
+                                                                  </th>    =
+                                                                           =
+                                                                       <th =
+align=3D"center" width=3D"40" style=3D"word-break:break-word; word-wrap:bre=
+ak-word; overflow-wrap:break-word;">                                       =
+                                          <a target=3D"_blank">            =
+                                                                           =
+   <img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/=
+Additional%20Element%20icon?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Defender ic=
+on" border=3D"0" height=3D"40" width=3D"40">                               =
+                                                   </a>                    =
+                                                             <p style=3D"co=
+lor:#000000; font-family:Segoe UI, Helvetica, Arial, sans-serif; font-style=
+:normal; font-weight:normal; font-size:14px; line-height:18px; letter-spaci=
+ng:-0.02em; margin:0; padding:0">                                          =
+                                                                           =
+                                                 </p>                      =
+                                                       </th>               =
+                                                                           =
+                                                    </tr>                  =
+                                               </tbody>                    =
+                                         </table>                          =
+                               </th>                                       =
+                  <!--<![endif]-->                                         =
+                <th class=3D"desktop-block mobileHidden">                  =
+                                           <table border=3D"0" cellspacing=
+=3D"0" cellpadding=3D"0" role=3D"presentation">                            =
+                                     <tbody>                               =
+                                      <tr>                                 =
+                                                                           =
+                                                                           =
+                                                <th align=3D"center" width=
+=3D"40" style=3D"word-break:break-word; word-wrap:break-word; overflow-wrap=
+:break-word;">                                                             =
+                        <a target=3D"_blank">                              =
+                                                                <img src=3D=
+"https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/Word_130x130_1=
+01681?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Word Icon" border=3D"0" height=3D=
+"40" width=3D"40">                                                         =
+                             </a>                                          =
+                                           <p style=3D"color:#000000; font-=
+family:Segoe UI, Helvetica, Arial, sans-serif; font-style:normal; font-weig=
+ht:normal; font-size:14px; line-height:18px; letter-spacing:-0.02em; margin=
+:0; padding:0">                                                            =
+                                                                           =
+                                       </p>                                =
+                                                 </th>                     =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                              <th align=3D"=
+center" width=3D"40" style=3D"word-break:break-word; word-wrap:break-word; =
+overflow-wrap:break-word;">                                                =
+                                     <a target=3D"_blank">                 =
+                                                                           =
+  <img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/E=
+xcel_130x130_101681?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Excel Icon" border=
+=3D"0" height=3D"40" width=3D"40">                                         =
+                                             </a>                          =
+                                                           <p style=3D"colo=
+r:#000000; font-family:Segoe UI, Helvetica, Arial, sans-serif; font-style:n=
+ormal; font-weight:normal; font-size:14px; line-height:18px; letter-spacing=
+:-0.02em; margin:0; padding:0">                                            =
+                                                                           =
+                                                       </p>                =
+                                                                 </th>     =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+   <th align=3D"center" width=3D"40" style=3D"word-break:break-word; word-w=
+rap:break-word; overflow-wrap:break-word;">                                =
+                                                     <a target=3D"_blank"> =
+                                                                           =
+                  <img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image=
+/microsoftcorp/PowerPoint_130x130_101681?scl=3D1&amp;fmt=3Dpng-alpha" alt=
+=3D"PowerPoint Icon" border=3D"0" height=3D"40" width=3D"40">              =
+                                                                        </a=
+>                                                                          =
+           <p style=3D"color:#000000; font-family:Segoe UI, Helvetica, Aria=
+l, sans-serif; font-style:normal; font-weight:normal; font-size:14px; line-=
+height:18px; letter-spacing:-0.02em; margin:0; padding:0">                 =
+                                                                           =
+                                                                           =
+       </p>                                                                =
+                 </th>                                                     =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                </tr>                                                      =
+           </tbody>                                                        =
+     </table>                                                         </th>=
+                                                         <!--[if mso]>     =
+                                            </tr>                          =
+                       <tr>                                                =
+ <![endif]-->                                                              =
+                                    <th class=3D"desktop-block mobileHidden=
+">                                                 <table border=3D"0" cell=
+spacing=3D"0" cellpadding=3D"0" role=3D"presentation">                     =
+                            <tbody>                                        =
+         <tr>                                                              =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+    <th align=3D"center" width=3D"40" style=3D"word-break:break-word; word-=
+wrap:break-word; overflow-wrap:break-word;">                               =
+                  <a target=3D"_blank">                                    =
+                  <img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image=
+/microsoftcorp/Outlook_130x130_101681?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"O=
+utlook Icon" border=3D"0" height=3D"40" width=3D"40">                      =
+                            </a>                                           =
+      <p style=3D"color:#000000; font-family:Segoe UI, Helvetica, Arial, sa=
+ns-serif; font-style:normal; font-weight:normal; font-size:14px; line-heigh=
+t:18px; letter-spacing:-0.02em; margin:0; padding:0">                      =
+                                                                           =
+ </p>                                                 </th>                =
+                                                                           =
+                                                                           =
+                              <th align=3D"center" width=3D"40" style=3D"wo=
+rd-break:break-word; word-wrap:break-word; overflow-wrap:break-word;">     =
+                                            <a target=3D"_blank">          =
+                                            <img src=3D"https://cdn-dynmedi=
+a-1.microsoft.com/is/image/microsoftcorp/OneDrive_130x130_101681?scl=3D1&am=
+p;fmt=3Dpng-alpha" alt=3D"OneDrive Icon" border=3D"0" height=3D"40" width=
+=3D"40">                                                  </a>             =
+                                    <p style=3D"color:#000000; font-family:=
+Segoe UI, Helvetica, Arial, sans-serif; font-style:normal; font-weight:norm=
+al; font-size:14px; line-height:18px; letter-spacing:-0.02em; margin:0; pad=
+ding:0">                                                                   =
+                               </p>                                        =
+         </th>                                                             =
+                                                                           =
+                                                            <th align=3D"ce=
+nter" width=3D"40" style=3D"word-break:break-word; word-wrap:break-word; ov=
+erflow-wrap:break-word;">                                                 <=
+a target=3D"_blank">                                                      <=
+img src=3D"https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/Addi=
+tional%20Element%20icon?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Defender icon" =
+border=3D"0" height=3D"40" width=3D"40">                                   =
+               </a>                                                 <p styl=
+e=3D"color:#000000; font-family:Segoe UI, Helvetica, Arial, sans-serif; fon=
+t-style:normal; font-weight:normal; font-size:14px; line-height:18px; lette=
+r-spacing:-0.02em; margin:0; padding:0">                                   =
+                                                               </p>        =
+                                         </th>                             =
+                                                                           =
+                                           </tr>                           =
+                      </tbody>                                             =
+    </table>                                                 </th>         =
+                                                                           =
+                                                               </tr>       =
+                                      </tbody>                             =
+            </table>                                     </td>             =
+                    </tr>                             </tbody>             =
+            </table>                     </td>                 </tr>       =
+               </tbody>     </table>        </td>      </tr>               =
+         <!-- FIRST   ADDITIONAL ELEMENT ENDS -->   <!-- SECOND ADDITIONAL =
+ELEMENT STARTS -->      <!-- SECOND ADDITIONAL ELEMENT ENDS -->   <!-- THIR=
+D ADDITIONAL ELEMENT STARTS -->                                   <tr>     =
+        <td height=3D"20">&nbsp;</td>         </tr>           <tr>      <td=
+ class=3D"padd-left-right-20">       <table border=3D"0" cellspacing=3D"0" =
+cellpadding=3D"0" style=3D"text-align:center" align=3D"center" role=3D"pres=
+entation">        <tbody>        <tr>         <td>                         =
+                 <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" wi=
+dth=3D"100%" style=3D"background-color: ;" role=3D"presentation">       <tb=
+ody>          <tr>             <td class=3D"btn-rtl">                <table=
+ border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"center" role=3D"=
+presentation">        <tr>                     <td>                        =
+ <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"center" r=
+ole=3D"presentation">                   <tbody>                      <tr>  =
+                                                                           =
+                                                                           =
+                                                                           =
+                  <!--[if mso]>                                  <td class=
+=3D"btn-block">                                  <![endif]-->              =
+                                                      <!--[if !mso]><\!--> =
+                                 <td class=3D"btn-block">                  =
+                   <!-- <![endif]-->                                     <t=
+able class=3D"btn-rtl" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" ali=
+gn=3D"center" role=3D"presentation">                                       =
+ <tbody>                                           <tr>                    =
+                          <td>                                             =
+    <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" =
+dir=3D"ltr" role=3D"presentation">                                         =
+                                               <th class=3D"block-max-width=
+" align=3D"center" style=3D"font-family:Segoe UI, Helvetica, Arial, sans-se=
+rif; font-style: normal; font-weight:600 !important; font-size:16px; line-h=
+eight:24px;  max-width:280px; padding:8px 0; letter-spacing: -0.02em;">    =
+             <a href=3D"https://t.notificationmail.microsoft.com/r/?id=3Dh8=
+7b9ba6d,7703ee42,7703ef9d&amp;e=3Db2NpZD0mcDE9ZW4tVVMmcDI9&amp;s=3DO0PKakz-=
+h87g-olWF5dzm_6Ith1TcclAp6TiLnz2dXA" title=3D"Learn more" style=3D"text-dec=
+oration:none;; color:#0067B8;" aria-label=3D"Learn more, opens a new window=
+" target=3D"_blank"><strong class=3D"cta-button" style=3D"color:#0067B8; te=
+xt-decoration:underline;font-weight:600;">Learn more</strong><strong style=
+=3D"color:#0067B8; text-decoration:none; font-weight:600;">&nbsp;=E2=9D=AF<=
+/strong>                 </a>             </th>                            =
+                                         </table>                          =
+                    </td>                                           </tr>  =
+                                      </tbody>                             =
+        </table>                                  </td>                    =
+                                                                           =
+           </tr>                   </tbody>      </table>                 <=
+/td>                </tr>                </table>             </td>        =
+  </tr>       </tbody>    </table>          </td>        </tr>             =
+   </tbody>       </table>      </td>     </tr>                      <!-- T=
+HIRD ADDITIONAL ELEMENT ENDS -->          <td style=3D"font-size:0; line-he=
+ight:">&nbsp;</td>      </tbody>  </table>                                 =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+                                                                           =
+      </th>                                                                =
+                                                                 </tr>     =
+                                </tbody>                                  <=
+/table>                               </td>                            </tr=
+>                         </table>                      </td>              =
+     </tr>                                                             <!--=
+ Multifield Ends -->                                                       =
+            <tr>             <td height=3D"40">&nbsp;</td>         </tr>   =
+                                                          </tbody>       </=
+table>                              <table width=3D"100%" border=3D"0" cell=
+spacing=3D"0" cellpadding=3D"0" style=3D"background-color: #e6e6e6;" role=
+=3D"presentation">          <tbody>    <tr>                <td height=3D"20=
+" class=3D"spacer-ln-ht-0">&nbsp;</td>             </tr>             <tr>  =
+              <td class=3D"txt-align-right" align=3D"left">                =
+   <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" c=
+lass=3D"rte-footerspacer-10" role=3D"presentation">                      <t=
+r>                         <td class=3D"gutter" style=3D"color:#505050;font=
+-family:Segoe UI, Helvetica, Arial, sans-serif;font-size:10px;line-height:1=
+4px;letter-spacing:-0.02em;font-style:normal;">                            =
+<p>You are receiving this email because you recently created a new OneDrive=
+ account. We're here to help you get the most out of your OneDrive experien=
+ce.</p>                         </td>                      </tr>           =
+        </table>                </td>             </tr>             <tr>   =
+             <td height=3D"0" class=3D"spacer-ln-ht-0">&nbsp;</td>         =
+    </tr>          </tbody>       </table>                                 =
+     </td>                       </tr>                          <!-- FOOTER=
+ SECTION STARTS HERE -->                          <tr>                     =
+   <td>                                                                  </=
+td>                       </tr>                          <tr>              =
+          <td>                                          <table border=3D"0"=
+ cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" style=3D"background-col=
+or:#e6e6e6;" role=3D"presentation">          <tbody>                       =
+                                                           <tr>            =
+    <td>                                                                   =
+                           =20
+=09
+
+
+
+
+
+<table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%">
+   <tr>
+   	<td height=3D"20">&nbsp;</td>
+   </tr>
+   <!--Privacy text-->
+  =20
+    =20
+   =20
+   <tr>
+      <td class=3D"gutter" style=3D"font-family:Segoe UI,Helvetica,Arial,sa=
+ns-serif;font-size:10px;line-height:14px;color:#505050;">
+         <a title=3D"Privacy Statement" href=3D"https://t.notificationmail.=
+microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703efe4&amp;e=3Db2NpZD0&amp;s=3DR=
+0MwAzmddMozIOBhr9-pP24GUo-Md9W5Xpv7bJEdQk0" _label=3D"Privacy Link" _type=
+=3D"Email click"><strong style=3D"color:#505050;text-decoration:underline;f=
+ont-weight: normal;">Privacy Statement</strong></a>
+      </td>
+   </tr>
+  =20
+   <tr>
+      <td height=3D"5" style=3D"font-size:0px;line-height:5px">&nbsp;</td>
+   </tr>
+   <tr>
+      <!--[if gte mso 9]>
+				<td class=3D"footeraddressrtl" style=3D"color:#505050;font-family:Segoe=
+ UI,Helvetica,Arial,sans-serif;font-size:10px;line-height:14px;letter-spaci=
+ng:-0.02em;font-style:normal;">    =20
+			<![endif]-->
+			<!--[if !gte mso 9]><!-- -->
+				<td class=3D"gutter" style=3D"color:#505050;font-family:Segoe UI,Helvet=
+ica,Arial,sans-serif;font-size:10px;line-height:14px;letter-spacing:-0.02em=
+;font-style:normal;">
+			<!--<![endif]-->
+     =20
+      <p>Microsoft Corporation,&nbsp;One Microsoft Way,&nbsp;Redmond, WA 98=
+052
+         </p>
+     =20
+      </td>
+   </tr>
+  =20
+   <tr>
+     <td style=3D"line-height:1px; mso-line-height-rule:exactly;">
+       <img border=3D"0" src=3D"https://cam-pixel-tracker-prod.azure-api.ne=
+t/api/p8/track.png" height=3D"1" width=3D"1" style=3D"display:block;height:=
+1px;">
+     </td>
+</tr>
+</table>
+
+=09
+                </td>             </tr>                         <tr>       =
+                            <tr>             <td height=3D"20">&nbsp;</td> =
+        </tr>                      <td>                   <table border=3D"=
+0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%" role=3D"presentation"=
+>                      <tr>                           <td class=3D"gutter" =
+width=3D"100" style=3D"line-height:14px;">                                 =
+                                        <a target=3D"_blank" href=3D"https:=
+//t.notificationmail.microsoft.com/r/?id=3Dh87b9ba6d,7703ee42,7703f016&amp;=
+e=3Db2NpZD0&amp;s=3Dvp5n47Pp9G0rucrG7h57nn1lCx0utD8b4RhAcR549wc"><img src=
+=3D"https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/microsoft%2=
+0logo-1?scl=3D1&amp;fmt=3Dpng-alpha" alt=3D"Microsoft Logo" style=3D"displa=
+y:block; height:20px;" height=3D"20">                                      =
+     </a>                                                                  =
+           </td>                        </tr>                   </table>   =
+             </td>             </tr>                                <tr>   =
+          <td height=3D"30">&nbsp;</td>         </tr>                </tbod=
+y>       </table>                          </td>                    </tr>  =
+                   <!-- FOOTER SECTION ENDS HERE -->                       =
+</tbody>                   </table>                 </td>               </t=
+r>                  </tbody>       </table>       <!--PARENT TABLE Ends Her=
+e -->       <p style=3D"line-height:1px;">&nbsp;</p>=20
+<img height=3D"0" width=3D"0" alt=3D"" src=3D"https://t.notificationmail.mi=
+crosoft.com/r/?id=3Dh87b9ba6d,7703ee42,1">
+</body> </html>
+
