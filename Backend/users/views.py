@@ -11,17 +11,24 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
-from plugin.models import EmailDetails, DisputeInfo
+from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable
 # from plugin.serializers import EmailDetailsSerializer
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from drf_yasg.utils import swagger_auto_schema
 from datetime import datetime
+from datetime import timedelta
 from .models import RoughURL, RoughDomain, RoughMail
 from rest_framework.exceptions import ValidationError
 from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import traceback
+from rest_framework.decorators import api_view
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import api_view, parser_classes
+import json
+from django.core.files.storage import default_storage
+from django.utils import timezone
 
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
@@ -792,3 +799,49 @@ class RoughMailViewSet(viewsets.ModelViewSet):
         return Response({
             "message": f"RoughMail with id {kwargs['pk']} has been deleted successfully."
         }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+def save_machine_info(request):
+    if 'file' not in request.FILES:
+        return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+    uploaded_file = request.FILES['file']
+    file_path = default_storage.save(uploaded_file.name, uploaded_file)
+
+    with open(file_path, 'r') as json_file:
+        try:
+            machine_info_data = json.load(json_file)
+        except json.JSONDecodeError:
+            return Response({"error": "Invalid JSON file"}, status=status.HTTP_400_BAD_REQUEST)
+
+    hardware_info = machine_info_data.get("hardware_info", {})
+
+    # Serialize and save the data to the database
+    serializer = MachineDataSerializer(data={
+        "machine_id": machine_info_data.get("machine_id", ""),
+        "system": hardware_info.get("system", ""),
+        "machine": hardware_info.get("machine", ""),
+        "processor": hardware_info.get("processor", ""),
+        "platform_version": hardware_info.get("platform_version", ""),
+        "serial_number": hardware_info.get("serial_number", ""),
+        "uuid": hardware_info.get("uuid", ""),
+        "mac_addresses": hardware_info.get("mac_addresses", []),  # List of MAC addresses
+    })
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+def get_disabled_plugins_count(request):
+    fifteen_minutes_ago = timezone.now() - timedelta(minutes=15)
+    disabled_plugins_count = PluginEnableDisable.objects.filter(
+        disabled_at__gte=fifteen_minutes_ago
+    ).count()
+    return Response({"disabled_plugins_count": disabled_plugins_count})

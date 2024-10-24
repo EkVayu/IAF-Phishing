@@ -177,4 +177,19 @@ class RoughDomainSerializer(serializers.ModelSerializer):
 class RoughMailSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoughMail
-        fields = ['id', 'mailid']        
+        fields = ['id', 'mailid']
+
+
+class MachineDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MachineData
+        fields = [
+            'machine_id',
+            'system',
+            'machine',
+            'processor',
+            'platform_version',
+            'serial_number',
+            'uuid',
+            'mac_addresses',
+        ]
