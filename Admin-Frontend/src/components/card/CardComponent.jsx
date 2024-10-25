@@ -4,7 +4,7 @@ const CardComponent = ({ icon, title, initialCount, onClick, isSelected }) => {
 
   return (
     <div
-      className={`w-full h-32 flex justify-between p-4 rounded-md shadow-md dark:shadow-white dark:shadow-sm cursor-pointer transition-all duration-300 ${
+      className={`w-full h-32 flex justify-between p-4 bg-background dark:bg-gray-800 rounded-md shadow-md dark:shadow-white dark:shadow-sm cursor-pointer transition-all duration-300 ${
         isSelected ? "ring-2 ring-primary dark:ring-gray-600" : "hover:shadow-lg"
       }`}
       onClick={onClick}
