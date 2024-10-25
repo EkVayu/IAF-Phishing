@@ -212,9 +212,28 @@ class LicenseListView(viewsets.ModelViewSet):
 
     queryset = License.objects.all()
     serializer_class = LicenseSerializer
+    # Nidhi
+    def list(self, request): 
+        current_user = request.user      
+        user_email = current_user.email 
+        print(user_email)
+        user = User.objects.get(email=user_email)
+        print(user)
+        user_is_active = user.is_active
+        print(user_is_active)
 
-    def list(self, request):
-        queryset = License.objects.all()
+        user_is_staff=user.is_staff
+        print(user_is_staff)
+
+        user_is_superuser=user.is_superuser
+        print(user_is_superuser)
+
+        if user_is_superuser:
+           queryset = License.objects.all() 
+        else:
+           queryset = License.objects.filter(is_reserved=0)  
+        print(queryset)  
+        #queryset = License.objects.all()
         serializer = self.serializer_class(queryset, many=True)
         count = queryset.count()
         return Response(serializer.data)
@@ -407,6 +426,25 @@ class LicenseViewSet(viewsets.ViewSet):
 
         except License.DoesNotExist:
             return Response({"detail": "License not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    # def list(self, request):
+    #     """
+    #     List licenses based on user role.
+    #     Superusers see all licenses, while staff see only unreserved licenses.
+    #     """
+    #     user = request.user
+
+    #     if user.is_superuser:
+    #         # Superusers see all licenses, including reserved
+    #         licenses = License.objects.all()
+    #     else:
+    #         # Staff users see only unreserved licenses
+    #         #licenses = License.objects.filter(is_reserved=False)
+    #         licenses = License.objects.filter(is_reserved=0)
+
+
+    #     serializer = self.serializer_class(licenses, many=True, context={'request': request})
+    #     return Response(serializer.data)   
 
 
 class PluginMasterViewSet(viewsets.ModelViewSet):
