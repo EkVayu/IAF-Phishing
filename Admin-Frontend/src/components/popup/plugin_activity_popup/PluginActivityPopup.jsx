@@ -22,7 +22,6 @@ function PluginActivityPopup({ onClose }) {
       userName: "User 1",
       lastActive: "2 days ago",
       status: "Disabled",
-      description: "Helps optimize your website for search engines",
     },
     {
       id: 2,
@@ -30,7 +29,6 @@ function PluginActivityPopup({ onClose }) {
       userName: "User 2",
       lastActive: "5 hours ago",
       status: "Disabled",
-      description: "Tracks website performance and user behavior",
     },
     {
       id: 3,
@@ -38,7 +36,6 @@ function PluginActivityPopup({ onClose }) {
       userName: "User 3",
       lastActive: "1 week ago",
       status: "Disabled",
-      description: "Scans for vulnerabilities and security issues",
     },
   ];
 
@@ -227,13 +224,6 @@ function PluginActivityPopup({ onClose }) {
                 <div className="flex justify-between">
                   <span className="">Last Active:</span>
                   <span>{selectedExtension.lastActive}</span>
-                </div>
-
-                <div className="flex justify-between gap-5">
-                  <span className="">Description:</span>
-                  <span className=" text-right">
-                    {selectedExtension.description}
-                  </span>
                 </div>
               </div>
             </div>
