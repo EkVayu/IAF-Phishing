@@ -13,7 +13,7 @@ import { useTheme } from "@/context/theme-provider";
 function Settings() {
   const { setTheme, theme } = useTheme();
   return (
-    <div className="w-full h-[80vh] bg-background">
+    <div className="w-full h-[80vh] bg-background rounded-md">
       <div className="h-full w-full">
         <div className="p-8 w-full h-full">
           <h1 className="text-4xl font-bold text-primary mb-6 tracking-widest">Settings</h1>

@@ -28,7 +28,6 @@ function Plugin() {
     } catch (error) {
       console.error("Failed to load license data:", error);
       const dummyData = generateDummyLicenses(10); // Generate 10 dummy licenses
-      // console.log("data", dummyData);
       setLicenseData(dummyData);
       toast.error(`API error: ${error.message}`);
       // setError(`API error: ${error.message}`);

@@ -50,11 +50,6 @@ const staffMenuItems = [
     icon: <TbReportSearch className="text-xl" />,
   },
   {
-    title: "Profile",
-    path: "/profile",
-    icon: <CgProfile className="text-xl" />,
-  },
-  {
     title: "SandBox",
     path: "/sandbox",
     icon: <IoIosChatboxes className="text-xl" />,
@@ -65,20 +60,25 @@ const staffMenuItems = [
     icon: <MessageSquareLock className="text-xl" />,
   },
   {
-    title: "Contact",
-    path: "/contact",
-    icon: <IoCall className="text-xl" />,
-  },
-  {
     title: "Rogue DB",
     path: "/rogue-db",
     icon: <GiRogue className="text-xl" />,
   },
   { title: "SIRTs", path: "/sirts", icon: <SiRtlzwei className="text-xl" /> },
   {
+    title: "Profile",
+    path: "/profile",
+    icon: <CgProfile className="text-xl" />,
+  },
+  {
     title: "Settings",
     path: "/settings",
     icon: <IoMdSettings className="text-xl" />,
+  },
+  {
+    title: "Contact",
+    path: "/contact",
+    icon: <IoCall className="text-xl" />,
   },
 ];
 
@@ -102,7 +102,7 @@ function Sidebar() {
             <li key={index}>
               <Link
                 to={item.path}
-                className={`flex items-center gap-3 px-4 rounded-lg py-2 text-sm hover:bg-secondary dark:hover:bg-gray-700 transition duration-150 ease-in-out tracking-widest ${
+                className={`flex items-center gap-3 px-4 rounded-md py-2 text-sm hover:bg-secondary dark:hover:bg-gray-700 transition duration-150 ease-in-out tracking-widest ${
                   location.pathname === item.path
                     ? "bg-secondary dark:bg-gray-700"
                     : ""
