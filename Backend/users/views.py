@@ -841,7 +841,21 @@ def save_machine_info(request):
 @api_view(['GET'])
 def get_disabled_plugins_count(request):
     fifteen_minutes_ago = timezone.now() - timedelta(minutes=15)
-    disabled_plugins_count = PluginEnableDisable.objects.filter(
-        disabled_at__gte=fifteen_minutes_ago
-    ).count()
-    return Response({"disabled_plugins_count": disabled_plugins_count})
+    disabled_plugins = PluginEnableDisable.objects.filter(disabled_at__gte=fifteen_minutes_ago)
+
+    disabled_plugins_data = []
+
+    for plugin_action in disabled_plugins:
+        time_diff = timezone.now() - plugin_action.disabled_at
+        minutes, seconds = divmod(time_diff.total_seconds(), 60)
+
+        disabled_plugins_data.append({
+            "plugin_id": plugin_action.plugin_install_uninstall.plugin_id,
+            "user_name": plugin_action.user_profile.user.username,
+            "last_active": f"{int(minutes)} minutes, {int(seconds)} seconds"
+        })
+
+    return Response({
+        "disabled_plugins_count": disabled_plugins.count(),
+        "disabled_plugins_details": disabled_plugins_data
+    })

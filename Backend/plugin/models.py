@@ -7,6 +7,7 @@ from django.utils import timezone
 import hashlib
 from users.models import *
 from django.contrib.auth import get_user_model
+from users.models import UserProfile
 User = get_user_model()
 
 
@@ -135,10 +136,12 @@ class PluginEnableDisable(models.Model):
         enabled_at (datetime): The datetime when the plugin was enabled.
         disabled_at (datetime): The datetime when the plugin was disabled.
     """
-    plugin_install_uninstall = models.ForeignKey(PluginInstallUninstall, on_delete=models.CASCADE, related_name="enable_disable_actions")
+    plugin_install_uninstall = models.ForeignKey(PluginInstallUninstall, on_delete=models.CASCADE,
+                                                 related_name="enable_disable_actions")
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="plugin_actions")
     enabled_at = models.DateTimeField(null=True, blank=True)
     disabled_at = models.DateTimeField(null=True, blank=True)
-    
+
     class Meta:
         """
         Returns a string representation of the enable/disable action, showing the plugin ID.
@@ -147,12 +150,11 @@ class PluginEnableDisable(models.Model):
 
     def _str_(self):
         return f"Enable/Disable Action for {self.plugin_install_uninstall.plugin_id}"
-    
+
     """
     PluginEnableDisable model stores information about enabling and disabling actions for a plugin.
     """
-    
-    
+
     # EmailDetails model stores details related to an email, including its subject, body, and attachments.
 class EmailDetails(models.Model):
     """
