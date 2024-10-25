@@ -86,13 +86,41 @@ class PluginMasterSerializer(serializers.ModelSerializer):
 
 
 # UserProfile
-
+#Soumya Ranjan(25-10-24)
 class UserProfileSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source='user.get_full_name', read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+
     class Meta:
         model = UserProfile
-        fields = ['phone_number', 'address', 'organization', 'full_name', 'email']
+        fields = ['phone_number', 'address', 'organization', 'first_name', 'last_name', 'full_name', 'email']
+        extra_kwargs = {
+            'phone_number': {'required': False},
+            'address': {'required': False},
+            'organization': {'required': False},
+        }
+
+    def update(self, instance, validated_data):
+        # Extract nested user data if available
+        user_data = validated_data.pop('user', {})
+
+        # Update first_name and last_name if provided
+        if 'first_name' in user_data:
+            instance.user.first_name = user_data['first_name']
+        if 'last_name' in user_data:
+            instance.user.last_name = user_data['last_name']
+        instance.user.save()  # Save changes to User model
+
+        # Update UserProfile fields
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.address = validated_data.get('address', instance.address)
+        instance.organization = validated_data.get('organization', instance.organization)
+
+        instance.save()  # Save changes to UserProfile
+        return instance
+
 
 
 class LicenseAllocationSerializer(serializers.ModelSerializer):

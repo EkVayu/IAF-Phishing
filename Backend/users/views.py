@@ -489,6 +489,21 @@ class UserProfileView(viewsets.ModelViewSet):
         #return get_object_or_404(UserProfile, user_id=user_id)
         return get_object_or_404(UserProfile, user_id=user_id, user__is_deleted=False)
 
+#Soumya Ranjan(25-10-2024)
+    @action(detail=False, methods=['patch'], url_path=r'update_by_user_id/(?P<user_id>[^/.]+)')
+    def update_profile_by_user_id(self, request, user_id=None):
+        """Update specific details of a user profile by user_id, excluding username and email."""
+        profile = self.get_object_by_user_id(user_id=user_id)
+
+        # Use the serializer with partial=True for partial updates
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+
+        # Validate and save
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "User profile updated successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post', 'put', 'patch',], url_path=r'user_id/(?P<user_id>[^/.]+)')
     def partial_update_by_user_id(self, request, user_id=None):

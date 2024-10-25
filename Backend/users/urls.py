@@ -40,7 +40,8 @@ license_viewset = LicenseViewSet.as_view({
 urlpatterns = [
     path('', include(router.urls)),
     # path('user-profiles/user_id/<int:user_id>/', UserProfileView.as_view({'get': 'get_user_id'}), name='get-user-id'),
-    path('user-profiles/user_id/<int:user_id>/', UserProfileView.as_view({'patch': 'partial_update_by_user_id'}), name='partial-update-by-user-id'),
+    path('user-profiles/user_id/<int:user_id>/', UserProfileView.as_view({'patch': 'update_profile_by_user_id'}),
+         name='partial-update-by-user-id'),
     path('licenses/<str:pk>/reserve/', license_viewset, name='reserve_license'),
     path('api/save-machine-info/', save_machine_info, name='save_machine_info'),
     path('disabled-plugins-count/', get_disabled_plugins_count, name='disabled-plugins-count'),
