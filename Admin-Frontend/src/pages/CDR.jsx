@@ -46,7 +46,7 @@ function CDR() {
   }
 
   return (
-    <div className="w-full p-6 bg-background rounded-lg">
+    <div className="w-full rounded-lg">
       <h1 className="text-3xl font-semibold mb-6 text-secondary-foreground tracking-widest">
         CDR
       </h1>
@@ -61,7 +61,7 @@ function CDR() {
         ))}
       </div>
       <div className="flex gap-6">
-        <div className="w-1/2 rounded-lg shadow-lg  dark:shadow-sm dark:shadow-white p-4">
+        <div className="w-1/2 rounded-lg shadow-lg  bg-background dark:bg-gray-800 dark:shadow-sm dark:shadow-white p-4">
           <h2 className="text-xl font-semibold mb-4 text-secondary-foreground">
             {selectedCard !== null
               ? cardData[selectedCard].title
@@ -82,7 +82,7 @@ function CDR() {
               index !== selectedCard && (
                 <div
                   key={index}
-                  className="rounded-lg shadow-lg dark:shadow-sm dark:shadow-white p-4"
+                  className="rounded-lg shadow-lg dark:shadow-sm dark:shadow-white p-4 bg-background dark:bg-gray-800"
                 >
                   <h3 className="text-lg font-semibold mb-2 text-secondary-foreground">
                     {card.title}
