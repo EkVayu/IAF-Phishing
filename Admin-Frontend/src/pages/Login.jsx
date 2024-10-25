@@ -23,26 +23,21 @@ function Login() {
   };
 
   const validatePassword = (password) => {
-    // const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&])(?=.*[0-9]).{2,}$/;
-    // return passwordRegex.test(password);
     return password;
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // User ID and password validation
     if (!userId.trim() || !password.trim()) {
       toast.error("Please enter both User ID and Password.");
       return;
     }
 
-    // Email validation
     if (!validateEmail(userId)) {
       toast.error("Please enter a valid email address.");
       return;
     }
 
-    // Password validation
     if (!validatePassword(password)) {
       toast.error(
         "Password must be at least 8 characters long and contain at least one special character."
@@ -70,7 +65,6 @@ function Login() {
   };
 
   const handleSendPasswordReset = async () => {
-    // Email validation for forgot password
     if (!validateEmail(userId)) {
       toast.error("Please enter a valid email address.");
       return;
@@ -78,7 +72,6 @@ function Login() {
       setLoading(true);
       try {
         const response = await sendPasswordResetRequest(userId);
-
         const data = await response.json();
         if (data.success) {
           toast.success("Password reset link sent to your email");
@@ -110,7 +103,6 @@ function Login() {
             className="w-6 h-6 cursor-pointer bg-blue-800 text-white rounded-full"
             onClick={() => {
               setAction("Login");
-              setError("");
             }}
           />
         )}
@@ -118,7 +110,10 @@ function Login() {
           <h1 className="text-2xl font-bold text-blue-800 underline">
             {action === "Login" ? "Login" : "Forget Password"}
           </h1>
-          <div className="w-full flex flex-col items-center justify-center gap-5 px-3">
+          <form
+            onSubmit={handleLogin}
+            className="w-full flex flex-col items-center justify-center gap-5 px-3"
+          >
             <div className="w-full flex items-center gap-10 bg-[#E8F0FE] px-5 py-2 rounded-md">
               <MdOutlineEmail className="w-8 h-8 text-gray-500" />
               <input
@@ -149,7 +144,6 @@ function Login() {
                 <span
                   onClick={() => {
                     setAction("Forget Password");
-                    setError("");
                   }}
                   className="text-blue-800 cursor-pointer"
                 >
@@ -157,38 +151,38 @@ function Login() {
                 </span>
               </div>
             )}
-          </div>
-          <div className="w-full flex items-center justify-center">
-            {action === "Forget Password" ? (
-              <div
-                className="bg-blue-800 px-8 py-2 rounded-full cursor-pointer text-white mb-10 select-none"
-                onClick={handleSendPasswordReset}
-              >
-                {loading ? (
-                  <span className="flex items-center">
-                    <LuLoader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
-                    Sending...
-                  </span>
-                ) : (
-                  "Send Password Reset Link"
-                )}
-              </div>
-            ) : (
-              <div
-                className="bg-blue-800 px-8 py-2 rounded-full cursor-pointer text-white select-none"
-                onClick={handleLogin}
-              >
-                {loading ? (
-                  <span className="flex items-center">
-                    <LuLoader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
-                    Login...
-                  </span>
-                ) : (
-                  "Login"
-                )}
-              </div>
-            )}
-          </div>
+            <div className="w-full flex items-center justify-center">
+              {action === "Forget Password" ? (
+                <div
+                  className="bg-blue-800 px-8 py-2 rounded-full cursor-pointer text-white mb-10 select-none"
+                  onClick={handleSendPasswordReset}
+                >
+                  {loading ? (
+                    <span className="flex items-center">
+                      <LuLoader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
+                      Sending...
+                    </span>
+                  ) : (
+                    "Send Password Reset Link"
+                  )}
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  className="bg-blue-800 px-8 py-2 rounded-full cursor-pointer text-white select-none"
+                >
+                  {loading ? (
+                    <span className="flex items-center">
+                      <LuLoader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
+                      Login...
+                    </span>
+                  ) : (
+                    "Login"
+                  )}
+                </button>
+              )}
+            </div>
+          </form>
         </div>
       </div>
     </div>
