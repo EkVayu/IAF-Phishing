@@ -155,7 +155,7 @@ class PluginEnableDisable(models.Model):
     PluginEnableDisable model stores information about enabling and disabling actions for a plugin.
     """
 
-    # EmailDetails model stores details related to an email, including its subject, body, and attachments.
+# EmailDetails model stores details related to an email, including its subject, body, and attachments.
 class EmailDetails(models.Model):
     """
     Attributes:
@@ -191,7 +191,7 @@ class EmailDetails(models.Model):
     eml_file_name = models.CharField(max_length=100, blank=True, null=True)
     plugin_id = models.CharField(max_length=80, blank=True, null=True)
     msg_id = models.CharField(max_length=100, blank=True, null=True)    
-    status = models.CharField(max_length=50,choices=STATUS_CHOICES, default='safe')
+    status = models.CharField(max_length=50,choices=STATUS_CHOICES, default='unsafe')
     subject = models.TextField(blank=True, null=True)
     urls = models.TextField(blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True,blank=True,null=True)
@@ -216,72 +216,6 @@ class EmailDetails(models.Model):
         Returns a string representation of the email details, showing the email ID.
 
         """
-
-# class urls(models.Model):
-#     """
-#     Attributes:
-#         url (str): The URL associated with the email.
-#         email_id (str): The ID of the email associated with the URL.
-#         email_details (ForeignKey): A reference to the related EmailDetails object.
-#     """
-#     email_details = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name="email_details")
-#     url = models.CharField(max_length=255, blank=True, null=True)
-#     message= models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name="email_details1")
-    
-#     class Meta:
-#         """
-#         Meta class for the EmailDetails model.
-#         """
-#         db_table = 'plugin_emails_urls'
-#         def _str_(self):
-#             return f"Email Details for {self.url}"
-
-# class email2(models.Model):
-#     """
-#     Attributes:
-#         msg_id (str): The ID of the email message.
-#         u_id (str): The unique identifier of the email.
-#         recievers_email (str): The email address of the recipient.
-#         senders_email (str): The email address of the sender.
-#         eml_file_name (str): The name of the email file.
-#         plugin_id (str): The ID of the plugin associated with the email.
-#         message_id (str): The ID of the message associated with the email.
-#         status (str): The status of the email.
-#         subject (str): The subject of the email.
-#         urls (
-#         TextField): The URLs associated with the email.
-#         create_time (datetime): The datetime when the email details were created.
-
-#         """
-#     EmailDetails = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name="email2")
-#     sender_email = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name="email2")
-    
-
-#     class Meta:
-#         """
-#         Meta class for the EmailDetails model.
-#         """
-#         managed = True
-#         db_table = 'plugin_email2'
-
-
-
-# class Attachments(models.Model):
-#     """
-#     Attributes:
-#         message_id (str): The ID of the message associated with the attachment.
-#         attachment (str): The attachment associated with the message.
-#     """
-#     msg_id = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name="message_id1")
-#     attachment = models.CharField(max_length=255, blank=True, null=True)
-
-#     class Meta:
-#         db_table = 'plugin_emails_attachments'
-#     def _str_(self):
-#         return f"Attachment for {self.msg_id}"
-
-
-
 class CDRFile(models.Model):
     """
     Attributes:

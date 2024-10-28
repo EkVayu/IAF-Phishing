@@ -8,7 +8,7 @@ from .views import spam_email_view
 from plugin.views import DisputeViewSet
 from plugin.views import PluginInstallUninstallViewSet
 from plugin.views import PluginEnableDisableViewSet
-from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email
+from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView
 # from plugin.ai_services import process_url
 # from .views import PluginUninstallView
 # from .views import PluginDisableView
@@ -36,6 +36,7 @@ router.register(r'disputes', DisputeViewSet, basename='dispute')
 router.register(r'plugins/install-uninstall', PluginInstallUninstallViewSet, basename='plugin-install-uninstall')
 router.register(r'plugins/enable-disable', PluginEnableDisableViewSet, basename='plugin-enable-disable')
 router.register(r'plugin-check', PluginRegistrationCheckViewSet, basename='plugin-check')
+router.register(r'disputes-details', GetDisputesView, basename='disputes-details')
 
 # Define URL patterns
 

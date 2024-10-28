@@ -220,10 +220,19 @@ class LicenseListView(viewsets.ModelViewSet):
     serializer_class = LicenseSerializer
     # Nidhi
     def list(self, request): 
-        current_user = request.user      
+        current_user = request.user    
+
+        # Check if the user is authenticated
+        if not current_user.is_authenticated:
+            return Response({'error': 'Login required to access licenses.'}, status=status.HTTP_401_UNAUTHORIZED)
+ 
         user_email = current_user.email 
         print(user_email)
-        user = User.objects.get(email=user_email)
+        try:
+           user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
         print(user)
         user_is_active = user.is_active
         print(user_is_active)
@@ -242,7 +251,7 @@ class LicenseListView(viewsets.ModelViewSet):
         #queryset = License.objects.all()
         serializer = self.serializer_class(queryset, many=True)
         count = queryset.count()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
     def allocate(self, request, pk=None):
@@ -352,7 +361,7 @@ class LicenseListView(viewsets.ModelViewSet):
         
         for i in range(number_of_licenses):
             serial_number = base_license_number + i
-            license_id = f"LIC-{serial_number:04d}"  # Formats the license ID like 'LIC-0001'
+            license_id = f"LIC-{serial_number:04d}"
 
             license = License(
                 license_id=license_id,

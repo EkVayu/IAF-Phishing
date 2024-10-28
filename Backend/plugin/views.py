@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from pathlib import Path
@@ -9,9 +8,7 @@ import json
 from .view.register import register
 from .view.verify_license_id  import verify_lid
 from .services.check_email import check_email
-# from .view.spam_email import spam_email
 from users.models import PluginMaster, License
-# from .view.dispute import dispute_count,dispute_email
 from django.shortcuts import render
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework import viewsets, permissions,generics,status,mixins
@@ -34,9 +31,7 @@ import os
 from django.core.files.storage import default_storage
 from django.core.serializers import serialize
 logger = logging.getLogger(__name__)
-
 from users.serializers import *
-
 
 
 @csrf_exempt
@@ -100,17 +95,6 @@ def verify_license_id_view(request):
         data = json.loads(request.body)
         response = verify_lid(data)
         return response
-    
-# @csrf_exempt
-# def handle_dispute_view(request):
-#     if request.method == 'POST':
-#         try:
-#             reason = json.loads(request.body).get('reason')
-#             print('Dispute Reason:', reason)
-#             response = {'status': 'received', 'reason': reason}
-#             return JsonResponse(response, status=200)
-#         except Exception as e:
-#             return JsonResponse({'error': str(e)}, status=500)
         
 @csrf_exempt
 def check_email_view(request):
@@ -138,53 +122,36 @@ def spam_email_view(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
-
-
 class DisputeViewSet(viewsets.ViewSet):
     serializer_class = DisputeSerializer
     #permission_classes = [IsAuthenticated]
 
 
-    @action(detail=False, methods=['get'], url_path='count/(?P<email>[^/]+)/(?P<msg_id>[^/]+)')
-    # http://127.0.0.1:8000/plugin/disputes/count?email=user@example.com&messageId=112223344555666
+    @action(detail=False, methods=['get'], url_path='count')
     def get_dispute_count(self, request):
-        """
-        Returns the count of active disputes for the given email and message ID,
-        along with the message status and other details from the email_details table.
-        """
         email = request.query_params.get('email')
-        message_id = request.query_params.get('messageId')
-        
+        msg_id = request.query_params.get('messageId')
+
         if not email:
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
         
-        if not message_id:
+        if not msg_id:
             return Response({"error": "Message Id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Get the dispute count for the given email and message_id
-        active_dispute_count = Dispute.objects.filter(email=email, msg_id=message_id).count()
+        
+        active_dispute_count = Dispute.objects.filter(email=email, msg_id=msg_id).count()
 
-        # Query the email_details table for the status and other details of the message_id
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT status, subject, plugin_id 
-                FROM email_details 
-                WHERE message_id = %s
-            """, [message_id])
-            row = cursor.fetchone()
-
-        # Check if we got a result from email_details
-        if row:
-            message_status = row[0]  # Status of the email
-            # plugin_id = row[2]       # Plugin ID related to the email
-        else:
+        try:
+            email_detail = EmailDetail.objects.get(message_id=msg_id)
+        except EmailDetail.DoesNotExist:
             return Response({"error": "Message Id not found in email_details"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Return the dispute count and the message status along with additional details
         return Response({
             "dispute_count": active_dispute_count,
-            "message_status": message_status,
-            "message_id":message_id
+            "message_status": email_detail.status,
+            "message_id": msg_id,
+            "subject": email_detail.subject,
+            "plugin_id": email_detail.plugin_id
         }, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'], url_path='raise')
@@ -200,7 +167,7 @@ class DisputeViewSet(viewsets.ViewSet):
         if not user_comment:
             return Response({"error": "User comment is required"}, status=status.HTTP_400_BAD_REQUEST)
         
-    # Get the status from EmailDetails based on msg_id
+    
         email_detail = EmailDetails.objects.filter(msg_id=msg_id).first()
     
         if not email_detail:
@@ -210,12 +177,12 @@ class DisputeViewSet(viewsets.ViewSet):
         email_status = email_detail.status
         print(email_status)
 
-    # Convert email status to code (0 = Unsafe, 1 = Safe)
+    
         email_status_code = {
         'unsafe': 0,
-        'safe': 1,  # Ensure the key is lowercase
-        'Safe': 1,  # Keep this for case sensitivity
-        # Add other statuses as needed
+        'safe': 1,  
+        'Safe': 1,  
+        
     }.get(email_status.lower())
 
         if email_status_code is None:
@@ -416,191 +383,6 @@ class PluginRegistrationCheckViewSet(viewsets.ViewSet):
             return Response({
                 'error': 'License not found for this plugin.'
             }, status=status.HTTP_404_NOT_FOUND)
-        
-
-
-# class EmailUrlsViewSet(viewsets.ViewSet):
-    
-#     @action(detail=False, methods=['post'])
-#     def transfer_urls_to_new_table(self, request):
-#         """
-#         Transfer URLs from EmailDetails to the new Urls table.
-#         """
-#         email_id = request.data.get('email_id')
-
-#         if not email_id:
-#             return Response(
-#                 {"error": "email_id is required."},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         try:
-#             email_details = EmailDetails.objects.get(id=email_id)
-#         except EmailDetails.DoesNotExist:
-#             return Response(
-#                 {"error": "EmailDetails not found."},
-#                 status=status.HTTP_404_NOT_FOUND
-#             )
-
-#         # Assuming the URLs are stored in a field called 'urls' in EmailDetails
-#         # and it's a TextField with URLs separated by commas
-#         urls = email_details.urls.split(',') if email_details.urls else []
-
-#         if not urls:
-#             return Response(
-#                 {"message": "No URLs found in the EmailDetails."},
-#                 status=status.HTTP_200_OK
-#             )
-
-#         saved_urls = []
-#         for url in urls:
-#             url = url.strip()  # Remove any leading/trailing whitespace
-#             if url:
-#                 url_obj, created = urls.objects.get_or_create(
-#                     url=url,
-#                     email_id=email_details
-#                 )
-#                 if created:
-#                     saved_urls.append(url)
-
-#         return Response(
-#             {
-#                 "message": f"Successfully transferred {len(saved_urls)} URLs to the new table",
-#                 "transferred_urls": saved_urls
-#             },
-#             status=status.HTTP_201_CREATED
-#         )
-
-# views.py
-
-
-# @csrf_exempt
-# @require_http_methods(["POST"])
-# def upload_attachment(request):
-#     msg_id = request.POST.get('msg_id')
-#     attachment = request.FILES.get('attachment')
-
-#     if not msg_id or not attachment:
-#         return JsonResponse({"error": "msg_id and attachment are required"}, status=400)
-
-#     try:
-#         # Check if EmailDetails record exists
-#         email_detail = EmailDetails.objects.get(message_id=msg_id)
-#     except EmailDetails.DoesNotExist:
-#         return JsonResponse({"error": "No EmailDetails record found for the given msg_id"}, status=404)
-
-#     # Save the file temporarily
-#     file_path = default_storage.save(f'temp_attachments/{attachment.name}', attachment)
-#     full_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
-
-#     try:
-#         # API endpoint
-#         url = 'https://anti-phishing.voxomos.ai/voxpd/process_attachment'
-
-#         # Prepare the data and file for the external API request
-#         data = {'msg_id': msg_id}
-#         files = {'attachments': open(full_file_path, 'rb')}
-
-#         # Send the POST request to the external API
-#         response = requests.post(url, data=data, files=files)
-
-#         if response.status_code == 200:
-#             response_data = response.json()
-#             api_status = response_data['data']['result']
-
-#             # Map API status to our model's status choices
-#             status_mapping = {
-#                 'safe': 'safe',
-#                 'unsafe': 'unsafe',
-#                 # Add any other mappings if needed
-#             }
-#             new_status = status_mapping.get(api_status.lower(), 'pending')
-
-#             # Update the status in the existing EmailDetails record
-#             email_detail.status = new_status
-#             email_detail.save()
-
-#             return JsonResponse({
-#                 "message": "Attachment processed successfully",
-#                 "details": response_data,
-#                 "database_record": {
-#                     "id": email_detail.id,
-#                     "message_id": email_detail.message_id,
-#                     "status": email_detail.status,
-#                     "updated_at": email_detail.updated_at
-#                 }
-#             })
-#         else:
-#             return JsonResponse({
-#                 "error": "Failed to process the attachment",
-#                 "details": response.text
-#             }, status=response.status_code)
-
-#     except requests.RequestException as e:
-#         return JsonResponse({
-#             "error": "Failed to connect to the external service",
-#             "details": str(e)
-#         }, status=503)
-
-#     finally:
-#         # Close the file
-#         files['attachments'].close()
-#         # Remove the temporary file
-#         default_storage.delete(file_path)
-
-# @csrf_exempt  # Only use in development or if CSRF tokens are handled elsewhere
-# def post_cdr_data(request):
-#     if request.method == 'POST':
-#         try:
-#             # Parse JSON data from the request body
-#             body_unicode = request.body.decode('utf-8')
-#             body_data = json.loads(body_unicode)
-
-#             # Extract required fields
-#             msg_id = body_data.get('msg_id')
-#             cdr_file = body_data.get['cdr_file']
-#             status = body_data.get('status')
-
-#             # Simple validation check (you can add more validation if needed)
-#             if not msg_id or not cdr_file or not status:
-#                 return JsonResponse({
-#                     'status': 400,
-#                     'message': 'Bad Request: Missing required fields.',
-#                     'data': None,
-#                     'errors': 'msg_id, cdr_file, and status are required.'
-#                 }, status=400)
-
-#             # Simulate processing the data (you can add custom logic here)
-#             processed_data = {
-#                 'msg_id': msg_id,
-#                 'cdr_file': [cdr_file],
-#                 'status': status
-#             }
-
-#             # Return success response
-#             return JsonResponse({
-#                 'status': 200,
-#                 'message': 'Data processed successfully.',
-#                 'msg_id': [msg_id],
-#                 'errors': None
-#             }, status=200)
-
-#         except json.JSONDecodeError:
-#             return JsonResponse({
-#                 'status': 400,
-#                 'message': 'Bad Request: Invalid JSON format.',
-#                 'data': None,
-#                 'errors': 'JSONDecodeError: Failed to parse JSON.'
-#             }, status=400)
-
-#     # Handle invalid HTTP method
-#     return JsonResponse({
-#         'status': 405,
-#         'message': 'Method Not Allowed. Use POST.',
-#         'data': None,
-#         'errors': 'Invalid HTTP method'
-#     }, status=405)
-
 
 
 @csrf_exempt
@@ -729,6 +511,39 @@ class BrowserDetailsViewSet(viewsets.ModelViewSet):
         )
 
         return Response(data)
+
+class GetDisputesView(viewsets.ViewSet):
+    queryset = Dispute.objects.all()
+    serializer_class = DisputeSerializer
+    def list(self, request):
+        try:
+            disputes = Dispute.objects.all().order_by('-created_at')
+            dispute_data = []
+            for dispute in disputes:
+                dispute_info = DisputeInfo.objects.filter(dispute=dispute).first()
+                dispute_details = {
+                    'dispute_id': dispute.id,
+                    'email': dispute.email,
+                    'msg_id': dispute.msg_id,
+                    'counter': dispute.counter,
+                    'status': dispute.status,
+                    'created_at': dispute.created_at,
+                    'user_comment': dispute_info.user_comment if dispute_info else None
+                }
+                dispute_data.append(dispute_details)
+            return JsonResponse({
+                    "message": "Disputes retrieved successfully",
+                    "STATUS": "Success",
+                    "Code": 1,
+                    "data": dispute_data
+                }, safe=False)
+        except Exception as e:
+            return JsonResponse({
+                "message": str(e),
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=500)
     
 
 @csrf_exempt
