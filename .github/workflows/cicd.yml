@@ -1,42 +1,33 @@
 name: My First GitHub Actions
 
-on: [push]
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - 'aws-conn'
+
+env:
+  sshKey: ${{ secrets.EC2_SSH_KEY }}
+  ec2IP: ${{ secrets.EC2_PUBLIC_IP }}
+  pat: ${{ secrets.GH_PAT }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
-      - name: Build application
-        run: |
-          echo "this is build stage"
 
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        
-      - name: Install dependencies
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ env.sshKey }}
+      
+      - name: Clone Repository on EC2 using PAT
         run: |
-          echo "this is installing the dependencies"
-
-      - name: Run tests
-        run: |
-          echo "this is running the test"
-          ls
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        
-      - name: Deploy application
-        run: |
-          echo "this is deployment"
-          pwd
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2IP }} << 'EOF'
+            # Clone the private repo on EC2 instance using PAT
+            git clone https://${{ env.pat }}git@github.com:EkVayu/IAF-Phishing.git /home/ubuntu/python-code/
+          EOF
+    
