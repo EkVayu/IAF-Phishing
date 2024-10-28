@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - 'aws-conn'
+      - 'main'
 
 env:
   sshKey: ${{ secrets.EC2_SSH_KEY }}
