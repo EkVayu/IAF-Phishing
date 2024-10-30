@@ -37,56 +37,78 @@ from users.serializers import *
 @csrf_exempt
 def registration_view(request):
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            
-            plugin_id = data.get('pluginId')
-            ip_add = data.get('ipAddress')
-            browser = data.get('browser')
-            license_id = data.get('licenseId')
-
-            if not all([plugin_id, ip_add, license_id]):
-                return JsonResponse({"error": "Plugin ID, IP Address, and License ID are required"}, status=400)
-
-            logger.info(f"Registering plugin: {plugin_id}")
-            
-            
-            response = register(request)
-
-            if isinstance(response, JsonResponse):
-                response_data = json.loads(response.content)
-                if response_data.get('Code') == 0:
-                    return response
-
-            
-            plugin_install_uninstall = PluginInstallUninstall.objects.create(
+        data = json.loads(request.body)
+        plugin_id = data.get('pluginId')
+        ip_add = data.get('ipAddress')
+        browser = data.get('browser')
+        license_id = data.get('licenseId')
+        
+        plugin_install_uninstall = PluginInstallUninstall.objects.create(
                 plugin_id=plugin_id,
                 ip_address=ip_add,
                 browser=browser,
                 installed_at=timezone.now(),
                 uninstalled_at=None
             )
-            
-            enable_disable_action = PluginEnableDisable.objects.create(
+        # plugin_install_uninstall.save()
+        enable_disable_action = PluginEnableDisable.objects.create(
                 plugin_install_uninstall=plugin_install_uninstall,
                 enabled_at=timezone.now()
             )
+        serializer = PluginEnableDisableSerializer(enable_disable_action)
+    #         logger.info(f"Plugin {plugin_id} registered and enabled successfully")
+    #         return JsonResponse(serializer.data, status=201, safe=False)
+        response = verify_lid(data)
+        return response
+    # if request.method == 'POST':
+    #     try:
+    #         data = json.loads(request.body)
             
-            serializer = PluginEnableDisableSerializer(enable_disable_action)
-            logger.info(f"Plugin {plugin_id} registered and enabled successfully")
-            return JsonResponse(serializer.data, status=201, safe=False)
+    #         plugin_id = data.get('pluginId')
+    #         ip_add = data.get('ipAddress')
+    #         browser = data.get('browser')
+    #         license_id = data.get('licenseId')
 
-        except json.JSONDecodeError:
-            logger.error("Invalid JSON in request body")
-            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
-        except License.DoesNotExist:
-            logger.error(f"License not found: {license_id}")
-            return JsonResponse({"error": "License not found"}, status=404)
-        except Exception as e:
-            logger.error(f"Error in registration_view: {str(e)}", exc_info=True)
-            return JsonResponse({"error": "Internal server error"}, status=500)
+    #         if not all([plugin_id, ip_add, license_id]):
+    #             return JsonResponse({"error": "Plugin ID, IP Address, and License ID are required"}, status=400)
+
+    #         logger.info(f"Registering plugin: {plugin_id}")
+            
+    #         response = register(request)
+
+    #         if isinstance(response, JsonResponse):
+    #             response_data = json.loads(response.content)
+    #             if response_data.get('Code') == 0:
+    #                 return response
+
+    #         plugin_install_uninstall = PluginInstallUninstall.objects.create(
+    #             plugin_id=plugin_id,
+    #             ip_address=ip_add,
+    #             browser=browser,
+    #             installed_at=timezone.now(),
+    #             uninstalled_at=None
+    #         )
+            
+    #         enable_disable_action = PluginEnableDisable.objects.create(
+    #             plugin_install_uninstall=plugin_install_uninstall,
+    #             enabled_at=timezone.now()
+    #         )
+            
+    #         serializer = PluginEnableDisableSerializer(enable_disable_action)
+    #         logger.info(f"Plugin {plugin_id} registered and enabled successfully")
+    #         return JsonResponse(serializer.data, status=201, safe=False)
+
+    #     except json.JSONDecodeError:
+    #         logger.error("Invalid JSON in request body")
+    #         return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
+    #     except License.DoesNotExist:
+    #         logger.error(f"License not found: {license_id}")
+    #         return JsonResponse({"error": "License not found"}, status=404)
+    #     except Exception as e:
+    #         logger.error(f"Error in registration_view: {str(e)}", exc_info=True)
+    #         return JsonResponse({"error": "Internal server error"}, status=500)
     
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+    # return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 @csrf_exempt

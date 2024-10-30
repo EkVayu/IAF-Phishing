@@ -15,31 +15,36 @@ def register(request):
                 plugin_id = data.get('pluginId')
                 ip_add = data.get('ipAddress')
                 browser = data.get('browser')
-
-                # Check if license exists and is not in use
                 try:
                     license = License.objects.get(hashed_license_id=license_id)
                 except License.DoesNotExist:
-                    return JsonResponse({"message": "License Not Exists", "STATUS": "Not Found", "Code": 0})
-
-                if license.status == '1':
-                    return JsonResponse({"message": "License Already In Use", "STATUS": "", "Code": 0})
-
-                # Check if plugin_id already exists
-                if PluginMaster.objects.filter(plugin_id=plugin_id).exists():
-                    return JsonResponse({"message": "Plugin Id already registered, Install again", "STATUS": "", "Code": 0})
-                # Create new plugin
+                    return JsonResponse({
+                        "message": "License Not Exists",
+                        "STATUS": "Not Found",
+                        "Code": 0
+                    }, status=400)
                 plugin = PluginMaster.objects.create(
                     plugin_id=plugin_id,
-                    license=license,
+                    license_id=license,
                     ip_add=ip_add,
-                    browser=browser
+                    browser=browser,
+                    install_date=timezone.now()
                 )
-                # Update license
-                license.plugin = plugin
-                license.status = '1'
-                license.save()
-                return JsonResponse({"message": "License Id registered", "STATUS": "Registered", "Code": 1})
+                plugin.save()
+                
+                return JsonResponse({
+                    "message": "License Id registered",
+                    "STATUS": "Registered",
+                    "Code": 1
+                }, status=200)
+
         except Exception as e:
-            return JsonResponse({"error": str(e), "Code": 0})
-    return JsonResponse({"error": "Invalid request method", "Code": 0})
+            return JsonResponse({
+                "error": str(e),
+                "Code": 0
+            }, status=500)
+
+    return JsonResponse({
+        "error": "Invalid request method",
+        "Code": 0
+    }, status=405)

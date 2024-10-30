@@ -49,7 +49,7 @@ urlpatterns = [
     
     #............................AI Services............................
 
-    # for check ai_serivices url if then will use only not need to use this url
+    # for check ai_serivices url if then69 will use only not need to use this url
     # path('send-email-details/', send_email_details, name='send-email-details'),
     # 
     path('cdr-response/', cdr_resposne_to_ai, name='cdr-response'),

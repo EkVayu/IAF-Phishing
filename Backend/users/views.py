@@ -50,8 +50,6 @@ class LoginViewset(viewsets.ViewSet):
                     role = "staff"
                 else:
                     role = "user"
-
-                
                 request.session['user_role'] = role
                 request.session['user_email'] = user.email
                 request.session['user_username'] = user.username
@@ -247,8 +245,7 @@ class LicenseListView(viewsets.ModelViewSet):
            queryset = License.objects.all() 
         else:
            queryset = License.objects.filter(is_reserved=0)  
-        print(queryset)  
-        #queryset = License.objects.all()
+        print(queryset)
         serializer = self.serializer_class(queryset, many=True)
         count = queryset.count()
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -266,7 +263,7 @@ class LicenseListView(viewsets.ModelViewSet):
 
             # Update the License instance
             license.allocated_to = allocated_to
-            license.status = 1  # Assuming 1 represents 'allocated' status
+            license.status = 1
             license.save()
 
             # Create a new LicenseAllocation instance
@@ -275,7 +272,6 @@ class LicenseListView(viewsets.ModelViewSet):
                 allocated_to=allocated_to,
                 allocation_date=allocation_date
             )
-
             message = f"License allocated successfully to {allocated_to}, Allocation Date: {allocation_date}, License ID: {license.hashed_license_id}"
             print("Hashed license id ",license.hashed_license_id)
             send_mail(
