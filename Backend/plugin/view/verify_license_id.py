@@ -23,7 +23,7 @@ def verify_lid(data):
                 current_time = timezone.now()
                 if license.valid_till < current_time:
                     return JsonResponse({
-                        "message": "License has expired",
+                        "message": "License has expired.Please contact the administrator.",
                         "STATUS": "Expired",
                         "Code": 0,
                         "data": ""
@@ -34,7 +34,7 @@ def verify_lid(data):
                 print(f"Allocation: {allocation}")
                 if not allocation:
                     return JsonResponse({
-                        "message": "License found but no email allocation",
+                        "message": "License found but no email allocation.Please contact the administrator.",
                         "STATUS": "allocation not found",
                         "Code": 1,
                         "data": ""
@@ -51,14 +51,14 @@ def verify_lid(data):
                     
                 else:
                     return JsonResponse({
-                        "message": "License allocation mismatch",
+                        "message": "License allocation mismatch.Please contact the administrator.",
                         "STATUS": "Wrong Allocation",
                         "Code": 0,
                         "data": ""
                     }, status=400)
             else:
                 return JsonResponse({
-                    "message": "License validity dates not set",
+                    "message": "License validity dates not set.Please contact the administrator.",
                     "STATUS": "Invalid Dates",
                     "Code": 0,
                     "data": ""
