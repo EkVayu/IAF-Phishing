@@ -619,30 +619,45 @@ def spam_email(request):
         "data": ""
     }, status=405)
 
-
-
 @csrf_exempt
 def graph_count(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
-            total_disputes = Dispute.objects.count()
-            total_processed_emails = EmailDetails.objects.count()
-            total_spam_emails = EmailDetails.objects.filter(status='unsafe').count()
+            data = json.loads(request.body)
+            email_id = data.get('emailId')
 
-            data = {
+            if not email_id:
+                return JsonResponse({
+                    "message": "email_id is missing",
+                    "STATUS": "Error",
+                    "Code": 0,
+                    "data": ""
+                }, status=400)
+
+            total_disputes = Dispute.objects.filter(email=email_id).count()
+            total_processed_emails = EmailDetails.objects.filter(recievers_email=email_id).count()
+            total_spam_emails = EmailDetails.objects.filter(status='unsafe', recievers_email=email_id).count()
+
+            result_data = {
                 'total_disputes': total_disputes,
                 'total_processed_emails': total_processed_emails,
                 'total_spam_emails': total_spam_emails,
             }
-            print("count data",data)
 
             return JsonResponse({
                 "message": "Counts retrieved successfully",
                 "STATUS": "Success",
                 "Code": 1,
-                "data": data
+                "data": result_data
             })
 
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "message": "Invalid JSON format",
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=400)
         except Exception as e:
             return JsonResponse({
                 "message": str(e),
@@ -657,4 +672,3 @@ def graph_count(request):
         "Code": 0,
         "data": ""
     }, status=405)
-
