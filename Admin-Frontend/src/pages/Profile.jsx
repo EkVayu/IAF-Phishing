@@ -70,7 +70,7 @@ function Profile() {
                 </p>
               </div>
               <Link
-                to="/edit-profile"
+                to="/profile/edit"
                 className="bg-background text-primary dark:text-white transition duration-300 py-2 px-4 rounded-full flex items-center"
               >
                 <FaEdit className="w-5 h-5 mr-2" />

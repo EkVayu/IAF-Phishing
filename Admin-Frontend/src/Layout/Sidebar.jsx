@@ -25,6 +25,11 @@ const superadminMenuItems = [
     path: "/licenses",
     icon: <MdVpnKey className="text-xl" />,
   },
+  {
+    title: "Profile",
+    path: "/profile",
+    icon: <CgProfile className="text-xl" />,
+  },
 ];
 
 const staffMenuItems = [

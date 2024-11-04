@@ -100,6 +100,28 @@ const AppRoutes = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    {" "}
+                    <Profile />{" "}
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/edit"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    {" "}
+                    <Editprofile />{" "}
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
           </>
         ) : (
           <>
