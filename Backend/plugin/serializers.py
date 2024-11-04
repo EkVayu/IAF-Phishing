@@ -95,4 +95,9 @@ class PluginSerializer(serializers.ModelSerializer):
 class AttachmentUpdateSerializer(serializers.Serializer):
     msg_id = serializers.CharField(required=True)
     attachments = serializers.FileField(required=True)
+
+
+class TotalCountSerializer(serializers.Serializer):
+    dispute=serializers.IntegerField()
+    EmaiDetails=serializers.IntegerField()
         

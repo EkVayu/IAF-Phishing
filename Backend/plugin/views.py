@@ -584,20 +584,19 @@ def spam_email(request):
                     "data": ""
                 }, status=400)
 
-            print(f"Looking for emails with receiver: {email_id}")  # Debugging line
+            print(f"Looking for emails with receiver: {email_id}")
 
             # Query using Django ORM
             spam_emails = EmailDetails.objects.filter(
-                status__in=['unsafe','pending'],  # Ensure these match exactly what's in the database
+                status__in=['unsafe','pending'],
                 recievers_email=email_id
             ).order_by('-create_time')
 
-            print(spam_emails)  # Debugging line to see the queryset
-
-            # Serialize the queryset to JSON
+            print(spam_emails)
+            
             serialized_data = serialize('json', spam_emails)
             
-            # Parse the serialized data back to a Python object
+            
             parsed_data = json.loads(serialized_data)
 
             # Extract the actual data from the serialized format
@@ -619,3 +618,43 @@ def spam_email(request):
         "Code": 0,
         "data": ""
     }, status=405)
+
+
+
+@csrf_exempt
+def graph_count(request):
+    if request.method == 'GET':
+        try:
+            total_disputes = Dispute.objects.count()
+            total_processed_emails = EmailDetails.objects.count()
+            total_spam_emails = EmailDetails.objects.filter(status='unsafe').count()
+
+            data = {
+                'total_disputes': total_disputes,
+                'total_processed_emails': total_processed_emails,
+                'total_spam_emails': total_spam_emails,
+            }
+            print("count data",data)
+
+            return JsonResponse({
+                "message": "Counts retrieved successfully",
+                "STATUS": "Success",
+                "Code": 1,
+                "data": data
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                "message": str(e),
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=500)
+
+    return JsonResponse({
+        "message": "Invalid request method",
+        "STATUS": "Error",
+        "Code": 0,
+        "data": ""
+    }, status=405)
+

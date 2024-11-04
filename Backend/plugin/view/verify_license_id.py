@@ -71,7 +71,6 @@ def verify_lid(data):
                 "Code": 0,
                 "data": ""
             }, status=404)
-
     except Exception as e:
         return JsonResponse({
             "message": f"An error occurred: {str(e)}",

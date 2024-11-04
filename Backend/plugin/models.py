@@ -155,7 +155,7 @@ class PluginEnableDisable(models.Model):
     PluginEnableDisable model stores information about enabling and disabling actions for a plugin.
     """
 
-# EmailDetails model stores details related to an email, including its subject, body, and attachments.
+    # EmailDetails model stores details related to an email, including its subject, body, and attachments.
 class EmailDetails(models.Model):
     """
     Attributes:
