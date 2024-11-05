@@ -672,3 +672,5 @@ def graph_count(request):
         "Code": 0,
         "data": ""
     }, status=405)
+
+
