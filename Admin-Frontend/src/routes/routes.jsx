@@ -27,6 +27,7 @@ import SuperAdminDashboard from "../pages/SuperAdmin/SuperAdminDashboard";
 import StaffDashboard from "../pages/StaffDashboard";
 import { useAuth } from "../context/AuthContext";
 import PluginActivityPopup from "../components/popup/plugin_activity_popup/PluginActivityPopup";
+import Disputes from "../pages/Disputes";
 
 const ConditionalPluginPopup = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -167,6 +168,16 @@ const AppRoutes = () => {
               }
             />
             <Route
+              path="/disputes"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Disputes />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/sandbox"
               element={
                 <ProtectedRoute>
@@ -255,7 +266,7 @@ const AppRoutes = () => {
               }
             />
             <Route
-              path="/edit-profile"
+              path="/profile/edit"
               element={
                 <ProtectedRoute>
                   <DashboardLayout>

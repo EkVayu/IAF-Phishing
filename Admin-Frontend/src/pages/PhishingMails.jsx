@@ -47,8 +47,17 @@ function PhishingMails() {
           setError("No data available!");
           toast.info("No data available!");
         } else {
-          setError("Server response not Ok!");
+          // setError("Server response not Ok!");
           toast.warn("Server response not Ok!");
+          const generatedData = generatePhishingMails(5);
+          const formattedGeneratedData = generatedData.flatMap((mailGroup) =>
+            mailGroup.email_details.map((mail) => ({
+              ...mail,
+              user_comment: mailGroup.dispute_info[0]?.user_comment || "N/A",
+              admin_comment: mailGroup.dispute_info[0]?.admin_comment || "N/A",
+            }))
+          );
+          setPhishingMails(formattedGeneratedData);
         }
       } catch (error) {
         console.error("Error fetching phishing mails:", error);
@@ -62,7 +71,7 @@ function PhishingMails() {
         );
         setPhishingMails(formattedGeneratedData);
         toast.error(`API error: ${error.message}`);
-        setError(`API error: ${error.message}`);
+        // setError(`API error: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -129,9 +138,6 @@ function PhishingMails() {
 }
 
 export default PhishingMails;
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { toast } from "react-toastify";

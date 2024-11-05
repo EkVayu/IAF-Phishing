@@ -186,6 +186,41 @@ export const fetchPhishingMails = async () => {
   return response;
 };
 
+export const fetchDisputes = async () => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/disputes/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+  return response;
+};
+
+export const disputeStatusChange = async (
+  newStatus,
+  email,
+  messageId,
+  adminComment
+) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/disputes/update-status/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      status: newStatus,
+      email: email,
+      message_id: messageId,
+      admin_comment: adminComment,
+    }),
+  });
+  return response;
+};
+
 export const updatePhishingMailStatus = async (
   newStatus,
   receiverEmail,

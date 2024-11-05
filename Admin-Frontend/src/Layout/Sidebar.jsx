@@ -45,6 +45,11 @@ const staffMenuItems = [
     icon: <RiSpam2Fill className="text-xl" />,
   },
   {
+    title: "Disputes",
+    path: "/disputes",
+    icon: <RiSpam2Fill className="text-xl" />,
+  },
+  {
     title: "CDR",
     path: "/cdr",
     icon: <MdSpaceDashboard className="text-xl" />,

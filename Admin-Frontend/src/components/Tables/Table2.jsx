@@ -11,6 +11,64 @@ import DateFormatter from "../Common/DateFormatter";
 import { toast } from "react-toastify";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
+const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await onSubmit(comment);
+      setComment("");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      {isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background dark:bg-gray-800 p-6 rounded-lg shadow-xl w-[400px] animate-in fade-in-0 zoom-in-95">
+            <h3 className="text-lg font-semibold mb-4 text-secondary-foreground">
+              Admin Comment
+            </h3>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full p-3 border border-gray-500 rounded-md bg-background dark:bg-gray-800 text-secondary-foreground resize-none"
+              placeholder="Enter your comment..."
+              rows={4}
+            />
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 rounded-md bg-destructive text-white hover:bg-destructive/80"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="flex gap-2 items-center px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 const getStatusColor = (status) => {
   if (!status) return "bg-gray-200"; // Default color for undefined or null status
   switch (status.toLowerCase()) {
@@ -44,16 +102,27 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
     Object.fromEntries(columns.map((col) => [col.accessor, true]))
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const itemsPerPage = 10;
 
   const handleStatusChange = (row, newStatus) => {
-    const adminComment = prompt("Enter admin comment:");
-    onStatusChange(
-      row.recievers_email,
-      row.message_id,
-      adminComment,
-      newStatus
-    );
+    setPendingStatusChange({ row, newStatus });
+    setIsModalOpen(true);
+  };
+
+  const handleCommentSubmit = async (comment) => {
+    if (pendingStatusChange) {
+      const { row, newStatus } = pendingStatusChange;
+      await onStatusChange(
+        row?.recievers_email,
+        row?.message_id,
+        comment,
+        newStatus
+      );
+    }
+    setIsModalOpen(false);
+    setPendingStatusChange(null);
   };
 
   const filteredData = useMemo(() => {
@@ -296,6 +365,11 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
           </div>
         </div>
       )}
+      <AdminCommentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCommentSubmit}
+      />
     </div>
   );
 }
