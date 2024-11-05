@@ -125,6 +125,11 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
     setPendingStatusChange(null);
   };
 
+  const handleCommentOnly = (row) => {
+    setPendingStatusChange({ row, newStatus: row.status }); // Keep existing status
+    setIsModalOpen(true);
+  };
+
   const filteredData = useMemo(() => {
     return data.filter((row) => {
       return (
@@ -283,29 +288,40 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                         className="px-6 py-2 whitespace-nowrap text-center text-secondary-foreground text-sm"
                       >
                         {column.accessor === "status" ? (
-                          row[column.accessor] === "safe" ||
-                          row[column.accessor] === "unsafe" ? (
-                            <select
-                              value={row[column.accessor]}
-                              onChange={(e) =>
-                                handleStatusChange(row, e.target.value)
-                              }
-                              className={`px-2 py-1 leading-5 font-semibold rounded-md outline-none cursor-pointer ${getStatusColor(
-                                row[column.accessor]
-                              )} text-white`}
-                            >
-                              <option value="safe">Safe</option>
-                              <option value="unsafe">Unsafe</option>
-                            </select>
-                          ) : (
-                            <span
-                              className={`px-2 py-1 leading-5 font-semibold rounded-md ${getStatusColor(
-                                row[column.accessor]
-                              )} text-white`}
-                            >
-                              {row[column.accessor]}
-                            </span>
-                          )
+                          <div className="flex items-center justify-center gap-2">
+                            {row[column.accessor] === "safe" ||
+                            row[column.accessor] === "unsafe" ? (
+                              <>
+                                <select
+                                  value={row[column.accessor]}
+                                  onChange={(e) =>
+                                    handleStatusChange(row, e.target.value)
+                                  }
+                                  className={`px-2 py-1 leading-5 font-semibold rounded-md outline-none cursor-pointer ${getStatusColor(
+                                    row[column.accessor]
+                                  )} text-white`}
+                                >
+                                  <option value="safe">Safe</option>
+                                  <option value="unsafe">Unsafe</option>
+                                </select>
+                                <button
+                                  onClick={() => handleCommentOnly(row)}
+                                  className="bg-primary hover:bg-primary/90 text-white p-1 rounded-md"
+                                  title="Add Comment"
+                                >
+                                  💬
+                                </button>
+                              </>
+                            ) : (
+                              <span
+                                className={`px-2 py-1 leading-5 font-semibold rounded-md ${getStatusColor(
+                                  row[column.accessor]
+                                )} text-white`}
+                              >
+                                {row[column.accessor]}
+                              </span>
+                            )}
+                          </div>
                         ) : column.accessor === "export" ? (
                           <button
                             onClick={() => handleDownload(row)}
