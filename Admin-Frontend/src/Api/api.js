@@ -1,26 +1,11 @@
 import axios from "axios";
 
-// const API_BASE_URL =
-//   process.env.NODE_ENV === "production"
-//     ? "http://13.201.121.236:8002"
-//     : "http://localhost:3000";
-
 const API_BASE_URL = "http://35.154.97.4:8002";
-// const API_BASE_URL = "http://localhost:3000";
+// const API_BASE_URL = "http://localhost:8000";
+
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
-
-export const loginApi = async ({ email: userId, password: password }) => {
-  const response = await fetch(`${API_BASE_URL}/login/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email: userId, password: password }),
-  });
-  return response;
-};
 
 export const refreshToken = async () => {
   const token = sessionStorage.getItem("token");
@@ -34,7 +19,18 @@ export const refreshToken = async () => {
   return response;
 };
 
-export const sendPasswordResetRequest = async ({ email: userId }) => {
+export const loginApi = async ({ email: userId, password: password }) => {
+  const response = await fetch(`${API_BASE_URL}/login/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email: userId, password: password }),
+  });
+  return response;
+};
+
+export const sendPasswordResetOtp = async ({ email: userId }) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/password-reset-request/`, {
     method: "POST",
@@ -43,6 +39,40 @@ export const sendPasswordResetRequest = async ({ email: userId }) => {
       Authorization: `Token ${token}`,
     },
     body: JSON.stringify({ email: userId }),
+  });
+  return response;
+};
+
+export const verifyOtp = async ({ email: userId, otp: otp }) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/verify-otp/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({ email: userId, otp: otp }),
+  });
+  return response;
+};
+
+export const resetPassword = async ({
+  email: userId,
+  otp: otp,
+  newPassword: password,
+}) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/reset-password/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      email: userId,
+      otp: otp,
+      new_password: password,
+    }),
   });
   return response;
 };
@@ -186,6 +216,41 @@ export const fetchPhishingMails = async () => {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,
     },
+  });
+  return response;
+};
+
+export const fetchDisputes = async () => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/disputes/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+  return response;
+};
+
+export const disputeStatusChange = async (
+  newStatus,
+  email,
+  messageId,
+  adminComment
+) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/disputes/update-status/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      status: newStatus,
+      email: email,
+      message_id: messageId,
+      admin_comment: adminComment,
+    }),
   });
   return response;
 };

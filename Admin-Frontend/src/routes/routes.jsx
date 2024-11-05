@@ -27,6 +27,7 @@ import SuperAdminDashboard from "../pages/SuperAdmin/SuperAdminDashboard";
 import StaffDashboard from "../pages/StaffDashboard";
 import { useAuth } from "../context/AuthContext";
 import PluginActivityPopup from "../components/popup/plugin_activity_popup/PluginActivityPopup";
+import Disputes from "../pages/Disputes";
 
 const ConditionalPluginPopup = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -100,6 +101,28 @@ const AppRoutes = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    {" "}
+                    <Profile />{" "}
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/edit"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    {" "}
+                    <Editprofile />{" "}
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
           </>
         ) : (
           <>
@@ -140,6 +163,16 @@ const AppRoutes = () => {
                 <ProtectedRoute>
                   <DashboardLayout>
                     <PhishingMails />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/disputes"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Disputes />
                   </DashboardLayout>
                 </ProtectedRoute>
               }
@@ -233,7 +266,7 @@ const AppRoutes = () => {
               }
             />
             <Route
-              path="/edit-profile"
+              path="/profile/edit"
               element={
                 <ProtectedRoute>
                   <DashboardLayout>

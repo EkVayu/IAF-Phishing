@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { fetchCurrentUserData } from "../Api/api";
 
 function Profile() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [userInfo, setUserInfo] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -66,11 +66,11 @@ function Profile() {
                   {user?.username || "User Name"}
                 </h2>
                 <p className="text-white capitalize text-sm">
-                  {userInfo?.role || "User Role"}
+                  {role || "User Role"}
                 </p>
               </div>
               <Link
-                to="/edit-profile"
+                to="/profile/edit"
                 className="bg-background text-primary dark:text-white transition duration-300 py-2 px-4 rounded-full flex items-center"
               >
                 <FaEdit className="w-5 h-5 mr-2" />
@@ -80,6 +80,16 @@ function Profile() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <ProfileItem
+                icon={<FaEnvelope />}
+                label="First Name"
+                value={user?.name}
+              />
+              <ProfileItem
+                icon={<FaEnvelope />}
+                label="Last Name"
+                value={user?.name}
+              />
               <ProfileItem
                 icon={<FaEnvelope />}
                 label="Email"
@@ -99,16 +109,6 @@ function Profile() {
                 icon={<FaBuilding />}
                 label="Organization"
                 value={userInfo?.organization}
-              />
-              <ProfileItem
-                icon={<FaCalendar />}
-                label="Joined"
-                value={userInfo?.join_date || "Not available"}
-              />
-              <ProfileItem
-                icon={<FaBriefcase />}
-                label="Department"
-                value={userInfo?.department || "Not specified"}
               />
             </div>
           </div>
