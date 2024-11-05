@@ -30,7 +30,6 @@ export const loginApi = async ({ email: userId, password: password }) => {
   return response;
 };
 
-
 export const sendPasswordResetOtp = async ({ email: userId }) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/password-reset-request/`, {
@@ -40,6 +39,40 @@ export const sendPasswordResetOtp = async ({ email: userId }) => {
       Authorization: `Token ${token}`,
     },
     body: JSON.stringify({ email: userId }),
+  });
+  return response;
+};
+
+export const verifyOtp = async ({ email: userId, otp: otp }) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/verify-otp/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({ email: userId, otp: otp }),
+  });
+  return response;
+};
+
+export const resetPassword = async ({
+  email: userId,
+  otp: otp,
+  newPassword: password,
+}) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/reset-password/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      email: userId,
+      otp: otp,
+      new_password: password,
+    }),
   });
   return response;
 };
