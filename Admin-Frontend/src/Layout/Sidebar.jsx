@@ -6,7 +6,6 @@ import { useAuth } from "../context/AuthContext";
 import { MdDashboard, MdVpnKey } from "react-icons/md";
 import { IoMdPeople } from "react-icons/io";
 import { FaPlug } from "react-icons/fa";
-import { RiSpam2Fill } from "react-icons/ri";
 import { MdSpaceDashboard } from "react-icons/md";
 import { TbReportSearch } from "react-icons/tb";
 import { CgProfile } from "react-icons/cg";
@@ -16,6 +15,8 @@ import { IoCall } from "react-icons/io5";
 import { GiRogue } from "react-icons/gi";
 import { IoMdSettings } from "react-icons/io";
 import { SiRtlzwei } from "react-icons/si";
+import { GoLaw } from "react-icons/go";
+import { MdOutlineReportProblem } from "react-icons/md";
 
 const superadminMenuItems = [
   { title: "Dashboard", path: "/", icon: <MdDashboard className="text-xl" /> },
@@ -42,12 +43,12 @@ const staffMenuItems = [
   {
     title: "Phishing",
     path: "/phishing-mails",
-    icon: <RiSpam2Fill className="text-xl" />,
+    icon: <MdOutlineReportProblem className="text-xl" />,
   },
   {
     title: "Disputes",
     path: "/disputes",
-    icon: <RiSpam2Fill className="text-xl" />,
+    icon: <GoLaw className="text-xl" />,
   },
   {
     title: "CDR",
