@@ -7,17 +7,6 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-export const loginApi = async ({ email: userId, password: password }) => {
-  const response = await fetch(`${API_BASE_URL}/login/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email: userId, password: password }),
-  });
-  return response;
-};
-
 export const refreshToken = async () => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/refresh-token/`, {
@@ -30,7 +19,19 @@ export const refreshToken = async () => {
   return response;
 };
 
-export const sendPasswordResetRequest = async ({ email: userId }) => {
+export const loginApi = async ({ email: userId, password: password }) => {
+  const response = await fetch(`${API_BASE_URL}/login/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email: userId, password: password }),
+  });
+  return response;
+};
+
+
+export const sendPasswordResetOtp = async ({ email: userId }) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/password-reset-request/`, {
     method: "POST",

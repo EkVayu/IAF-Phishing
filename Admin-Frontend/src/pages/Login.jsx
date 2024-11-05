@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import leftImage from "../assets/loginPlane.png";
 import { useAuth } from "../context/AuthContext";
-import { loginApi, sendPasswordResetRequest } from "../Api/api";
+import { loginApi, sendPasswordResetOtp } from "../Api/api";
 import { MdOutlineEmail } from "react-icons/md";
 import { HiLockClosed } from "react-icons/hi";
 import { FaAngleLeft } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { LuLoader } from "react-icons/lu";
+import { validatePassword } from "../Validation";
 
 function Login() {
   const [action, setAction] = useState("Login");
@@ -28,6 +29,7 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
     if (!userId.trim() || !password.trim()) {
       toast.error("Please enter both User ID and Password.");
       return;
@@ -71,7 +73,7 @@ function Login() {
     } else {
       setLoading(true);
       try {
-        const response = await sendPasswordResetRequest(userId);
+        const response = await sendPasswordResetOtp(userId);
         const data = await response.json();
         if (data.success) {
           toast.success("Password reset link sent to your email");
@@ -163,7 +165,7 @@ function Login() {
                       Sending...
                     </span>
                   ) : (
-                    "Send Password Reset Link"
+                    <span className="text-sm">Send OTP</span>
                   )}
                 </div>
               ) : (
