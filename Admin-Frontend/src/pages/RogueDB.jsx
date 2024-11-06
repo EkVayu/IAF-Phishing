@@ -64,33 +64,55 @@ function RogueDB() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      const urlResponse = await fetchRoughUrl();
-      const domainResponse = await fetchRoughDomain();
-      const mailResponse = await fetchRoughMail();
+      const [urlResponse, domainResponse, mailResponse] = await Promise.all([
+        fetchRoughUrl(),
+        fetchRoughDomain(),
+        fetchRoughMail(),
+      ]);
 
-      if (urlResponse.ok && domainResponse.ok && mailResponse.ok) {
-        const urlData = await urlResponse.json();
-        const domainData = await domainResponse.json();
-        const mailData = await mailResponse.json();
-
-        setUrlData(urlData.results.data);
-        setDomainData(domainData.results.data);
-        setMailData(mailData.results.data);
-        setLoading(false);
-      } else {
-        setLoading(false);
-        setError("API response not OK.");
-        toast.warn("API response not OK.");
+      // Check each response individually for more specific error messages
+      if (!urlResponse.ok) {
+        setError(`URL data unavailable (Status: ${urlResponse.status})`);
       }
+      if (!domainResponse.ok) {
+        setError(`Domain data unavailable (Status: ${domainResponse.status})`);
+      }
+      if (!mailResponse.ok) {
+        setError(`Mail data unavailable (Status: ${mailResponse.status})`);
+      }
+
+      const [urlData, domainData, mailData] = await Promise.all([
+        urlResponse.json(),
+        domainResponse.json(),
+        mailResponse.json(),
+      ]);
+
+      // Validate data exists in responses
+      if (
+        !urlData?.results?.data ||
+        !domainData?.results?.data ||
+        !mailData?.results?.data
+      ) {
+        setError("Data structure is invalid or missing");
+      }
+
+      setUrlData(urlData.results.data);
+      setDomainData(domainData.results.data);
+      setMailData(mailData.results.data);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setError(error.message);
+      toast.error(error.message);
+
+      // Set empty arrays when data is unavailable
+      setUrlData([]);
+      setDomainData([]);
+      setMailData([]);
+    } finally {
       setLoading(false);
-      setUrlData(dummyUrlData);
-      setDomainData(dummyDomainData);
-      setMailData(dummyMailData);
-      toast.error(`API error: ${error.message}`);
-      // setError(`API error: ${error.message}`);
     }
   };
 
