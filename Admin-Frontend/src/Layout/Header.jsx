@@ -183,15 +183,15 @@ const Header = () => {
               ref={menuRef}
             >
               <ul className="flex flex-col gap-2">
-                {role === "staff" && (
+                {/* {role === "staff" && ( */}
                   <li className="flex items-center p-[7px_10px] cursor-pointer  hover:bg-gray-300 dark:hover:bg-gray-800 text-secondary-foreground rounded-md">
                     <FaRegEdit className="mr-[10px] w-[18px] h-[18px]" />
-                    <Link to="/edit-profile" className="no-underline text-sm">
+                    <Link to="/profile/edit" className="no-underline text-sm">
                       Edit Profile
                     </Link>
                   </li>
-                )}
-                {role === "staff" && (
+                {/* )} */}
+                {/* {role === "staff" && ( */}
                   <li
                     className="flex items-center p-[7px_10px] cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-800 text-secondary-foreground rounded-md"
                     onClick={handleChangePasswordPopup}
@@ -201,7 +201,7 @@ const Header = () => {
                       Change Password
                     </Link>
                   </li>
-                )}
+                {/* )} */}
                 <li
                   className="flex items-center p-[7px_10px] cursor-pointer  hover:bg-gray-300 dark:hover:bg-gray-800 text-red-500 rounded-md"
                   onClick={handleLogoutPopup}

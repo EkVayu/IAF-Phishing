@@ -23,10 +23,11 @@ function EditProfile() {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
+    first_name: "",
+    last_name: "",
     phone_number: "",
     address: "",
     organization: "",
-    bio: "",
   });
 
   useEffect(() => {
@@ -38,10 +39,11 @@ function EditProfile() {
       setFormData({
         email: user.email || "",
         username: user.username || "",
+        first_name: userInfo.first_name || "",
+        last_name: userInfo.last_name || "",
         phone_number: userInfo.phone_number || "",
         address: userInfo.address || "",
         organization: userInfo.organization || "",
-        bio: userInfo.bio || "",
       });
       setAvatar(userInfo.avatar || null);
     }
@@ -126,16 +128,19 @@ function EditProfile() {
   const inputFields = [
     { key: "username", icon: <FaUser />, type: "text" },
     { key: "email", icon: <FaEnvelope />, type: "email" },
+    { key: "first_name", icon: <FaUser />, type: "text" },
+    { key: "last_name", icon: <FaUser />, type: "text" },
     { key: "phone_number", icon: <FaPhone />, type: "tel" },
     { key: "address", icon: <FaMapMarkerAlt />, type: "text" },
-    { key: "organization", icon: <FaBuilding />, type: "text" },
   ];
 
   return (
     <div className="min-h-screen">
       <div className="w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="bg-primary dark:bg-gray-900 h-20 px-5 flex items-center">
-          <h2 className="text-3xl font-bold text-white tracking-widest">Edit Profile</h2>
+          <h2 className="text-3xl font-bold text-white tracking-widest">
+            Edit Profile
+          </h2>
         </div>
         <form onSubmit={handleSubmit} className="p-8">
           <div className="mb-8 flex justify-center">
@@ -196,23 +201,6 @@ function EditProfile() {
                 )}
               </div>
             ))}
-          </div>
-          <div className="mt-6">
-            <label
-              htmlFor="bio"
-              className="text-sm font-medium text-gray-700 dark:text-white mb-1 block"
-            >
-              Bio
-            </label>
-            <textarea
-              id="bio"
-              name="bio"
-              rows="4"
-              value={formData.bio}
-              onChange={handleInputChange}
-              className="block w-full p-2 sm:text-sm text-secondary-foreground border border-gray-300 dark:bg-gray-700 rounded-md focus:ring-blue-500 focus:border-blue-500 resize-none"
-              placeholder="Tell us about yourself..."
-            ></textarea>
           </div>
           <div className="mt-8 flex justify-end space-x-4">
             <Link to="/profile">

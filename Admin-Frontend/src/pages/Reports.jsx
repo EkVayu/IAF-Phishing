@@ -24,9 +24,9 @@ function Reports() {
     setLoading(true);
     try {
       const response = await fetchReports();
+      const result = await response.json();
 
       if (response.ok) {
-        const result = await response.json();
         setReportsData(result);
         setLoading(false);
       } else if (result.length === 0) {

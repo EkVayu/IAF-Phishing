@@ -61,9 +61,8 @@ function Users() {
       setLoading(false);
       toast.error(`API error: ${error.message}`);
       setError(`API error: ${error.message}`);
-    }
-    finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
