@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
-from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable
+from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable, Dispute
 # from plugin.serializers import EmailDetailsSerializer
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -21,7 +21,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import RoughURL, RoughDomain, RoughMail
 from rest_framework.exceptions import ValidationError
-from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer
+from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer, DisputeUpdateSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import json
 from django.core.files.storage import default_storage
@@ -892,3 +892,12 @@ def get_disabled_plugins_count(request):
         "disabled_plugins_count": disabled_plugins.count(),
         "disabled_plugins_details": disabled_plugins_data
     })
+
+class DisputeStatusUpdateView(generics.UpdateAPIView):
+    queryset = Dispute.objects.all()
+    serializer_class = DisputeSerializer
+
+# View to add a new comment on DisputeInfo
+class DisputeCommentCreateView(generics.CreateAPIView):
+    queryset = DisputeInfo.objects.all()
+    serializer_class = DisputeCommentSerializer
