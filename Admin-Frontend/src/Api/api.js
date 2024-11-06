@@ -1,8 +1,8 @@
 import axios from "axios";
 
+// const API_BASE_URL = "http://35.154.97.4:8002";
 const API_BASE_URL = "http://35.154.97.4:8002";
 // const API_BASE_URL = "http://localhost:8000";
-
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -179,6 +179,7 @@ export const fetchLicensesHistory = async (licenseId) => {
   );
   return response;
 };
+
 export const fetchCurrentUserData = async () => {
   const token = sessionStorage.getItem("token");
   const user = JSON.parse(sessionStorage.getItem("user"));

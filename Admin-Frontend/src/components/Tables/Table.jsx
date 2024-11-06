@@ -147,7 +147,8 @@ const Table = ({
 
     try {
       const response = await fetchLicensesHistory(licenseId);
-      console.log("history", response.json());
+      const data = await response.json();
+      console.log("history", data);
 
       // Check content type before parsing
       const contentType = response.headers.get("content-type");
@@ -177,7 +178,6 @@ const Table = ({
       setShowHistoryModal(true);
       toast.success("License history loaded successfully");
     } catch (error) {
-      setLoading(false);
       setShowHistoryModal(true);
       console.error("Error fetching license history:", error);
       toast.error(`Error fetching license history: ${error.message}`);

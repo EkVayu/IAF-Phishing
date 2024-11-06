@@ -133,27 +133,29 @@ function RogueDB() {
     const formData = new FormData(event.target);
     const newItem = Object.fromEntries(formData.entries());
 
-    try {
-      let response;
-      if (activeTab === "url") {
-        response = await createRoughUrl(newItem);
-      } else if (activeTab === "domain") {
-        response = await createRoughDomain(newItem);
-      } else if (activeTab === "mail") {
-        response = await createRoughMail(newItem);
-      }
+    console.log(newItem);
 
-      if (response && response.message) {
-        toast.success(response.message);
-        setIsModalOpen(false);
-        fetchData();
-      } else {
-        toast.error("Failed to create item");
-      }
-    } catch (error) {
-      console.error("Error creating item:", error);
-      toast.error("Error creating item");
-    }
+    // try {
+    //   let response;
+    //   if (activeTab === "url") {
+    //     response = await createRoughUrl(newItem);
+    //   } else if (activeTab === "domain") {
+    //     response = await createRoughDomain(newItem);
+    //   } else if (activeTab === "mail") {
+    //     response = await createRoughMail(newItem);
+    //   }
+
+    //   if (response && response.message) {
+    //     toast.success(response.message);
+    //     setIsModalOpen(false);
+    //     fetchData();
+    //   } else {
+    //     toast.error("Failed to create item");
+    //   }
+    // } catch (error) {
+    //   console.error("Error creating item:", error);
+    //   toast.error("Error creating item");
+    // }
   };
 
   const handleEdit = (item) => {
