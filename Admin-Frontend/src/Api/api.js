@@ -3,7 +3,6 @@ import axios from "axios";
 const API_BASE_URL = "http://35.154.97.4:8002";
 // const API_BASE_URL = "http://localhost:8000";
 
-
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
@@ -284,7 +283,6 @@ export const updatePhishingMailStatus = async (
 export const fetchUsers = async () => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/users/`, {
-  const response = await fetch(`${API_BASE_URL}/users/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -295,8 +293,8 @@ export const fetchUsers = async () => {
     console.error("Failed to fetch users:", response);
     throw new Error("Failed to fetch users");
   }
-  return response; 
-}
+  return response;
+};
 
 export const deleteUsers = async (id) => {
   const token = sessionStorage.getItem("token");
