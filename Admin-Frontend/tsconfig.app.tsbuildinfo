@@ -1,0 +1,1 @@
+{"root":["./src/vite-env.d.ts","./src/components/common/mode-toggle.tsx","./src/components/ui/button.tsx","./src/components/ui/dropdown-menu.tsx","./src/components/ui/scroll-area.tsx","./src/context/theme-provider.tsx","./src/lib/utils.ts"],"version":"5.6.3"}
