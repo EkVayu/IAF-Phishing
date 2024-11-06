@@ -1,0 +1,44 @@
+name: My First GitHub Actions
+on: [push] 
+
+# on:
+#   workflow_dispatch: {}
+#   push:
+#     branches:
+#       - 'main'
+
+env:
+  sshKey: ${{ secrets.EC2_SSH_KEY }}
+  ec2IP: ${{ secrets.EC2_PUBLIC_IP }}
+  pat: ${{ secrets.GH_PAT }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ env.sshKey }}
+      
+      # - name: Clone Repository on EC2 using PAT
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2IP }} << 'EOF'
+      #       # Clone the private repo on EC2 instance using PAT
+      #       git clone https://${{ env.pat }}@github.com/EkVayu/IAF-Phishing.git /home/ubuntu/python-code/
+      #     EOF
+
+      - name: Clone Repository on EC2 using PAT
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2IP }} << 'EOF'
+            # Clone the private repo on EC2 instance using PAT
+            git clone https://${{ env.pat }}@github.com/EkVayu/IAF-Phishing.git /home/ubuntu/python-code/
+            cd /home/ubuntu/python-code/
+            git checkout main
+          EOF
+
+    
