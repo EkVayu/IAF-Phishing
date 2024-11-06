@@ -17,35 +17,39 @@ function Quarantine() {
     const fetchAllData = async () => {
       try {
         setLoading(true);
-        const statusResponse = await fetchStatusData();
-        const checkLevelResponse = await fetchCheckLevelData();
-        const importTestResponse = await fetchImportTestData();
 
-        const statusResult = await statusResponse.json();
-        const checkLevelResult = await checkLevelResponse.json();
-        const importTestResult = await importTestResponse.json();
+        const [statusResponse, checkLevelResponse, importTestResponse] =
+          await Promise.all([
+            fetchStatusData(),
+            fetchCheckLevelData(),
+            fetchImportTestData(),
+          ]);
+
+        const [statusResult, checkLevelResult, importTestResult] =
+          await Promise.all([
+            statusResponse.json(),
+            checkLevelResponse.json(),
+            importTestResponse.json(),
+          ]);
 
         if (
-          statusResult.length > 0 &&
-          checkLevelResult.length > 0 &&
-          importTestResult.length > 0
+          statusResult.length &&
+          checkLevelResult.length &&
+          importTestResult.length
         ) {
-          setQuarantineData([
+          const formattedData = [
             { ...statusResult[0], label: "Status" },
             { ...checkLevelResult[0], label: "Check Level" },
             { ...importTestResult[0], label: "Import Test Data" },
-          ]);
-          setLoading(false);
+          ];
+          setQuarantineData(formattedData);
         } else {
-          setError("No data available!");
-          toast.error("No data available!");
+          setError("No data available");
         }
       } catch (err) {
         console.error("Error fetching quarantine data:", err);
-        const generatedData = generateQuarantineData();
-        setQuarantineData(generatedData);
-        toast.error(`API error: ${err.message}`);
-        // setError(`API error: ${err.message}`);
+        toast.error(`Error: ${err.message}`);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -64,8 +68,12 @@ function Quarantine() {
           <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
           </div>
-        ) : (
+        ) : quarantineData && quarantineData.length > 0 ? (
           <Table tabData={quarantineData} error={error} loading={loading} />
+        ) : (
+          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
+            <p className="text-red-500">No data available</p>
+          </div>
         )}
       </div>
     </div>
