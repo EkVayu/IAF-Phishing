@@ -11,6 +11,8 @@ Django==5.1.1
 django-cors-headers==4.4.0
 django-rest-knox==5.0.1
 djangorestframework==3.15.2
+dkimpy==1.1.8
+dnspython==2.7.0
 drf-yasg==1.21.7
 dynaconf==3.2.6
 environs==11.0.0
@@ -33,6 +35,7 @@ pandas==2.2.3
 pillow==10.4.0
 pycparser==2.22
 PyPDF2==3.0.1
+pyspf==2.0.14
 python-dateutil==2.9.0.post0
 python-docx==1.1.2
 python-dotenv==1.0.1

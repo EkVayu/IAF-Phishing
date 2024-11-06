@@ -6,7 +6,6 @@ import django.utils.timezone
 from django.utils import timezone
 import hashlib
 
-# Create your models here.
 
 # User Models
 class CustomUserManager(BaseUserManager):
