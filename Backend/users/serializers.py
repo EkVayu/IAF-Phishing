@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import *
 # from plugin.models import *
 from django.contrib.auth import get_user_model
-
-from plugin.models import EmailDetails, DisputeInfo
+from django.utils import timezone
+from plugin.models import EmailDetails, DisputeInfo, Dispute
 from .models import RoughURL, RoughDomain, RoughMail
 
 
@@ -221,3 +221,57 @@ class MachineDataSerializer(serializers.ModelSerializer):
             'uuid',
             'mac_addresses',
         ]
+
+class DisputeUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dispute
+        fields = ['status']
+
+class DisputeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Dispute model that updates the `status` and corresponding `EmailDetails` records
+    with matching `msg_id` and `email`.
+    """
+    class Meta:
+        model = Dispute
+        fields = ['id', 'status', 'updated_at']
+        read_only_fields = ['updated_at']
+
+    def update(self, instance, validated_data):
+        # Get the new status from validated data
+        new_status = validated_data.get('status', instance.status)
+        if instance.status != new_status:
+            # Update the status and timestamp of the Dispute
+            instance.status = new_status
+            instance.updated_at = timezone.now()
+            instance.save()
+
+            # Update the matching EmailDetails records if the status is "safe" or "unsafe"
+            if new_status in ['safe', 'unsafe']:
+                # Find matching EmailDetails records
+                matching_emails = EmailDetails.objects.filter(
+                    msg_id=instance.msg_id,
+                    recievers_email=instance.email
+                )
+                # Update the status in the matching EmailDetails records
+                matching_emails.update(status=new_status, create_time=timezone.now())
+
+        return instance
+
+class DisputeCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DisputeInfo
+        fields = ['dispute', 'admin_comment', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+
+    def create(self, validated_data):
+        dispute_info = DisputeInfo.objects.create(
+            dispute=validated_data['dispute'],
+            admin_comment=validated_data['admin_comment'],
+            updated_at=timezone.now(),
+            created_by=self.context['request'].user,
+            updated_by=self.context['request'].user
+        )
+        dispute_info.dispute.updated_at = timezone.now()
+        dispute_info.dispute.save()
+        return dispute_info
