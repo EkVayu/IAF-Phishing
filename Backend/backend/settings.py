@@ -2,6 +2,7 @@ from pathlib import Path
 from environs import Env
 import logging
 import os
+from corsheaders.defaults import default_headers
 # import distutils.util
 
 env = Env()
@@ -30,6 +31,7 @@ SECRET_KEY = 'django-insecure-awq+(j4w35488okwb5050g*z!vc$)f#%&em-jjg4$wzd6k1uod
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -54,14 +56,15 @@ INSTALLED_APPS = [
     'users',
     'plugin',
     'knox',
-    # 'corsheaders',
+    'corsheaders',
     'drf_yasg',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -95,7 +98,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', #nidhi
     'PAGE_SIZE': 10,  # Adjust the page size as needed
 }
 
@@ -174,4 +177,9 @@ EMAIL_HOST_PASSWORD = 'oqul lopa jfjm qeuh'
 DEFAULT_FROM_EMAIL = 'ekvayu.com'
 
 DEBUG = True
-APPEND_SLASH=False
+APPEND_SLASH = False
+
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'content-disposition',
+]

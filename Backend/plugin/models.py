@@ -6,6 +6,7 @@ import django.utils.timezone
 from django.utils import timezone
 import hashlib
 from users.models import *
+from users.models import UserProfile
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -135,10 +136,12 @@ class PluginEnableDisable(models.Model):
         enabled_at (datetime): The datetime when the plugin was enabled.
         disabled_at (datetime): The datetime when the plugin was disabled.
     """
-    plugin_install_uninstall = models.ForeignKey(PluginInstallUninstall, on_delete=models.CASCADE, related_name="enable_disable_actions")
+    plugin_install_uninstall = models.ForeignKey(PluginInstallUninstall, on_delete=models.CASCADE,
+                                                 related_name="enable_disable_actions")
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="plugin_actions")
     enabled_at = models.DateTimeField(null=True, blank=True)
     disabled_at = models.DateTimeField(null=True, blank=True)
-    
+
     class Meta:
         """
         Returns a string representation of the enable/disable action, showing the plugin ID.
@@ -147,12 +150,11 @@ class PluginEnableDisable(models.Model):
 
     def _str_(self):
         return f"Enable/Disable Action for {self.plugin_install_uninstall.plugin_id}"
-    
+
     """
     PluginEnableDisable model stores information about enabling and disabling actions for a plugin.
     """
-    
-    
+
     # EmailDetails model stores details related to an email, including its subject, body, and attachments.
 class EmailDetails(models.Model):
     """
@@ -186,10 +188,10 @@ class EmailDetails(models.Model):
     u_id = models.CharField(max_length=90, blank=True, null=True)
     recievers_email = models.EmailField(max_length=200)
     senders_email = models.CharField(max_length=100, blank=True, null=True)
-    eml_file_name = models.CharField(max_length=30, blank=True, null=True)
+    eml_file_name = models.CharField(max_length=100, blank=True, null=True)
     plugin_id = models.CharField(max_length=80, blank=True, null=True)
-    msg_id = models.CharField(max_length=80, blank=True, null=True)    
-    status = models.CharField(max_length=50,choices=STATUS_CHOICES, default='unsafe')
+    msg_id = models.CharField(max_length=100, blank=True, null=True)    
+    status = models.CharField(max_length=50,choices=STATUS_CHOICES, default='safe')
     subject = models.TextField(blank=True, null=True)
     urls = models.TextField(blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True,blank=True,null=True)
@@ -277,3 +279,52 @@ class EmailDetails(models.Model):
 #         db_table = 'plugin_emails_attachments'
 #     def _str_(self):
 #         return f"Attachment for {self.msg_id}"
+
+
+
+class CDRFile(models.Model):
+    """
+    Attributes:
+        email_detail (ForeignKey): A reference to the related EmailDetails object.
+        cdr_file (FileField): The CDR file associated with the email.
+    """
+    email_detail = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name='Emails_cdr_files')
+    cdr_file = models.FileField(upload_to='cdr_files/', null=True, blank=True)
+
+    class Meta:
+        db_table = 'plugin_emails_cdr_files'
+
+    def __str__(self):
+        return f"CDR File for message_id {self.email_detail.msg_id}"
+    
+
+class Attachment(models.Model):
+    """
+    Attributes:
+        email_detail (ForeignKey): A reference to the related EmailDetails object.
+        attachment (FileField): The attachment associated with the email.
+    """
+    email_detail = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name='Emailsattachments')
+    attachment = models.FileField(upload_to='attachments/', null=True, blank=True)
+
+    class Meta:
+        db_table = 'plugin_emails_attachments'
+
+    def __str__(self):
+        return f"Attachment for message_id {self.email_detail.msg_id}"
+    
+
+class URL(models.Model):
+        
+        """
+        Attributes:
+            email_detail (ForeignKey): A reference to the related EmailDetails object.
+            url (URLField): The URL associated with the email.
+        """
+        email_detail = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name='Emaidetialsurls')
+        url = models.URLField(max_length=1000, blank=True, null=True)
+        class Meta:
+            db_table = 'plugin_emails_urls'
+
+        def __str__(self):
+             return f"URL for message_id {self.email_detail.msg_id}"

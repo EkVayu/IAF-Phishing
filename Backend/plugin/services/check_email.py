@@ -7,14 +7,11 @@ from pathlib import Path
 import email
 from email import policy
 import re
+from plugin.models import EmailDetails, Attachment, URL
 
-
-# Assuming you have an EmailDetails model in your models.py
-from plugin.models import EmailDetails
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+import os
 FILE_PATH = Path(settings.EMAIL_BACKUP_DIR)
 FILE_PATH_S = Path(settings.EMAIL_FILE_DIR)
 
@@ -23,11 +20,10 @@ FILE_PATH_S = Path(settings.EMAIL_FILE_DIR)
 def check_email(request):
     try:
         logger.info("Processing check_email request")
-        
+
         msg_id = request.POST.get('messageId')
         plugin_id = request.POST.get('pluginId')
         browser = request.POST.get('browser')
-        print(browser,"browser")
         ipv4 = request.POST.get('ipv4')
         uploaded_file = request.FILES.get('file')
 
@@ -40,11 +36,11 @@ def check_email(request):
         existing_email = EmailDetails.objects.filter(msg_id=msg_id).first()
         if existing_email:
             logger.info(f"Email with messageId {msg_id} already exists")
-            return JsonResponse({"message": "Email already exists", "STATUS": "Found", "Code": 1})
+            return JsonResponse({"message": "Email already exists", "STATUS": "Found", "Code": 1,"email_status": existing_email.status})
 
         newpath_set = FILE_PATH / msg_id
         logger.info(f"Creating directory at {newpath_set}")
-        newpath_set.mkdir(parents=True, exist_ok=True)
+        os.makedirs(newpath_set, exist_ok=True)
 
         if uploaded_file:
             logger.info("File uploaded successfully")
@@ -53,6 +49,10 @@ def check_email(request):
 
             backup_saved_file_path = newpath_set / eml_filename
             logger.info(f"Saving file to {backup_saved_file_path}")
+            
+            # Ensure the parent directory exists
+            os.makedirs(os.path.dirname(backup_saved_file_path), exist_ok=True)
+            
             with open(backup_saved_file_path, 'wb') as backup_file:
                 backup_file.write(eml_content)
 
@@ -72,19 +72,33 @@ def check_email(request):
                 subject=email_details['subject'],
                 senders_email=email_details['from_email'],
                 recievers_email=email_details['to_email'],
-                eml_file_name = eml_filename,
+                eml_file_name=eml_filename,
                 email_body=email_details['body'],
                 cc=email_details['cc'],
                 bcc=email_details['bcc'],
                 urls=', '.join(email_details['urls']),
-                
-                attachments=email_details['attachments'],                
-                status = "Pending",
+                attachments=email_details['attachments'],
             )
             email_entry.save()
 
+            # Save URLs to the URL table
+            created_urls = []
+            for url in email_details['urls']:
+                url_obj = URL.objects.create(email_detail=email_entry, url=url)
+                created_urls.append(url_obj.url)
+
             logger.info(f"Email details saved to database: {email_entry}")
-            return JsonResponse({"message": "Email processed successfully", "STATUS": "Success", "Code": 1})
+
+            # Create a response dictionary
+            response_data = {
+                "message": "Email processed successfully",
+                "STATUS": "Success",
+                "Code": 1,
+                "email_status": getattr(email_entry, 'status', 'unknown'),
+                "created_urls": created_urls,
+                "messageId": msg_id,
+            }
+            return JsonResponse(response_data, status=200)
 
         logger.warning("No file received")
         return JsonResponse({"error": "No file received"}, status=400)
@@ -92,6 +106,7 @@ def check_email(request):
     except Exception as e:
         logger.error(f"Error in check_email: {e}", exc_info=True)
         return JsonResponse({"error": f"Internal Server Error: {str(e)}"}, status=500)
+
 
 def check_eml(eml_content, newpath_set):
     try:
@@ -126,9 +141,8 @@ def check_eml(eml_content, newpath_set):
             'bcc': bcc,
             'subject': subject,
             'body': body,
-            'urls': urls ,
+            'urls': urls,
             'attachments': attachment_info.get('attachments', [])
-            
         }
     except Exception as e:
         logger.error(f"Error extracting email details: {e}")
@@ -154,6 +168,10 @@ def extract_attachments(msg, destination_path):
                 filename = f"attachment_{len(info['attachments']) + 1}.bin"
 
             file_path = Path(destination_path) / filename
+            
+            # Ensure the parent directory exists
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            
             with file_path.open('wb') as attachment_file:
                 attachment_file.write(part.get_payload(decode=True))
             logger.info(f"Attachment saved: {file_path}")

@@ -1,12 +1,18 @@
 # Ignore virtual environments
 env/
 venv/
+Venv/
 myvenv/
 /static
 myenv/
-myEnv/
+plugin/migrations/
+plugin/__pycache__/
+users/migrations/
+users/__pycache__/
+eml_backup
+plugin/test
 
-eml_backup/
+
 # Ignore Python cache files
 __pycache__/
 
@@ -18,8 +24,3 @@ myenv/
 # Other ignores
 *.pyc
 __pycache__/
-
-
-# Ignore migrations
-plugin/migrations/
-

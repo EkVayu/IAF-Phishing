@@ -9,7 +9,7 @@ import json
 from .view.register import register
 from .view.verify_license_id  import verify_lid
 from .services.check_email import check_email
-from .view.spam_email import spam_email
+# from .view.spam_email import spam_email
 from users.models import PluginMaster, License
 # from .view.dispute import dispute_count,dispute_email
 from django.shortcuts import render
@@ -32,9 +32,10 @@ import logging
 from django.core.files.storage import default_storage
 import os
 from django.core.files.storage import default_storage
+from django.core.serializers import serialize
 logger = logging.getLogger(__name__)
 
-
+from users.serializers import *
 
 
 
@@ -44,47 +45,53 @@ def registration_view(request):
         try:
             data = json.loads(request.body)
             
-            # Extract necessary data from request/response (e.g., plugin_id, ip_address)
             plugin_id = data.get('pluginId')
             ip_add = data.get('ipAddress')
             browser = data.get('browser')
+            license_id = data.get('licenseId')
 
-            if not plugin_id or not ip_add:
-                return JsonResponse({"error": "Plugin ID and IP Address are required"}, status=400)
+            if not all([plugin_id, ip_add, license_id]):
+                return JsonResponse({"error": "Plugin ID, IP Address, and License ID are required"}, status=400)
 
-            # Register the plugin (assuming the register function handles the plugin registration)
-            response = register(data)  # You might need to adjust this line depending on your logic for registration
+            logger.info(f"Registering plugin: {plugin_id}")
+            
+            
+            response = register(request)
 
-            # print(response)
-            if response.get('Code') == 0:
-                return JsonResponse(response,status =400)
-            # Step 1: Create an entry in PluginInstallUninstall model
+            if isinstance(response, JsonResponse):
+                response_data = json.loads(response.content)
+                if response_data.get('Code') == 0:
+                    return response
+
+            
             plugin_install_uninstall = PluginInstallUninstall.objects.create(
                 plugin_id=plugin_id,
                 ip_address=ip_add,
-                browser = browser,
+                browser=browser,
                 installed_at=timezone.now(),
-                uninstalled_at=None  # As this is an install
+                uninstalled_at=None
             )
             
-            # Step 2: Automatically enable the plugin after installation
             enable_disable_action = PluginEnableDisable.objects.create(
                 plugin_install_uninstall=plugin_install_uninstall,
-                enabled_at=timezone.now()  # Set the enable time to now
+                enabled_at=timezone.now()
             )
             
-            # Step 3: Serialize the PluginEnableDisable entry and return the response
             serializer = PluginEnableDisableSerializer(enable_disable_action)
-
+            logger.info(f"Plugin {plugin_id} registered and enabled successfully")
             return JsonResponse(serializer.data, status=201, safe=False)
-            # return JsonResponse("data", status=201, safe=False)
-            
 
+        except json.JSONDecodeError:
+            logger.error("Invalid JSON in request body")
+            return JsonResponse({"error": "Invalid JSON in request body"}, status=400)
+        except License.DoesNotExist:
+            logger.error(f"License not found: {license_id}")
+            return JsonResponse({"error": "License not found"}, status=404)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            logger.error(f"Error in registration_view: {str(e)}", exc_info=True)
+            return JsonResponse({"error": "Internal server error"}, status=500)
     
-    else:
-        return JsonResponse({"error": "Invalid request method"}, status=405)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 @csrf_exempt
@@ -109,11 +116,11 @@ def verify_license_id_view(request):
 def check_email_view(request):
     if request.method == 'POST':
         try:
-            response = check_email(request)
-            return JsonResponse(response, status=200)
+            return check_email(request)
         except Exception as e:
+            logger.error(f"Error in check_email_view: {e}", exc_info=True)
             return JsonResponse({'error': str(e)}, status=500)
-        
+    
     return JsonResponse({"error": "Invalid request method"}, status=405)
         
 @csrf_exempt
@@ -138,7 +145,7 @@ class DisputeViewSet(viewsets.ViewSet):
     #permission_classes = [IsAuthenticated]
 
 
-    @action(detail=False, methods=['get'], url_path='count/(?P<email>[^/]+)/(?P<message_id>[^/]+)')
+    @action(detail=False, methods=['get'], url_path='count/(?P<email>[^/]+)/(?P<msg_id>[^/]+)')
     # http://127.0.0.1:8000/plugin/disputes/count?email=user@example.com&messageId=112223344555666
     def get_dispute_count(self, request):
         """
@@ -182,89 +189,85 @@ class DisputeViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'], url_path='raise')
     def raise_dispute(self, request):
-        """
-        Allows a user to raise a dispute if they have fewer than 3 active disputes.
-        Also creates a DisputeInfo entry and increments the counter.
-        """
         email = request.data.get('email')
         msg_id = request.data.get('msgId')
         user_comment = request.data.get('userComment')
-        print(email,msg_id,user_comment)
+        print(email, msg_id, user_comment)
 
         if not email or not msg_id:
             return Response({"error": "Email and msg_id are required"}, status=status.HTTP_400_BAD_REQUEST)
         
         if not user_comment:
-            return Response({"error": "Please Raise Your Querry"}, status=status.HTTP_400_BAD_REQUEST)
-
-            
-
-        # Get the status from email_details table based on msg_id
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT status FROM email_details WHERE message_id = %s
-            """, [msg_id])
-            row = cursor.fetchone()
-
-        if not row:
+            return Response({"error": "User comment is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+    # Get the status from EmailDetails based on msg_id
+        email_detail = EmailDetails.objects.filter(msg_id=msg_id).first()
+    
+        if not email_detail:
             return Response({"error": "Message Id not found in email_details"}, status=status.HTTP_404_NOT_FOUND)
+        
 
-        email_status = row[0]  # The status of the email
+        email_status = email_detail.status
+        print(email_status)
 
-        # Convert email status to code (0 = Unsafe, 1 = Safe)
-        email_status_code = 0 if email_status == 'Unsafe' else 1 if email_status == 'Safe' else None
+    # Convert email status to code (0 = Unsafe, 1 = Safe)
+        email_status_code = {
+        'unsafe': 0,
+        'safe': 1,  # Ensure the key is lowercase
+        'Safe': 1,  # Keep this for case sensitivity
+        # Add other statuses as needed
+    }.get(email_status.lower())
 
         if email_status_code is None:
             return Response({"error": "Invalid email status in email_details"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if the user has fewer than 3 active disputes
-        active_dispute_count = Dispute.objects.filter(email=email, msg_id=msg_id)
-        print(active_dispute_count[0].counter,"<<<<<<<>>>>>>>>>>")
-        if active_dispute_count[0].counter >= 3:
+        
+    # Check if the user has fewer than 3 active disputes
+        active_dispute_count = Dispute.objects.filter(email=email).count()
+    
+        if active_dispute_count >= 3:
             return Response({"error": "You cannot raise more than 3 disputes"}, status=status.HTTP_403_FORBIDDEN)
-
-        # Check if a dispute already exists for the given email and msg_id
+        
+    # Check if a dispute already exists for the given email and msg_id
         dispute, created = Dispute.objects.get_or_create(
-            email=email,
-            msg_id=msg_id,
-            defaults={
-                'counter': active_dispute_count[0].counter,
-                'status': email_status_code,  # Set status from email_details
-                # 'created_by': request.user,  # Uncomment if you want to set created_by
-                # 'updated_by': request.user,  # Uncomment if you want to set updated_by
-            }
-        )
- 
-
-        # If the dispute already exists, increment the counter
-        if not created:
-            dispute.counter = (dispute.counter or 0) + 1  # Ensure counter is not null and increment
-            # dispute.updated_by = request.user  # Uncomment if you have a user field
-            dispute.save()
-        # Create the DisputeInfo entry
-        dispute_info_data = {
-           
-            'dispute': dispute.id,
-            'user_comment': user_comment,
-            'counter': dispute.counter,  # Pass the updated counter value
-            # 'created_by': request.user.id,  # Uncomment if you want to track created_by
-            # 'updated_by': request.user.id,  # Uncomment if you want to track updated_by
+        email=email,
+        msg_id=msg_id,
+        defaults={
+            'counter': 1,
+            'status': email_status_code,
+            # 'created_by': request.email,  # Uncomment if you want to track created_by
+            # 'updated_by': request.email,  # Uncomment if you want to track updated_by
         }
-        # dispute_info_data.save()
+    )
+
+    # If the dispute already exists, increment the counter
+        if not created:
+            dispute.counter += 1  # Increment the counter
+            dispute.save()
+        
+
+    # Create the DisputeInfo entry
+        dispute_info_data = {
+        'dispute': dispute.id,
+        'user_comment': user_comment,
+        'counter': dispute.counter,  # Pass the updated counter value
+        # 'created_by': request.user.id,  # Uncomment if you want to track created_by
+        # 'updated_by': request.user.id,  # Uncomment if you want to track updated_by
+    }
+
         dispute_info_serializer = DisputeInfoSerializer(data=dispute_info_data)
         if dispute_info_serializer.is_valid():
-            print('hijeevan',dispute_info_serializer)
+
             dispute_info_serializer.save()
         else:
             return Response(dispute_info_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({
-            "message": "Dispute raised successfully",
-            "dispute": DisputeSerializer(dispute).data,
-            "email_status": email_status  # Include the status from email_details
-        }, status=status.HTTP_201_CREATED)        
         
-  
+        return Response({
+        "message": "Dispute raised successfully",
+        "dispute": DisputeSerializer(dispute).data,
+        "email_status": email_status  # Include the status from email_details
+       }, status=status.HTTP_201_CREATED)
+    
+        
 
 class PluginInstallUninstallViewSet(viewsets.ViewSet):
     """
@@ -706,3 +709,76 @@ def content_response_to_ai(request):
 
     except Exception as e:
         return JsonResponse({"error": "An unexpected error occurred", "details": str(e)}, status=500)
+    
+
+class BrowserDetailsViewSet(viewsets.ModelViewSet):
+    queryset = LicenseAllocation.objects.all()
+    serializer_class = LicenseAllocationSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = {
+            'license_validity': instance.license_validity,
+            'license_allocated_to': instance.license_allocated_to,
+            'allocated_date': instance.allocated_date,
+        }
+        print(
+            f"License Validity: {instance.license_validity}",
+            f"License Allocated To: {instance.license_allocated_to}",
+            f"Allocated Date: {instance.allocated_date}",
+        )
+
+        return Response(data)
+    
+
+@csrf_exempt
+def spam_email(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            email_id = data.get('emailId')
+            plugin_id = data.get('pluginId') 
+            
+            if not email_id:
+                return JsonResponse({
+                    "message": "email_id is missing",
+                    "STATUS": "Error",
+                    "Code": 0,
+                    "data": ""
+                }, status=400)
+
+            print(f"Looking for emails with receiver: {email_id}")  # Debugging line
+
+            # Query using Django ORM
+            spam_emails = EmailDetails.objects.filter(
+                status__in=['unsafe','pending'],  # Ensure these match exactly what's in the database
+                recievers_email=email_id
+            ).order_by('-create_time')
+
+            print(spam_emails)  # Debugging line to see the queryset
+
+            # Serialize the queryset to JSON
+            serialized_data = serialize('json', spam_emails)
+            
+            # Parse the serialized data back to a Python object
+            parsed_data = json.loads(serialized_data)
+
+            # Extract the actual data from the serialized format
+            result = [item['fields'] for item in parsed_data]
+
+            return JsonResponse(result, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "message": "Invalid JSON format",
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=400)
+
+    return JsonResponse({
+        "message": "Invalid request method",
+        "STATUS": "Error",
+        "Code": 0,
+        "data": ""
+    }, status=405)
