@@ -16,6 +16,8 @@ import { FaEye } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
+
+
 const Table = ({
   tabData,
   loading,
