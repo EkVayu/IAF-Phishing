@@ -25,7 +25,7 @@ function SandBox() {
           ]);
           setLoading(false);
         } else {
-          // setError("No data available!");
+          setError("No data available!");
           toast.error("No data available!");
           // setSandBoxData([]);
         }
