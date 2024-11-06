@@ -42,10 +42,10 @@ function Quarantine() {
         }
       } catch (err) {
         console.error("Error fetching quarantine data:", err);
-        const generatedData = generateQuarantineData();
-        setQuarantineData(generatedData);
+        // const generatedData = generateQuarantineData();
+        // setQuarantineData(generatedData);
         toast.error(`API error: ${err.message}`);
-        // setError(`API error: ${err.message}`);
+        setError(`API error: ${err.message}`);
       } finally {
         setLoading(false);
       }
