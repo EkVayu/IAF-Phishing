@@ -27,14 +27,14 @@ function Disputes() {
           const result = await response.json();
           setDisputes(result.data);
         } else {
-          //   setError("Failed to fetch disputes");
-          const dummyDisputes = generateDummyDisputes(5);
-          setDisputes(dummyDisputes);
+          setError("Failed to fetch disputes");
+          // const dummyDisputes = generateDummyDisputes(5);
+          // setDisputes(dummyDisputes);
         }
       } catch (err) {
-        const dummyDisputes = generateDummyDisputes(5);
-        setDisputes(dummyDisputes);
-        // setError("Error fetching disputes: " + err.message);
+        // const dummyDisputes = generateDummyDisputes(5);
+        // setDisputes(dummyDisputes);
+        setError("Error fetching disputes: " + err.message);
       } finally {
         setLoading(false);
       }

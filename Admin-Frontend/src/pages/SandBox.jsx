@@ -27,14 +27,14 @@ function SandBox() {
         } else {
           setError("No data available!");
           toast.error("No data available!");
-          setSandBoxData([]);
+          // setSandBoxData([]);
         }
       } catch (err) {
         console.error("Error fetching sandbox data:", err);
-        const generatedData = generateSandBoxData(5);
-        setSandBoxData(generatedData);
+        // const generatedData = generateSandBoxData(5);
+        // setSandBoxData(generatedData);
         toast.error(`API error: ${err.message}`);
-        // setError(`API error: ${err.message}`);
+        setError(`API error: ${err.message}`);
       } finally {
         setLoading(false);
       }
@@ -52,6 +52,10 @@ function SandBox() {
         {loading ? (
           <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
+          </div>
+        ) : error ? (
+          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
+            <div className="text-red-500 text-lg">{error}</div>
           </div>
         ) : Array.isArray(sandBoxData) && sandBoxData.length > 0 ? (
           <Table tabData={sandBoxData} error={error} loading={loading} />

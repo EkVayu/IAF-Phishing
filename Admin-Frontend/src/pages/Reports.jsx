@@ -41,10 +41,10 @@ function Reports() {
       }
     } catch (error) {
       console.error("Failed to load reports data:", error);
-      const dummyData = ReportDataGenerator(5); // Generate 10 dummy reports
-      setReportsData(dummyData);
+      // const dummyData = ReportDataGenerator(5); // Generate 10 dummy reports
+      // setReportsData(dummyData);
       toast.error(`API error: ${error.message}`);
-      // setError(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     } finally {
       setLoading(false);
     }
