@@ -603,4 +603,17 @@ export const deleteRoughMail = async (id) => {
   return response;
 };
 
+
+export const fetchDisabledPlugins = async (id) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/disabled-plugins-count/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+  return response;
+};
+
 export default api;

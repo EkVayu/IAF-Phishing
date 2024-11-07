@@ -41,7 +41,6 @@ function PhishingMails() {
 
         if (result && result.email_details && result.email_details.length > 0) {
           setPhishingMails(result.email_details);
-          toast.success("Data loaded successfully");
         } else {
           setError("No data available!");
           toast.info("No data available!");
