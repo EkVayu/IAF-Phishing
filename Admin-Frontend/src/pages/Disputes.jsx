@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table2 from "../components/Tables/Table2";
-import { disputeStatusChange, fetchDisputes } from "../Api/api";
-import generateDummyDisputes from "../Utils/generateDummyDisputes";
+import { addDisputeComment, disputeStatusChange, fetchDisputes, updateDisputeStatus } from "../Api/api";
 import { toast } from "react-toastify";
 
 function Disputes() {
@@ -43,47 +42,87 @@ function Disputes() {
     getDisputes();
   }, []);
 
-  const handleStatusChange = async (
-    receiverEmail,
-    messageId,
-    adminComment = null,
-    newStatus
-  ) => {
+  const handleStatusChange = async (id, newStatus) => {
     try {
-      const response = await disputeStatusChange(
-        newStatus,
-        receiverEmail,
-        messageId,
-        adminComment
-      );
-
+      const response = await updateDisputeStatus(id, newStatus);
       if (response.ok) {
-        setDisputes((prevDisputes) =>
-          prevDisputes.map((dispute) =>
-            dispute.msg_id === messageId && dispute.email === receiverEmail
-              ? {
-                  ...dispute,
-                  status: newStatus,
-                  admin_comment: adminComment || dispute.admin_comment,
-                }
-              : dispute
+        const updatedData = await response.json();
+        setPhishingMails((prevMails) =>
+          prevMails.map((mail) =>
+            mail.id === id ? { ...mail, status: updatedData.status } : mail
           )
         );
-
-        toast.success(
-          adminComment
-            ? "Status and admin comment updated successfully!"
-            : "Status updated successfully!"
-        );
+        toast.success("Status updated successfully!");
       } else {
-        const errorData = await response.json();
-        toast.error(`Failed to update status: ${errorData.message}`);
+        toast.error("Failed to update status");
       }
     } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("Failed to update status. Please try again.");
+      toast.error(`Error: ${error.message}`);
     }
   };
+
+  const handleCommentAdd = async (id, comment) => {
+    try {
+      const response = await addDisputeComment(id, comment);
+      if (response.ok) {
+        const updatedData = await response.json();
+        setPhishingMails((prevMails) =>
+          prevMails.map((mail) =>
+            mail.id === id
+              ? { ...mail, admin_comment: updatedData.admin_comment }
+              : mail
+          )
+        );
+        toast.success("Comment added successfully!");
+      } else {
+        toast.error("Failed to add comment");
+      }
+    } catch (error) {
+      toast.error(`Error: ${error.message}`);
+    }
+  };
+
+  // const handleStatusChange = async (
+  //   receiverEmail,
+  //   messageId,
+  //   adminComment = null,
+  //   newStatus
+  // ) => {
+  //   try {
+  //     const response = await disputeStatusChange(
+  //       newStatus,
+  //       receiverEmail,
+  //       messageId,
+  //       adminComment
+  //     );
+
+  //     if (response.ok) {
+  //       setDisputes((prevDisputes) =>
+  //         prevDisputes.map((dispute) =>
+  //           dispute.msg_id === messageId && dispute.email === receiverEmail
+  //             ? {
+  //                 ...dispute,
+  //                 status: newStatus,
+  //                 admin_comment: adminComment || dispute.admin_comment,
+  //               }
+  //             : dispute
+  //         )
+  //       );
+
+  //       toast.success(
+  //         adminComment
+  //           ? "Status and admin comment updated successfully!"
+  //           : "Status updated successfully!"
+  //       );
+  //     } else {
+  //       const errorData = await response.json();
+  //       toast.error(`Failed to update status: ${errorData.message}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating status:", error);
+  //     toast.error("Failed to update status. Please try again.");
+  //   }
+  // };
 
   return (
     <div className="w-full flex flex-col gap-5">
@@ -93,6 +132,7 @@ function Disputes() {
       <Table2
         data={disputes}
         onStatusChange={handleStatusChange}
+        onCommentAdd={handleCommentAdd}
         columns={columns}
         loading={loading}
         error={error}
