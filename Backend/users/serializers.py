@@ -227,11 +227,13 @@ class DisputeUpdateSerializer(serializers.ModelSerializer):
         model = Dispute
         fields = ['status']
 
+
 class DisputeSerializer(serializers.ModelSerializer):
     """
     Serializer for Dispute model that updates the `status` and corresponding `EmailDetails` records
     with matching `msg_id` and `email`.
     """
+
     class Meta:
         model = Dispute
         fields = ['id', 'status', 'updated_at']
@@ -245,18 +247,21 @@ class DisputeSerializer(serializers.ModelSerializer):
             instance.status = new_status
             instance.updated_at = timezone.now()
             instance.save()
+            matching_emails = EmailDetails.objects.filter(
+                msg_id=instance.msg_id,
+                recievers_email=instance.email
+            )
+            for email_detail in matching_emails:
+                if new_status == 1:
+                    email_detail.status = "safe"
+                elif new_status == 2:
+                    email_detail.status = "unsafe"
 
-            # Update the matching EmailDetails records if the status is "safe" or "unsafe"
-            if new_status in ['safe', 'unsafe']:
-                # Find matching EmailDetails records
-                matching_emails = EmailDetails.objects.filter(
-                    msg_id=instance.msg_id,
-                    recievers_email=instance.email
-                )
-                # Update the status in the matching EmailDetails records
-                matching_emails.update(status=new_status, create_time=timezone.now())
+                email_detail.save()
+                email_detail.refresh_from_db()
 
         return instance
+
 
 class DisputeCommentSerializer(serializers.ModelSerializer):
     class Meta:

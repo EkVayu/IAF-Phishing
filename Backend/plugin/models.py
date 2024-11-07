@@ -211,7 +211,7 @@ class EmailDetails(models.Model):
         db_table = 'plugin_email_details'
 
         def _str_(self):
-            return f"Email Details for {self.u_id}"
+            return f"Email Details for {self.u_id} - Status: {self.status}"
         """
         Returns a string representation of the email details, showing the email ID.
 
