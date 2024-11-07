@@ -49,7 +49,7 @@ function Quarantine() {
       } catch (err) {
         console.error("Error fetching quarantine data:", err);
         toast.error(`Error: ${err.message}`);
-        setError(err.message);
+        setError(`Error: ${err.message}`);
       } finally {
         setLoading(false);
       }
