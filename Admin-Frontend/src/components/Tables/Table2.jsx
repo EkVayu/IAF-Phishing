@@ -326,7 +326,7 @@ function Table2({
                               <span
                                 className={`px-2 py-1 leading-5 font-semibold rounded-md ${getStatusColor(
                                   row[column.accessor]
-                                )} text-white`}
+                                )}`}
                               >
                                 {row[column.accessor]}
                               </span>
@@ -349,10 +349,18 @@ function Table2({
                             {row[column.accessor]}
                           </span>
                         ) : column.accessor.includes("started_on") ||
+                          column.accessor.includes("create_time") ||
+                          column.accessor.includes("created_at") ||
                           column.accessor.includes("completed_on") ? (
                           <DateFormatter dateString={row[column.accessor]} />
                         ) : (
-                          row[column.accessor]
+                          // Add the null checking logic here
+                          (() => {
+                            const value = row[column.accessor];
+                            const cellValue =
+                              value === null ? "null" : value || "null";
+                            return cellValue;
+                          })()
                         )}
                       </td>
                     ))}

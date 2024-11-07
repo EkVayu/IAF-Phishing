@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Table2 from "../components/Tables/Table2";
-import { addDisputeComment, disputeStatusChange, fetchDisputes, updateDisputeStatus } from "../Api/api";
+import {
+  addDisputeComment,
+  disputeStatusChange,
+  fetchDisputes,
+  updateDisputeStatus,
+} from "../Api/api";
 import { toast } from "react-toastify";
 
 function Disputes() {
@@ -27,8 +32,6 @@ function Disputes() {
           setDisputes(result.data);
         } else {
           setError("Failed to fetch disputes");
-          // const dummyDisputes = generateDummyDisputes(5);
-          // setDisputes(dummyDisputes);
         }
       } catch (err) {
         // const dummyDisputes = generateDummyDisputes(5);

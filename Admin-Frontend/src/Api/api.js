@@ -249,7 +249,7 @@ export const updatePhishingMailStatus = async (
 
 export const fetchDisputes = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/disputes/`, {
+  const response = await fetch(`${API_BASE_URL}/plugin/disputes-details/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
