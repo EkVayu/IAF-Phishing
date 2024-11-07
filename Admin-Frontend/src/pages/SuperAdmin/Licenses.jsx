@@ -66,11 +66,11 @@ function Licenses() {
       }
     } catch (error) {
       console.error("Error fetching licenses:", error);
-      const dummyLicenses = generateDummyLicenses(5);
-      setLicenses(processLicenses(dummyLicenses));
+      // const dummyLicenses = generateDummyLicenses(5);
+      // setLicenses(processLicenses(dummyLicenses));
       setLoading(false);
       toast.error(`API error: ${error.message}`);
-      // setError(`API error: ${error.message}`);
+      setError(`API error: ${error.message}`);
     }
   };
 

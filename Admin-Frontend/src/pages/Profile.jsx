@@ -44,13 +44,13 @@ function Profile() {
     fetchUserData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-[80vh] bg-background rounded-md">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-[80vh] bg-white dark:bg-gray-800 rounded-md">
+  //       <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-[80vh]">
@@ -58,65 +58,75 @@ function Profile() {
         <h1 className="text-3xl font-semibold text-secondary-foreground tracking-widest">
           Profile
         </h1>
-        <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mt-5">
-          <div className="bg-primary dark:bg-gray-900 h-20 px-5 py-2">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2 capitalize tracking-widest">
-                  {user?.username || "User Name"}
-                </h2>
-                <p className="text-white capitalize text-sm">
-                  {role || "User Role"}
-                </p>
+
+        {loading ? (
+          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-md mt-5">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
+          </div>
+        ) : (
+          <div className="">
+            <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mt-5">
+              <div className="bg-primary dark:bg-gray-900 h-20 px-5 py-2">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2 capitalize tracking-widest">
+                      {user?.username || "User Name"}
+                    </h2>
+                    <p className="text-white capitalize text-sm">
+                      {role || "User Role"}
+                    </p>
+                  </div>
+                  <Link
+                    to="/profile/edit"
+                    className="bg-background text-primary dark:text-white transition duration-300 py-2 px-4 rounded-full flex items-center"
+                  >
+                    <FaEdit className="w-5 h-5 mr-2" />
+                    Edit Profile
+                  </Link>
+                </div>
               </div>
-              <Link
-                to="/profile/edit"
-                className="bg-background text-primary dark:text-white transition duration-300 py-2 px-4 rounded-full flex items-center"
-              >
-                <FaEdit className="w-5 h-5 mr-2" />
-                Edit Profile
-              </Link>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <ProfileItem
+                    icon={<FaUser />}
+                    label="First Name"
+                    value={user?.name}
+                  />
+                  <ProfileItem
+                    icon={<FaUser />}
+                    label="Last Name"
+                    value={user?.name}
+                  />
+                  <ProfileItem
+                    icon={<FaEnvelope />}
+                    label="Email"
+                    value={user?.email}
+                  />
+                  <ProfileItem
+                    icon={<FaPhone />}
+                    label="Phone"
+                    value={userInfo?.phone_number}
+                  />
+                  <ProfileItem
+                    icon={<FaMapMarkerAlt />}
+                    label="Address"
+                    value={userInfo?.address}
+                  />
+                  <ProfileItem
+                    icon={<FaBuilding />}
+                    label="Organization"
+                    value={userInfo?.organization}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <ActivitySection />
+              <StatsSection />
             </div>
           </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <ProfileItem
-                icon={<FaUser  />}
-                label="First Name"
-                value={user?.name}
-              />
-              <ProfileItem
-                icon={<FaUser  />}
-                label="Last Name"
-                value={user?.name}
-              />
-              <ProfileItem
-                icon={<FaEnvelope />}
-                label="Email"
-                value={user?.email}
-              />
-              <ProfileItem
-                icon={<FaPhone />}
-                label="Phone"
-                value={userInfo?.phone_number}
-              />
-              <ProfileItem
-                icon={<FaMapMarkerAlt />}
-                label="Address"
-                value={userInfo?.address}
-              />
-              <ProfileItem
-                icon={<FaBuilding />}
-                label="Organization"
-                value={userInfo?.organization}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ActivitySection />
-          <StatsSection />
-        </div>
+        )}
       </div>
     </div>
   );

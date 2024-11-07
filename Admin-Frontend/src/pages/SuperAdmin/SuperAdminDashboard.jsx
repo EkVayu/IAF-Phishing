@@ -115,8 +115,8 @@ const SuperAdminDashboard = () => {
       </h1>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
+        <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
         </div>
       ) : error ? (
         <p className="text-red-500 text-sm font-semibold">{error}</p>
