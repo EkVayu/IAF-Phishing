@@ -71,7 +71,7 @@ const AdminCommentModal = ({ isOpen, onClose, onSubmit, statusChange }) => {
 };
 
 const getStatusColor = (status) => {
-  if (!status) return "bg-gray-200"; // Default color for undefined or null status
+  if (!status) return "bg-gray-200";
   switch (status.toLowerCase()) {
     case "completed":
       return "bg-green-500";
@@ -114,6 +114,37 @@ function Table2({
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const itemsPerPage = 10;
 
+  const filteredData = useMemo(() => {
+    return data.filter((row) => {
+      return (
+        columns.some((column) =>
+          String(row[column.accessor])
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        ) &&
+        Object.entries(filters).every(([key, value]) =>
+          String(row[key]).toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    });
+  }, [data, columns, searchTerm, filters]);
+
+  const sortedData = useMemo(() => {
+    return [...filteredData].sort((a, b) => {
+      if (a.srNo && b.srNo) {
+        return a.srNo - b.srNo;
+      }
+      const firstColumn = columns[0].accessor;
+      return a[firstColumn] > b[firstColumn] ? 1 : -1;
+    });
+  }, [filteredData, columns]);
+
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const paginatedData = sortedData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const handleStatusChange = (row, newStatus) => {
     setPendingStatusChange({ row, newStatus, type: "status" });
     setIsModalOpen(true);
@@ -134,26 +165,10 @@ function Table2({
     setPendingStatusChange(null);
   };
 
-  // Keep existing status
   const handleCommentOnly = (row) => {
     setPendingStatusChange({ row, type: "comment" });
     setIsModalOpen(true);
   };
-
-  const filteredData = useMemo(() => {
-    return data.filter((row) => {
-      return (
-        columns.some((column) =>
-          String(row[column.accessor])
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        ) &&
-        Object.entries(filters).every(([key, value]) =>
-          String(row[key]).toLowerCase().includes(value.toLowerCase())
-        )
-      );
-    });
-  }, [data, columns, searchTerm, filters]);
 
   const toggleColumnVisibility = (accessor) => {
     setVisibleColumns((prev) => ({
@@ -163,15 +178,8 @@ function Table2({
   };
 
   const handleDownload = (row) => {
-    // Implement your download logic here
     toast.success(`Downloading data for message ID: ${row.message_id}`);
   };
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const renderPaginationButtons = () => {
     const buttons = [];
@@ -324,7 +332,7 @@ function Table2({
                               </>
                             ) : (
                               <span
-                                className={`px-2 py-1 leading-5 font-semibold rounded-md ${getStatusColor(
+                                className={`px-2 py-1 leading-5 font-semibold rounded-md dark:text-black ${getStatusColor(
                                   row[column.accessor]
                                 )}`}
                               >
