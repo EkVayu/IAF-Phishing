@@ -16,8 +16,6 @@ import { FaEye } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-
-
 const Table = ({
   tabData,
   loading,
@@ -116,75 +114,37 @@ const Table = ({
   };
 
   const handliPrintHistory = async (licenseId) => {
-    const dummyData = [
-      {
-        license: licenseId,
-        plugin: "Plugin A",
-        allocated_to: "user1@example.com",
-        allocation_date: "2024-10-22T10:55:00.646615+05:30",
-        revoke_date: "2024-10-22T10:55:33.633906+05:30",
-        status: "Inactive",
-      },
-      {
-        license: licenseId,
-        plugin: null,
-        allocated_to: "user2@example.com",
-        allocation_date: "2024-10-22T10:55:50.434148+05:30",
-        revoke_date: "2024-10-22T10:56:05.106281+05:30",
-        status: "Inactive",
-      },
-      {
-        license: licenseId,
-        plugin: "Plugin B",
-        allocated_to: "user3@example.com",
-        allocation_date: "2024-10-22T10:56:19.880430+05:30",
-        revoke_date: null,
-        status: "Active",
-      },
-    ];
-
     setLoading(true);
 
     try {
       const response = await fetchLicensesHistory(licenseId);
-      const data = await response.json();
-      console.log("history", data);
-
-      // Check content type before parsing
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Invalid response format from server");
-      }
-
       const history = await response.json();
+      console.log(history.length);
 
-      if (!response.ok || history.length === 0) {
-        setShowHistoryModal(true);
+      if (!response.ok) {
         setSelectedLicenseHistory({
           licenseId: licenseId,
-          history: `No history data available for this license`,
+          history: [], // Send empty array instead of string
         });
-        toast.info("No history data available for this license");
-        setLoading(false);
+        toast.info(history.detail || "No history data available");
         return;
       }
 
+      // If data is available, set it in state
       setSelectedLicenseHistory({
         licenseId: licenseId,
-        history: history,
+        history: Array.isArray(history) ? history : [], // Ensure we always have an array
       });
 
-      setLoading(false);
-      setShowHistoryModal(true);
-      toast.success("License history loaded successfully");
+      // setLoading(false);
+      // setShowHistoryModal(true);
     } catch (error) {
-      setShowHistoryModal(true);
       console.error("Error fetching license history:", error);
-      toast.error(`Error fetching license history: ${error.message}`);
       setSelectedLicenseHistory({
         licenseId: licenseId,
-        history: `No history data available for this license`,
+        history: [], // Send empty array instead of string
       });
+      toast.error(`Error fetching license history: ${error.message}`);
     } finally {
       setLoading(false);
       setShowHistoryModal(true);

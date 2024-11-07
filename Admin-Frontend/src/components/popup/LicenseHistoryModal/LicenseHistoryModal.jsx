@@ -5,7 +5,8 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredHistory = useMemo(() => {
-    if (typeof history === "string") {
+    // Check if history is an array and not empty
+    if (!Array.isArray(history)) {
       return [];
     }
     return history.filter((entry) =>
@@ -67,7 +68,7 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
             </svg>
           </div>
         </div>
-        {typeof history === "string" ? (
+        {!Array.isArray(history) ? (
           <div className="text-center py-8 text-gray-600 dark:text-gray-400">
             No history data available for this license
           </div>
