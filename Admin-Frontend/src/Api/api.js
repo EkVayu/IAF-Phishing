@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// const API_BASE_URL = "http://35.154.97.4:8002";
 const API_BASE_URL = "http://35.154.97.4:8002";
 // const API_BASE_URL = "http://localhost:8000";
 
@@ -222,14 +221,68 @@ export const fetchPhishingMails = async () => {
   return response;
 };
 
+export const updatePhishingMailStatus = async (
+  newStatus,
+  receiverEmail,
+  messageId,
+  adminComment
+) => {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/emaildetails/update-status/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      status: newStatus,
+      recievers_email: receiverEmail,
+      message_id: messageId,
+      admin_comment: adminComment,
+    }),
+  });
+
+  return response;
+};
+
 export const fetchDisputes = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/disputes/`, {
+  const response = await fetch(`${API_BASE_URL}/plugin/disputes-details/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,
     },
+  });
+  return response;
+};
+
+export const updateDisputeStatus = async (id, status) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/dispute/${id}/update/`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+  return response;
+};
+
+export const addDisputeComment = async (id, adminComment) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/dispute/${id}/comments/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      dispute: id,
+      admin_comment: adminComment,
+    }),
   });
   return response;
 };
@@ -254,31 +307,6 @@ export const disputeStatusChange = async (
       admin_comment: adminComment,
     }),
   });
-  return response;
-};
-
-export const updatePhishingMailStatus = async (
-  newStatus,
-  receiverEmail,
-  messageId,
-  adminComment
-) => {
-  const token = sessionStorage.getItem("token");
-
-  const response = await fetch(`${API_BASE_URL}/emaildetails/update-status/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Token ${token}`,
-    },
-    body: JSON.stringify({
-      status: newStatus,
-      recievers_email: receiverEmail,
-      message_id: messageId,
-      admin_comment: adminComment,
-    }),
-  });
-
   return response;
 };
 
@@ -349,7 +377,7 @@ export const reserveLicense = async (licenseId, action) => {
 
 export const fetchReports = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/reports/`, {
+  const response = await fetch(`${API_BASE_URL}/allocations/license-report/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -566,6 +594,19 @@ export const deleteRoughMail = async (id) => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/rough-mail/${id}/`, {
     method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+  return response;
+};
+
+
+export const fetchDisabledPlugins = async (id) => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/disabled-plugins-count/`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Token ${token}`,

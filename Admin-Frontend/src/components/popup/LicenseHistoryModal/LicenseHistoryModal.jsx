@@ -5,7 +5,8 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredHistory = useMemo(() => {
-    if (typeof history === "string") {
+    // Check if history is an array and not empty
+    if (!Array.isArray(history)) {
       return [];
     }
     return history.filter((entry) =>
@@ -67,7 +68,7 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
             </svg>
           </div>
         </div>
-        {typeof history === "string" ? (
+        {filteredHistory.length === 0 ? (
           <div className="text-center py-8 text-gray-600 dark:text-gray-400">
             No history data available for this license
           </div>
@@ -120,7 +121,7 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
         )}
 
         <div className="flex justify-end gap-4">
-          {typeof !history === "string" && (
+          {filteredHistory.length > 0 && (
             <button
               onClick={handlePrint}
               className="bg-blue-500 text-white py-2 px-4 rounded text-base cursor-pointer transition duration-300 hover:bg-blue-600"

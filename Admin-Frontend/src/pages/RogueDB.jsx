@@ -6,6 +6,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CreateRogueDBModal from "../components/popup/RogueDB/CreateRogueDBModal";
 import DeleteConfirmModal from "../components/popup/RogueDB/DeleteConfirmModal";
 import EditRogueDBModal from "../components/popup/RogueDB/EditRogueDBModal";
+import { FaEdit, FaTrash } from "react-icons/fa";
+
 import {
   createRoughDomain,
   createRoughMail,
@@ -438,13 +440,13 @@ function RogueDB() {
                       className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
                       onClick={() => handleEdit(item)}
                     >
-                      Edit
+                      <FaEdit size={14} />
                     </button>
                     <button
                       className="bg-red-500 text-white px-2 py-1 rounded"
                       onClick={() => handleDeleteClick(item)}
                     >
-                      Delete
+                      <FaTrash size={14} />
                     </button>
                   </td>
                 </tr>

@@ -141,8 +141,8 @@ const Table3 = ({
       <ScrollArea className="bg-background">
         <table className="min-w-full">
           {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
+            <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
             </div>
           ) : error ? (
             <div className="w-full py-5 px-3 bg-background dark:bg-gray-800">

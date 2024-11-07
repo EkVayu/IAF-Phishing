@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-function PluginActivityPopup({ onClose }) {
+function PluginActivityPopup({ data, onClose }) {
   const [stage, setStage] = useState(1);
   const [selectedExtension, setSelectedExtension] = useState(null);
 
@@ -15,29 +15,15 @@ function PluginActivityPopup({ onClose }) {
     return `${id.substring(0, maxLength)}...`;
   };
 
-  const disabledExtensions = [
-    {
-      id: 1,
-      pluginId: "hi9876trdfcgvhyu765esdxokiu65rdcvhui",
-      userName: "User 1",
-      lastActive: "2 days ago",
+  const disabledExtensions = data?.disabled_plugins_details?.map(
+    (plugin, index) => ({
+      id: index + 1,
+      pluginId: plugin?.plugin_id,
+      userName: plugin?.user_name || "N/A",
+      lastActive: "15 minutes ago",
       status: "Disabled",
-    },
-    {
-      id: 2,
-      pluginId: "hi9876trdfcgvhyu765esdxokiu65rdcvhui87",
-      userName: "User 2",
-      lastActive: "5 hours ago",
-      status: "Disabled",
-    },
-    {
-      id: 3,
-      pluginId: "nkoi98y7tfgvhuy765resdxftr54w3a",
-      userName: "User 3",
-      lastActive: "1 week ago",
-      status: "Disabled",
-    },
-  ];
+    })
+  );
 
   const renderHeader = (title) => (
     <div className="flex items-center px-3 bg-red-500 rounded-t-md h-8">

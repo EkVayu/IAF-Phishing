@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Table2 from "../components/Tables/Table2";
 import { fetchPhishingMails, updatePhishingMailStatus } from "../Api/api";
-import { generatePhishingMails } from "../Utils/generatePhishingMails";
 
 function PhishingMails() {
   const [phishingMails, setPhishingMails] = useState([]);
@@ -14,13 +13,20 @@ function PhishingMails() {
     { Header: "User ID", accessor: "u_id" },
     { Header: "Receiver's Email", accessor: "recievers_email" },
     { Header: "Sender's Email", accessor: "senders_email" },
+    { Header: "EML File", accessor: "eml_file_name" },
     { Header: "Plugin ID", accessor: "plugin_id" },
-    { Header: "Message ID", accessor: "message_id" },
+    { Header: "Message ID", accessor: "msg_id" },
     { Header: "Status", accessor: "status" },
     { Header: "Subject", accessor: "subject" },
+    { Header: "URLs", accessor: "urls" },
     { Header: "Created At", accessor: "create_time" },
-    { Header: "User Comment", accessor: "user_comment" },
-    { Header: "Admin Comment", accessor: "admin_comment" },
+    { Header: "BCC", accessor: "bcc" },
+    { Header: "CC", accessor: "cc" },
+    { Header: "Attachments", accessor: "attachments" },
+    { Header: "IPv4", accessor: "ipv4" },
+    { Header: "Browser", accessor: "browser" },
+    { Header: "Email Body", accessor: "email_body" },
+    { Header: "CDR File", accessor: "cdr_file" },
   ];
 
   useEffect(() => {
@@ -33,43 +39,14 @@ function PhishingMails() {
         }
         const result = await response.json();
 
-        if (result && result.length > 0) {
-          const formattedData = result.flatMap((mailGroup) =>
-            mailGroup.email_details.map((mail) => ({
-              ...mail,
-              user_comment: mailGroup.dispute_info[0]?.user_comment || "N/A",
-              admin_comment: mailGroup.dispute_info[0]?.admin_comment || "N/A",
-            }))
-          );
-          setPhishingMails(formattedData);
-          toast.success("Data loaded successfully");
-        } else if (result.length === 0) {
+        if (result && result.email_details && result.email_details.length > 0) {
+          setPhishingMails(result.email_details);
+        } else {
           setError("No data available!");
           toast.info("No data available!");
-        } else {
-          setError("Server response not Ok!");
-          toast.warn("Server response not Ok!");
-          // const generatedData = generatePhishingMails(5);
-          // const formattedGeneratedData = generatedData.flatMap((mailGroup) =>
-          //   mailGroup.email_details.map((mail) => ({
-          //     ...mail,
-          //     user_comment: mailGroup.dispute_info[0]?.user_comment || "N/A",
-          //     admin_comment: mailGroup.dispute_info[0]?.admin_comment || "N/A",
-          //   }))
-          // );
-          // setPhishingMails(formattedGeneratedData);
         }
       } catch (error) {
         console.error("Error fetching phishing mails:", error);
-        // const generatedData = generatePhishingMails(5);
-        // const formattedGeneratedData = generatedData.flatMap((mailGroup) =>
-        //   mailGroup.email_details.map((mail) => ({
-        //     ...mail,
-        //     user_comment: mailGroup.dispute_info[0]?.user_comment || "N/A",
-        //     admin_comment: mailGroup.dispute_info[0]?.admin_comment || "N/A",
-        //   }))
-        // );
-        // setPhishingMails(formattedGeneratedData);
         toast.error(`API error: ${error.message}`);
         setError(`API error: ${error.message}`);
       } finally {

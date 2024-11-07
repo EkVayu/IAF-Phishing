@@ -11,7 +11,7 @@ import DateFormatter from "../Common/DateFormatter";
 import { toast } from "react-toastify";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
+const AdminCommentModal = ({ isOpen, onClose, onSubmit, statusChange }) => {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,6 +20,7 @@ const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
     try {
       await onSubmit(comment);
       setComment("");
+      onClose();
     } finally {
       setIsSubmitting(false);
     }
@@ -31,7 +32,7 @@ const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-background dark:bg-gray-800 p-6 rounded-lg shadow-xl w-[400px] animate-in fade-in-0 zoom-in-95">
             <h3 className="text-lg font-semibold mb-4 text-secondary-foreground">
-              Admin Comment
+              {statusChange ? "Update Status & Comment" : "Add Admin Comment"}
             </h3>
             <textarea
               value={comment}
@@ -70,7 +71,7 @@ const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 const getStatusColor = (status) => {
-  if (!status) return "bg-gray-200"; // Default color for undefined or null status
+  if (!status) return "bg-gray-200";
   switch (status.toLowerCase()) {
     case "completed":
       return "bg-green-500";
@@ -94,7 +95,14 @@ const getThreatScoreColor = (score) => {
   return "text-green-500";
 };
 
-function Table2({ data, columns, onStatusChange, loading, error }) {
+function Table2({
+  data,
+  columns,
+  onStatusChange,
+  onCommentAdd,
+  loading,
+  error,
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({});
   const [showColumnToggle, setShowColumnToggle] = useState(false);
@@ -105,30 +113,6 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const itemsPerPage = 10;
-
-  const handleStatusChange = (row, newStatus) => {
-    setPendingStatusChange({ row, newStatus });
-    setIsModalOpen(true);
-  };
-
-  const handleCommentSubmit = async (comment) => {
-    if (pendingStatusChange) {
-      const { row, newStatus } = pendingStatusChange;
-      await onStatusChange(
-        row?.recievers_email,
-        row?.message_id,
-        comment,
-        newStatus
-      );
-    }
-    setIsModalOpen(false);
-    setPendingStatusChange(null);
-  };
-
-  const handleCommentOnly = (row) => {
-    setPendingStatusChange({ row, newStatus: row.status }); // Keep existing status
-    setIsModalOpen(true);
-  };
 
   const filteredData = useMemo(() => {
     return data.filter((row) => {
@@ -145,6 +129,47 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
     });
   }, [data, columns, searchTerm, filters]);
 
+  const sortedData = useMemo(() => {
+    return [...filteredData].sort((a, b) => {
+      if (a.srNo && b.srNo) {
+        return a.srNo - b.srNo;
+      }
+      const firstColumn = columns[0].accessor;
+      return a[firstColumn] > b[firstColumn] ? 1 : -1;
+    });
+  }, [filteredData, columns]);
+
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const paginatedData = sortedData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleStatusChange = (row, newStatus) => {
+    setPendingStatusChange({ row, newStatus, type: "status" });
+    setIsModalOpen(true);
+  };
+
+  const handleCommentSubmit = async (comment) => {
+    if (!pendingStatusChange) return;
+
+    const { row, newStatus, type } = pendingStatusChange;
+
+    if (type === "status") {
+      await onStatusChange(row.id, newStatus, comment);
+    } else {
+      await onCommentAdd(row.id, comment);
+    }
+
+    setIsModalOpen(false);
+    setPendingStatusChange(null);
+  };
+
+  const handleCommentOnly = (row) => {
+    setPendingStatusChange({ row, type: "comment" });
+    setIsModalOpen(true);
+  };
+
   const toggleColumnVisibility = (accessor) => {
     setVisibleColumns((prev) => ({
       ...prev,
@@ -153,15 +178,8 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
   };
 
   const handleDownload = (row) => {
-    // Implement your download logic here
     toast.success(`Downloading data for message ID: ${row.message_id}`);
   };
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const renderPaginationButtons = () => {
     const buttons = [];
@@ -314,9 +332,9 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                               </>
                             ) : (
                               <span
-                                className={`px-2 py-1 leading-5 font-semibold rounded-md ${getStatusColor(
+                                className={`px-2 py-1 leading-5 font-semibold rounded-md dark:text-black ${getStatusColor(
                                   row[column.accessor]
-                                )} text-white`}
+                                )}`}
                               >
                                 {row[column.accessor]}
                               </span>
@@ -339,10 +357,18 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
                             {row[column.accessor]}
                           </span>
                         ) : column.accessor.includes("started_on") ||
+                          column.accessor.includes("create_time") ||
+                          column.accessor.includes("created_at") ||
                           column.accessor.includes("completed_on") ? (
                           <DateFormatter dateString={row[column.accessor]} />
                         ) : (
-                          row[column.accessor]
+                          // Add the null checking logic here
+                          (() => {
+                            const value = row[column.accessor];
+                            const cellValue =
+                              value === null ? "null" : value || "null";
+                            return cellValue;
+                          })()
                         )}
                       </td>
                     ))}
@@ -383,8 +409,12 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
       )}
       <AdminCommentModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setPendingStatusChange(null);
+        }}
         onSubmit={handleCommentSubmit}
+        statusChange={pendingStatusChange?.type === "status"}
       />
     </div>
   );
