@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// const API_BASE_URL = "http://35.154.97.4:8002";
 const API_BASE_URL = "http://35.154.97.4:8002";
 // const API_BASE_URL = "http://localhost:8000";
 

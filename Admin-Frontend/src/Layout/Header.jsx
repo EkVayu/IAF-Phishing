@@ -96,7 +96,7 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="w-full h-16 flex items-center justify-between px-6 dark:border-b sticky top-0 z-50 bg-white dark:bg-background dark:text-white shadow-md">
+    <div className="w-full h-16 flex items-center justify-between px-6 dark:border-b sticky top-0 bg-white dark:bg-background dark:text-white shadow-md">
       <div className="w-full">
         <h3 className="text-2xl font-bold bg-gradient-to-r from-primary via-white to-secondary text-transparent bg-clip-text">
           Indian Air Force

@@ -50,11 +50,11 @@ const staffMenuItems = [
     path: "/disputes",
     icon: <GoLaw className="text-xl" />,
   },
-  {
-    title: "CDR",
-    path: "/cdr",
-    icon: <MdSpaceDashboard className="text-xl" />,
-  },
+  // {
+  //   title: "CDR",
+  //   path: "/cdr",
+  //   icon: <MdSpaceDashboard className="text-xl" />,
+  // },
   {
     title: "Reports",
     path: "/reports",
