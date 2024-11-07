@@ -446,7 +446,7 @@ function RogueDB() {
                       className="bg-red-500 text-white px-2 py-1 rounded"
                       onClick={() => handleDeleteClick(item)}
                     >
-                      <FaTrash  size={14} />
+                      <FaTrash size={14} />
                     </button>
                   </td>
                 </tr>

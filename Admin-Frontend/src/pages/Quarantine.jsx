@@ -48,6 +48,8 @@ function Quarantine() {
         }
       } catch (err) {
         console.error("Error fetching quarantine data:", err);
+        // const data = generateQuarantineData(5);
+        // setQuarantineData(data);
         toast.error(`Error: ${err.message}`);
         setError(`Error: ${err.message}`);
       } finally {
