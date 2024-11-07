@@ -378,7 +378,7 @@ export const reserveLicense = async (licenseId, action) => {
 
 export const fetchReports = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/reports/`, {
+  const response = await fetch(`${API_BASE_URL}/allocations/license-report/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

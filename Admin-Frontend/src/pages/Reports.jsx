@@ -2,17 +2,14 @@ import React, { useState, useEffect } from "react";
 import Table2 from "../components/Tables/Table2";
 import { toast } from "react-toastify";
 import { fetchReports } from "../Api/api";
-import { ReportDataGenerator } from "../Utils/ReportDataGenerator";
 
 const columns = [
-  { Header: "ID", accessor: "id" },
-  { Header: "MESSAGE ID", accessor: "message_id" },
-  { Header: "CATEGORIES", accessor: "categories" },
-  { Header: "STARTED ON", accessor: "started_on" },
-  { Header: "COMPLETED ON", accessor: "completed_on" },
-  { Header: "THREAT SCORE", accessor: "threat_score" },
-  { Header: "STATUS", accessor: "status" },
-  { Header: "EXPORT", accessor: "export" },
+  { Header: "S.No", accessor: "S.No" },
+  { Header: "License Key", accessor: "License Key" },
+  { Header: "Allocated Email", accessor: "Allocated Email" },
+  { Header: "Allocation Date", accessor: "Allocation Date" },
+  { Header: "Revoke Date", accessor: "Revoke Date" },
+  { Header: "Status", accessor: "Status" },
 ];
 
 function Reports() {
@@ -25,11 +22,12 @@ function Reports() {
     try {
       const response = await fetchReports();
       const result = await response.json();
+      console.log(result);
 
       if (response.ok) {
-        setReportsData(result);
+        setReportsData(result.data);
         setLoading(false);
-      } else if (result.length === 0) {
+      } else if (result.data.length === 0) {
         setError("No data available!");
         toast.info("No data available!");
         setLoading(false);
@@ -57,17 +55,15 @@ function Reports() {
   return (
     <div className="w-full flex flex-col gap-5">
       <h1 className="text-3xl font-semibold text-secondary-foreground tracking-widest">
-        {" "}
-        Reports{" "}
+        Reports
       </h1>
       <div className="">
-        {/* {loading ? (
-          <div className="flex justify-center items-center h-64 bg-background rounded-lg">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-          </div>
-        ) : ( */}
-          <Table2 data={reportsData} columns={columns} error={error} loading={loading} />
-        {/* )} */}
+        <Table2
+          data={reportsData}
+          columns={columns}
+          error={error}
+          loading={loading}
+        />
       </div>
     </div>
   );
