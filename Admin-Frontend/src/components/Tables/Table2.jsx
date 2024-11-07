@@ -11,7 +11,7 @@ import DateFormatter from "../Common/DateFormatter";
 import { toast } from "react-toastify";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
+const AdminCommentModal = ({ isOpen, onClose, onSubmit, statusChange }) => {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,6 +20,7 @@ const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
     try {
       await onSubmit(comment);
       setComment("");
+      onClose();
     } finally {
       setIsSubmitting(false);
     }
@@ -31,7 +32,7 @@ const AdminCommentModal = ({ isOpen, onClose, onSubmit }) => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-background dark:bg-gray-800 p-6 rounded-lg shadow-xl w-[400px] animate-in fade-in-0 zoom-in-95">
             <h3 className="text-lg font-semibold mb-4 text-secondary-foreground">
-              Admin Comment
+              {statusChange ? "Update Status & Comment" : "Add Admin Comment"}
             </h3>
             <textarea
               value={comment}
@@ -94,7 +95,14 @@ const getThreatScoreColor = (score) => {
   return "text-green-500";
 };
 
-function Table2({ data, columns, onStatusChange, loading, error }) {
+function Table2({
+  data,
+  columns,
+  onStatusChange,
+  onCommentAdd,
+  loading,
+  error,
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({});
   const [showColumnToggle, setShowColumnToggle] = useState(false);
@@ -107,26 +115,28 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
   const itemsPerPage = 10;
 
   const handleStatusChange = (row, newStatus) => {
-    setPendingStatusChange({ row, newStatus });
+    setPendingStatusChange({ row, newStatus, type: "status" });
     setIsModalOpen(true);
   };
 
   const handleCommentSubmit = async (comment) => {
-    if (pendingStatusChange) {
-      const { row, newStatus } = pendingStatusChange;
-      await onStatusChange(
-        row?.recievers_email,
-        row?.message_id,
-        comment,
-        newStatus
-      );
+    if (!pendingStatusChange) return;
+
+    const { row, newStatus, type } = pendingStatusChange;
+
+    if (type === "status") {
+      await onStatusChange(row.id, newStatus, comment);
+    } else {
+      await onCommentAdd(row.id, comment);
     }
+
     setIsModalOpen(false);
     setPendingStatusChange(null);
   };
 
+  // Keep existing status
   const handleCommentOnly = (row) => {
-    setPendingStatusChange({ row, newStatus: row.status }); // Keep existing status
+    setPendingStatusChange({ row, type: "comment" });
     setIsModalOpen(true);
   };
 
@@ -383,8 +393,12 @@ function Table2({ data, columns, onStatusChange, loading, error }) {
       )}
       <AdminCommentModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setPendingStatusChange(null);
+        }}
         onSubmit={handleCommentSubmit}
+        statusChange={pendingStatusChange?.type === "status"}
       />
     </div>
   );
