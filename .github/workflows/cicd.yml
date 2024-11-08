@@ -43,3 +43,22 @@ jobs:
             git checkout main
             sudo cp -r * /home/ubuntu/Updated_code_backend_deployment/
           EOF
+        
+      - name: run server 
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2IP }} << 'EOF'
+            # Print the current directory on EC2 (to verify it's logged into EC2)
+            cd /home/ubuntu/Updated_code_backend_deployment/
+            source myenv2/bin/activate
+            # Find and kill any existing Django server running on port 8002
+            PID=$(ps aux | grep "python manage.py runserver" | grep "0.0.0.0:8002" | awk '{print $2}')
+            if [ -n "$PID" ]; then
+            echo "Killing existing server with PID: $PID"
+            kill -9 $PID
+            fi
+            # Start a new Django server
+            nohup python manage.py runserver 0.0.0.0:8002 > server.log 2>&1 &
+          EOF
+
+
+          
