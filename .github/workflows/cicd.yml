@@ -33,7 +33,8 @@ jobs:
       #     EOF
       - name: clear old python-code 
         run: | 
-          sudo rm -rf /home/ubuntu/python-code
+          # sudo rm -rf /home/ubuntu/python-code
+          pwd
 
       # - name: Clone Repository on EC2 using PAT
       #   run: |
