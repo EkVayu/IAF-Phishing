@@ -46,4 +46,5 @@ jobs:
 
       - name: moving the code in workable directory
         run: |
-          sudo cp -r /home/ubuntu/python-code/* /home/ubuntu/Updated_code_backend_deployment/
+          pwd
+          # sudo cp -r /home/ubuntu/python-code/* /home/ubuntu/Updated_code_backend_deployment/
