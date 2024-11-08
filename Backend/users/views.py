@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
-from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable
+from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable, Dispute
 # from plugin.serializers import EmailDetailsSerializer
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -21,7 +21,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import RoughURL, RoughDomain, RoughMail
 from rest_framework.exceptions import ValidationError
-from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer
+from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer, DisputeUpdateSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import json
 from django.core.files.storage import default_storage
@@ -50,8 +50,6 @@ class LoginViewset(viewsets.ViewSet):
                     role = "staff"
                 else:
                     role = "user"
-
-                
                 request.session['user_role'] = role
                 request.session['user_email'] = user.email
                 request.session['user_username'] = user.username
@@ -220,10 +218,19 @@ class LicenseListView(viewsets.ModelViewSet):
     serializer_class = LicenseSerializer
     # Nidhi
     def list(self, request): 
-        current_user = request.user      
+        current_user = request.user    
+
+        # Check if the user is authenticated
+        if not current_user.is_authenticated:
+            return Response({'error': 'Login required to access licenses.'}, status=status.HTTP_401_UNAUTHORIZED)
+ 
         user_email = current_user.email 
         print(user_email)
-        user = User.objects.get(email=user_email)
+        try:
+           user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
         print(user)
         user_is_active = user.is_active
         print(user_is_active)
@@ -238,11 +245,10 @@ class LicenseListView(viewsets.ModelViewSet):
            queryset = License.objects.all() 
         else:
            queryset = License.objects.filter(is_reserved=0)  
-        print(queryset)  
-        #queryset = License.objects.all()
+        print(queryset)
         serializer = self.serializer_class(queryset, many=True)
         count = queryset.count()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
     def allocate(self, request, pk=None):
@@ -257,7 +263,7 @@ class LicenseListView(viewsets.ModelViewSet):
 
             # Update the License instance
             license.allocated_to = allocated_to
-            license.status = 1  # Assuming 1 represents 'allocated' status
+            license.status = 1
             license.save()
 
             # Create a new LicenseAllocation instance
@@ -266,7 +272,6 @@ class LicenseListView(viewsets.ModelViewSet):
                 allocated_to=allocated_to,
                 allocation_date=allocation_date
             )
-
             message = f"License allocated successfully to {allocated_to}, Allocation Date: {allocation_date}, License ID: {license.hashed_license_id}"
             print("Hashed license id ",license.hashed_license_id)
             send_mail(
@@ -352,7 +357,7 @@ class LicenseListView(viewsets.ModelViewSet):
         
         for i in range(number_of_licenses):
             serial_number = base_license_number + i
-            license_id = f"LIC-{serial_number:04d}"  # Formats the license ID like 'LIC-0001'
+            license_id = f"LIC-{serial_number:04d}"
 
             license = License(
                 license_id=license_id,
@@ -891,4 +896,17 @@ def get_disabled_plugins_count(request):
     return Response({
         "disabled_plugins_count": disabled_plugins.count(),
         "disabled_plugins_details": disabled_plugins_data
+
     })
+
+class DisputeStatusUpdateView(generics.UpdateAPIView):
+    queryset = Dispute.objects.all()
+    serializer_class = DisputeSerializer
+
+# View to add a new comment on DisputeInfo
+class DisputeCommentCreateView(generics.CreateAPIView):
+    queryset = DisputeInfo.objects.all()
+    serializer_class = DisputeCommentSerializer
+
+    
+
