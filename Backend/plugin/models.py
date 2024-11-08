@@ -238,8 +238,20 @@ class Attachment(models.Model):
         email_detail (ForeignKey): A reference to the related EmailDetails object.
         attachment (FileField): The attachment associated with the email.
     """
+    AI_STATUS_CHOICES = (
+        (1, 'Safe'),
+        (2, 'Unsafe'),
+        (3, 'Exception'),
+        (4, 'Failed'),
+    )
     email_detail = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name='Emailsattachments')
+    cdr_file = models.ForeignKey(CDRFile, on_delete=models.SET_NULL, null=True, blank=True, related_name='attachments')
     attachment = models.FileField(upload_to='attachments/', null=True, blank=True)
+    created_at = models.DateTimeField(null=True, blank=True)
+    sended = models.BooleanField(default=False)
+    ai_Remarks = models.TextField(null=True, blank=True)
+    ai_status = models.IntegerField(choices=AI_STATUS_CHOICES, null=True, blank=True)
+    ai_sended_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'plugin_emails_attachments'

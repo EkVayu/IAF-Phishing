@@ -3,7 +3,7 @@ from .models import *
 # from plugin.models import *
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from plugin.models import EmailDetails, DisputeInfo, Dispute
+from plugin.models import EmailDetails, DisputeInfo, Dispute, Attachment
 from .models import RoughURL, RoughDomain, RoughMail
 
 
@@ -280,3 +280,26 @@ class DisputeCommentSerializer(serializers.ModelSerializer):
         dispute_info.dispute.updated_at = timezone.now()
         dispute_info.dispute.save()
         return dispute_info
+
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    msg_id = serializers.SerializerMethodField()
+    ai_status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Attachment
+        fields = ['msg_id', 'ai_status', 'created_at', 'ai_sended_at', 'attachment']
+
+    def get_msg_id(self, obj):
+        return obj.email_detail.msg_id
+
+    def get_ai_status(self, obj):
+        # Map integer values to descriptive names
+        status_map = {
+            1: "Safe",
+            2: "Unsafe",
+            3: "Exception",
+            4: "Failed"
+        }
+        return status_map.get(obj.ai_status, "Unknown")

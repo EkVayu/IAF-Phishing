@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
-from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable, Dispute
+from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable, Dispute, Attachment
 # from plugin.serializers import EmailDetailsSerializer
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -21,12 +21,14 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import RoughURL, RoughDomain, RoughMail
 from rest_framework.exceptions import ValidationError
-from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer, DisputeUpdateSerializer
+from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer, DisputeUpdateSerializer, AttachmentSerializer
+
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import json
 from django.core.files.storage import default_storage
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, parser_classes
+from rest_framework.views import APIView
 import traceback
 
 User = get_user_model()
@@ -908,5 +910,10 @@ class DisputeCommentCreateView(generics.CreateAPIView):
     queryset = DisputeInfo.objects.all()
     serializer_class = DisputeCommentSerializer
 
+class AvailableAttachmentsView(APIView):
+    def get(self, request):
+        attachments = Attachment.objects.filter(attachment__isnull=False)
+        serializer = AttachmentSerializer(attachments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 
