@@ -96,7 +96,7 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="w-full h-16 flex items-center justify-between px-6 dark:border-b sticky top-0 bg-white dark:bg-background dark:text-white shadow-md">
+    <div className="w-full h-16 flex items-center justify-between px-6 dark:border-b top-0 bg-white dark:bg-background dark:text-white shadow-md">
       <div className="w-full">
         <h3 className="text-2xl font-bold bg-gradient-to-r from-primary via-white to-secondary text-transparent bg-clip-text">
           Indian Air Force
@@ -179,7 +179,7 @@ const Header = () => {
         <div className="relative">
           {isDropdownOpen && (
             <div
-              className="absolute top-[40px] right-0 z-[1000] w-[200px] p-2 bg-background shadow-md dark:shadow-sm shadow-black dark:shadow-white rounded-md text-sm"
+              className="absolute top-[40px] right-0 w-[200px] p-2 bg-background shadow-md dark:shadow-sm shadow-black dark:shadow-white rounded-md text-sm z-50"
               ref={menuRef}
             >
               <ul className="flex flex-col gap-2">
