@@ -41,6 +41,7 @@ jobs:
             git clone https://${{ env.pat }}@github.com/EkVayu/IAF-Phishing.git /home/ubuntu/python-code/
             cd /home/ubuntu/python-code/
             git checkout main
+            cd /home/ubuntu/python-code/Backend
             sudo cp -r * /home/ubuntu/Updated_code_backend_deployment/
           EOF
         
