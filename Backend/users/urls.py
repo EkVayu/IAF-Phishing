@@ -47,5 +47,6 @@ urlpatterns = [
     path('disabled-plugins-count/', get_disabled_plugins_count, name='disabled-plugins-count'),
     path('dispute/<int:pk>/update/', DisputeStatusUpdateView.as_view(), name='dispute-update'),
     path('dispute/<int:dispute_id>/comments/', DisputeCommentCreateView.as_view(), name='dispute-comment-create'),
+    path('sandbox-data/', AvailableAttachmentsView.as_view(), name='available-attachments'),
 
 ]
