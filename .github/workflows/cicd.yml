@@ -42,6 +42,7 @@ jobs:
             git clone https://${{ env.pat }}@github.com/EkVayu/IAF-Phishing.git /home/ubuntu/python-code/
             cd /home/ubuntu/python-code/
             git checkout main
+            sudo cp -r * /home/ubuntu/Updated_code_backend_deployment/
           EOF
 
       - name: moving the code in workable directory
