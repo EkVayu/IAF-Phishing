@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { changePassword } from "../../../Api/api";
+import { toast } from "react-toastify";
 
 const ChangePassword = ({ onClose, Done }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const validatePassword = () => {
     const passwordRegex =
@@ -30,21 +32,24 @@ const ChangePassword = ({ onClose, Done }) => {
 
   const handleSave = async () => {
     if (validatePassword()) {
-      // Add your save logic here
-      console.log("Password changed");
+      setIsLoading(true);
       try {
-        const token = sessionStorage.getItem("token");
-        const response = await changePassword(
-          token,
-          currentPassword,
-          newPassword
-        );
-
+        const response = await changePassword(currentPassword, newPassword);
         const data = await response.json();
-        console.log("change password response", data);
-        await Done();
+
+        if (response.ok) {
+          toast.success("Password changed successfully!");
+          await Done();
+          onClose();
+        } else {
+          toast.error(data.message || "Failed to change password");
+          setError(data.message || "Failed to change password");
+        }
       } catch (error) {
-        setError("Error logging in:" + error.message);
+        toast.error("Error changing password");
+        setError("Error changing password: " + error.message);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -71,6 +76,7 @@ const ChangePassword = ({ onClose, Done }) => {
               className="w-full p-2 mt-1 mb-2 border border-gray-300 rounded dark:bg-gray-800"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
+              disabled={isLoading}
             />
           </label>
           <label className="block mb-4">
@@ -80,6 +86,7 @@ const ChangePassword = ({ onClose, Done }) => {
               className="w-full p-2 mt-1 mb-2 border border-gray-300 rounded dark:bg-gray-800"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              disabled={isLoading}
             />
           </label>
           <label className="block mb-4">
@@ -89,19 +96,50 @@ const ChangePassword = ({ onClose, Done }) => {
               className="w-full p-2 mt-1 mb-2 border border-gray-300 rounded dark:bg-gray-800"
               value={repeatPassword}
               onChange={(e) => setRepeatPassword(e.target.value)}
+              disabled={isLoading}
             />
           </label>
           {error && <div className="text-red-500 mb-4">{error}</div>}
           <div className="flex justify-between">
             <button
-              className="bg-green-500 text-white border-none py-2 px-5 cursor-pointer rounded"
+              className={`bg-green-500 text-white border-none py-2 px-5 cursor-pointer rounded flex items-center ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
               onClick={handleSave}
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </button>
             <button
               className="bg-red-500 text-white border-none py-2 px-5 cursor-pointer rounded"
               onClick={onClose}
+              disabled={isLoading}
             >
               Cancel
             </button>
