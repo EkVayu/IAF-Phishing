@@ -57,7 +57,7 @@ jobs:
             kill -9 $PID
             fi
             # Start a new Django server
-            nohup python manage.py runserver 0.0.0.0:8002 &
+            nohup python manage.py runserver 0.0.0.0:8002 > server.log 2>&1 &
           EOF
 
 
