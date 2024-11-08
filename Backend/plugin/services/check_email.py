@@ -1,26 +1,174 @@
+import os
 import logging
+import re
+import email
+from email import policy
+from django.conf import settings
+from pathlib import Path
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from django.conf import settings
-from pathlib import Path
-import email
-from email import policy
-import re
-from plugin.models import EmailDetails, Attachment, URL
+import dkim
+import spf
+import dns.resolver
+from plugin.models import EmailDetails, URL, RoughURL, RoughDomain, RoughMail, Attachment
+import time  # Added for timeout handling
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-import os
-FILE_PATH = Path(settings.EMAIL_BACKUP_DIR)
-FILE_PATH_S = Path(settings.EMAIL_FILE_DIR)
 
+# Define file path for email backups
+FILE_PATH = Path(settings.EMAIL_BACKUP_DIR)
+
+# Timeout threshold in seconds (e.g., 30 seconds)
+AI_RESPONSE_TIMEOUT = 30
+
+# Function to extract email details from .eml file
+def check_eml(eml_content, newpath_set, msg_id):
+    try:
+        msg = email.message_from_bytes(eml_content, policy=policy.default)
+
+        # Extract headers
+        to_email = msg.get('To', '') or ''
+        from_email = msg.get('From', '') or ''
+        cc = msg.get('Cc', '') or ''
+        bcc = msg.get('Bcc', '') or ''
+        subject = msg.get('Subject', '') or ''
+
+        # Extract body and attachments
+        body = extract_body(msg) or ""
+        attachment_info = extract_attachments(msg, newpath_set)
+
+        # Extract URLs
+        urls = extract_urls(eml_content) or []
+
+        return {
+            'to_email': to_email,
+            'from_email': from_email,
+            'cc': cc,
+            'bcc': bcc,
+            'subject': subject,
+            'body': body,
+            'urls': urls,
+            'attachments': attachment_info['attachments'],
+        }
+
+    except Exception as e:
+        logger.error(f"Error extracting email details: {e}")
+        return None
+
+# Extract body of the email (for simplicity, just text/plain or text/html)
+def extract_body(msg):
+    for part in msg.iter_parts():
+        if part.get_content_type() == 'text/plain':
+            return part.get_payload(decode=True).decode(part.get_content_charset(), errors='ignore')
+        elif part.get_content_type() == 'text/html':
+            return part.get_payload(decode=True).decode(part.get_content_charset(), errors='ignore')
+    return ""
+
+# Extract attachments from the email
+def extract_attachments(msg, newpath_set):
+    attachments = []
+    for part in msg.iter_parts():
+        if part.get_content_disposition() == 'attachment':
+            filename = part.get_filename()
+            if filename:
+                file_path = newpath_set / filename
+                with open(file_path, 'wb') as f:
+                    f.write(part.get_payload(decode=True))
+                attachments.append(filename)
+    return {'attachments': attachments}
+
+# Extract URLs from the email content
+def extract_urls(eml_content):
+    url_regex = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'  # Regex to match URLs
+    urls = set()  # Use a set to avoid duplicate URLs
+    msg = email.message_from_bytes(eml_content, policy=email.policy.default)
+    body = extract_body(msg)
+    
+    if body:
+        urls.update(re.findall(url_regex, body))
+
+    return list(urls)
+
+# Function to perform DKIM, SPF, and DMARC checks on the email
+def check_email_authentication(from_email, eml_content):
+    dkim_check = verify_dkim(eml_content)
+    logger.info(f"DKIM check result: {'pass' if dkim_check else 'fail'}")
+    spf_check = verify_spf(from_email)
+    logger.info(f"SPF check result: {'pass' if spf_check else 'fail'}")
+    
+    dmarc_check = verify_dmarc(from_email)
+    logger.info(f"DMARC check result: {'pass' if dmarc_check else 'fail'}")
+   
+    return "safe" if dkim_check and spf_check and dmarc_check else "unsafe"
+
+# DKIM Verification
+def verify_dkim(eml_content):
+    try:
+        return dkim.verify(eml_content)
+    except Exception as e:
+        logger.error(f"Error in DKIM check: {e}")
+        return False
+
+# SPF Verification
+def verify_spf(from_email):
+    try:
+        ip = '127.0.0.1'  # This is a dummy IP. Replace with the sender's IP if available.
+        domain = from_email.split('@')[-1]
+        result = spf.check(i=ip, s=from_email, h=domain)
+        return result[0] == 'pass'
+    except Exception as e:
+        logger.error(f"Error in SPF check: {e}")
+        return False
+
+# DMARC Verification
+def verify_dmarc(from_email):
+    try:
+        domain = from_email.split('@')[-1]
+        dmarc_record = dns.resolver.resolve(f'_dmarc.{domain}', 'TXT')
+        return bool(dmarc_record)
+    except dns.resolver.NoAnswer:
+        logger.error(f"No DMARC record found for domain {domain}")
+        return False
+    except dns.resolver.NXDOMAIN:
+        logger.error(f"Domain {domain} does not exist")
+        return False
+    except Exception as e:
+        logger.error(f"Error in DMARC check: {e}")
+        return False
+
+# Check RoughURL, RoughDomain, and RoughMail database validations
+def check_rough_data(email_details):
+    for url in email_details['urls']:
+        protocol = 'https' if url.startswith('https://') else 'http' if url.startswith('http://') else ''
+        if not RoughURL.objects.filter(url=url, protocol=protocol).exists():
+            logger.warning(f"URL {url} with protocol {protocol} not found in RoughURL.")
+            return False
+    
+    domain = email_details['from_email'].split('@')[-1]
+    if not RoughDomain.objects.filter(ip=domain).exists():
+        logger.warning(f"Domain {domain} not found in RoughDomain.")
+        return False
+    
+    if not RoughMail.objects.filter(mailid=email_details['from_email']).exists():
+        logger.warning(f"Email {email_details['from_email']} not found in RoughMail.")
+        return False
+    
+    return True
+
+# Django view to check the email
 @csrf_exempt
 @transaction.atomic
 def check_email(request):
     try:
         logger.info("Processing check_email request")
 
+        # Start time tracking for AI response
+        start_time = time.time()
+
+        # Extract request parameters
         msg_id = request.POST.get('messageId')
         plugin_id = request.POST.get('pluginId')
         browser = request.POST.get('browser')
@@ -28,41 +176,34 @@ def check_email(request):
         uploaded_file = request.FILES.get('file')
 
         if not msg_id:
-            logger.warning("No messageId provided")
             return JsonResponse({"message": "Please provide message Id", "STATUS": "Not Found", "Code": 0})
 
-        logger.info(f"Received messageId: {msg_id}")
-
+        # Check if email already exists
         existing_email = EmailDetails.objects.filter(msg_id=msg_id).first()
         if existing_email:
-            logger.info(f"Email with messageId {msg_id} already exists")
-            return JsonResponse({"message": "Email already exists", "STATUS": "Found", "Code": 1,"email_status": existing_email.status})
+            return JsonResponse({
+                "message": "Email already exists",
+                "STATUS": "Found",
+                "Code": 1,
+                "email_status": existing_email.status
+            })
 
-        newpath_set = FILE_PATH / msg_id
-        logger.info(f"Creating directory at {newpath_set}")
+        sanitized_msg_id = msg_id.replace("\\", "_").replace("/", "_").replace(":", "_")
+        newpath_set = FILE_PATH / sanitized_msg_id
+
         os.makedirs(newpath_set, exist_ok=True)
 
         if uploaded_file:
-            logger.info("File uploaded successfully")
             eml_content = uploaded_file.read()
-            eml_filename = f"{msg_id}.eml"
-
+            eml_filename = f"{sanitized_msg_id}.eml"
             backup_saved_file_path = newpath_set / eml_filename
-            logger.info(f"Saving file to {backup_saved_file_path}")
-            
-            # Ensure the parent directory exists
-            os.makedirs(os.path.dirname(backup_saved_file_path), exist_ok=True)
-            
+
             with open(backup_saved_file_path, 'wb') as backup_file:
                 backup_file.write(eml_content)
 
-            logger.info("Extracting email details")
-            email_details = check_eml(eml_content, newpath_set)
+            email_details = check_eml(eml_content, newpath_set, sanitized_msg_id)
             if not email_details:
-                logger.error("Failed to extract email details")
                 return JsonResponse({"error": "Failed to extract email details"}, status=400)
-
-            logger.info(f"Extracted email details: {email_details}")
 
             email_entry = EmailDetails(
                 msg_id=msg_id,
@@ -76,119 +217,55 @@ def check_email(request):
                 email_body=email_details['body'],
                 cc=email_details['cc'],
                 bcc=email_details['bcc'],
-                urls=', '.join(email_details['urls']),
+                urls=email_details['urls'],
                 attachments=email_details['attachments'],
+                status="pending"  # Initially mark as pending
             )
             email_entry.save()
 
-            # Save URLs to the URL table
-            created_urls = []
+            email_status = check_email_authentication(email_details['from_email'], eml_content)
+            
+            # Perform database validation for RoughURL, RoughDomain, RoughMail
+            if not check_rough_data(email_details):
+                email_entry.status = "unsafe"
+                email_entry.save()
+                return JsonResponse({
+                    "message": "Email failed database validation checks",
+                    "STATUS": "Unsafe",
+                    "Code": 1
+                })
+
+            # Check AI response time
+            elapsed_time = time.time() - start_time
+            if elapsed_time > AI_RESPONSE_TIMEOUT:
+                logger.warning(f"AI response time exceeded the timeout of {AI_RESPONSE_TIMEOUT} seconds.")
+                email_entry.status = "pending"
+                email_entry.save()
+
+            if email_status == "safe":
+                email_entry.status = "safe"
+            else:
+                email_entry.status = "unsafe"
+            email_entry.save()
+
+            # Save URLs in URL model
             for url in email_details['urls']:
-                url_obj = URL.objects.create(email_detail=email_entry, url=url)
-                created_urls.append(url_obj.url)
+                URL.objects.create(email_detail=email_entry, url=url)
 
-            logger.info(f"Email details saved to database: {email_entry}")
+            # Save Attachments in Attachment model (Assuming an Attachment model exists)
+            for attachment_filename in email_details['attachments']:
+                Attachment.objects.create(email_detail=email_entry, filename=attachment_filename)
 
-            # Create a response dictionary
-            response_data = {
+            return JsonResponse({
                 "message": "Email processed successfully",
                 "STATUS": "Success",
                 "Code": 1,
-                "email_status": getattr(email_entry, 'status', 'unknown'),
-                "created_urls": created_urls,
+                "email_status": email_entry.status,
                 "messageId": msg_id,
-            }
-            return JsonResponse(response_data, status=200)
+            })
 
-        logger.warning("No file received")
         return JsonResponse({"error": "No file received"}, status=400)
 
     except Exception as e:
         logger.error(f"Error in check_email: {e}", exc_info=True)
         return JsonResponse({"error": f"Internal Server Error: {str(e)}"}, status=500)
-
-
-def check_eml(eml_content, newpath_set):
-    try:
-        msg = email.message_from_bytes(eml_content, policy=policy.default)
-
-        to_email = msg.get('To', '')
-        from_email = msg.get('From', '')
-        cc = msg.get('Cc', '')
-        bcc = msg.get('Bcc', '')
-        subject = msg.get('Subject', '')
-        
-        body = extract_body(msg)
-        urls = extract_urls(eml_content)
-        domains = extract_domains(eml_content)
-        
-        attachment_info = extract_attachments(msg, newpath_set)
-
-        logger.info(f"To: {to_email}")
-        logger.info(f"From: {from_email}")
-        logger.info(f"CC: {cc}")
-        logger.info(f"BCC: {bcc}")
-        logger.info(f"Subject: {subject}")
-        logger.info(f"Body: {body[:100]}...")
-        logger.info(f"URLs: {urls}")
-        logger.info(f"Domains: {domains}")
-        logger.info(f"Attachments: {attachment_info}")
-
-        return {
-            'to_email': to_email,
-            'from_email': from_email,
-            'cc': cc,
-            'bcc': bcc,
-            'subject': subject,
-            'body': body,
-            'urls': urls,
-            'attachments': attachment_info.get('attachments', [])
-        }
-    except Exception as e:
-        logger.error(f"Error extracting email details: {e}")
-        return None
-
-def extract_body(msg):
-    body = ""
-    if msg.is_multipart():
-        for part in msg.walk():
-            if part.get_content_type() == "text/plain":
-                body += part.get_payload(decode=True).decode(errors='ignore')
-    else:
-        body = msg.get_payload(decode=True).decode(errors='ignore')
-    return body
-
-def extract_attachments(msg, destination_path):
-    try:
-        info = {"attachments": []}
-
-        for part in msg.iter_attachments():
-            filename = part.get_filename()
-            if not filename:
-                filename = f"attachment_{len(info['attachments']) + 1}.bin"
-
-            file_path = Path(destination_path) / filename
-            
-            # Ensure the parent directory exists
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            
-            with file_path.open('wb') as attachment_file:
-                attachment_file.write(part.get_payload(decode=True))
-            logger.info(f"Attachment saved: {file_path}")
-
-            attachment_info = {"filename": filename}
-            info["attachments"].append(attachment_info)
-
-        return info
-    except Exception as e:
-        logger.error(f"Error extracting attachments: {e}")
-        return {"attachments": []}
-
-def extract_urls(eml_content):
-    url_pattern = re.compile(rb'https?://\S+')
-    return [url.decode('utf-8', errors='ignore') for url in url_pattern.findall(eml_content)]
-
-
-def extract_domains(eml_content):
-    domain_pattern = re.compile(rb'(?<=@)\S+')
-    return [domain.decode('utf-8', errors='ignore') for domain in domain_pattern.findall(eml_content)]

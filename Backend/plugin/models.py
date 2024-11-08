@@ -191,7 +191,7 @@ class EmailDetails(models.Model):
     eml_file_name = models.CharField(max_length=100, blank=True, null=True)
     plugin_id = models.CharField(max_length=80, blank=True, null=True)
     msg_id = models.CharField(max_length=100, blank=True, null=True)    
-    status = models.CharField(max_length=50,choices=STATUS_CHOICES, default='unsafe')
+    status = models.CharField(max_length=50,choices=STATUS_CHOICES)
     subject = models.TextField(blank=True, null=True)
     urls = models.TextField(blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True,blank=True,null=True)
