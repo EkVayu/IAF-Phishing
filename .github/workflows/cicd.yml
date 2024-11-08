@@ -1,5 +1,5 @@
 name: My First GitHub Actions
-on: [push] 
+# on: [push] 
 
 on:
   workflow_dispatch: {}
