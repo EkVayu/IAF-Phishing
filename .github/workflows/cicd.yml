@@ -1,12 +1,12 @@
 name: My First GitHub Actions
 on: [push] 
 
-# on:
-#   workflow_dispatch: {}
-#   push:
-#     branches:
-#       - 'main'
-
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - 'main'
+      - 'update_yml1'
 env:
   sshKey: ${{ secrets.EC2_SSH_KEY }}
   ec2IP: ${{ secrets.EC2_PUBLIC_IP }}
