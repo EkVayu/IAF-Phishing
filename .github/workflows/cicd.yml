@@ -6,7 +6,7 @@ on: [push]
 #   push:
 #     branches:
 #       - 'main'
-
+#       - 'update_yml1'
 env:
   sshKey: ${{ secrets.EC2_SSH_KEY }}
   ec2IP: ${{ secrets.EC2_PUBLIC_IP }}
@@ -31,6 +31,9 @@ jobs:
       #       # Clone the private repo on EC2 instance using PAT
       #       git clone https://${{ env.pat }}@github.com/EkVayu/IAF-Phishing.git /home/ubuntu/python-code/
       #     EOF
+      - name: clear old python-code 
+        run: | 
+          sudo rm -rf /home/ubuntu/python-code/
 
       - name: Clone Repository on EC2 using PAT
         run: |
@@ -39,6 +42,5 @@ jobs:
             git clone https://${{ env.pat }}@github.com/EkVayu/IAF-Phishing.git /home/ubuntu/python-code/
             cd /home/ubuntu/python-code/
             git checkout main
+            sudo cp -r * /home/ubuntu/Updated_code_backend_deployment/
           EOF
-
-    
