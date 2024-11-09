@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useTable, usePagination, useSortBy } from "react-table";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import LicenseForm from "../popup/licenseFormPopup/LicenseForm";
-import DateFormatter from "../Common/DateFormatter";
 import LicenseHistoryModal from "../popup/LicenseHistoryModal/LicenseHistoryModal";
 import { toast } from "react-toastify";
 import {
@@ -15,6 +14,37 @@ import { IoFilterSharp } from "react-icons/io5";
 import { FaEye } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
+function DateFormatter({ dateString }) {
+  const formatDate = (dateString) => {
+    if (!dateString || dateString === "null" || dateString === "undefined") {
+      return "-";
+    }
+
+    const date = new Date(dateString);
+
+    // Check if date is invalid
+    if (isNaN(date.getTime())) {
+      return "-";
+    }
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    hours = hours.toString().padStart(2, "0");
+
+    return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
+  };
+
+  return <span>{formatDate(dateString)}</span>;
+}
 
 const Table = ({
   tabData,

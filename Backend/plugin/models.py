@@ -191,7 +191,7 @@ class EmailDetails(models.Model):
     eml_file_name = models.CharField(max_length=100, blank=True, null=True)
     plugin_id = models.CharField(max_length=80, blank=True, null=True)
     msg_id = models.CharField(max_length=100, blank=True, null=True)    
-    status = models.CharField(max_length=50,choices=STATUS_CHOICES, default='unsafe')
+    status = models.CharField(max_length=50,choices=STATUS_CHOICES)
     subject = models.TextField(blank=True, null=True)
     urls = models.TextField(blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True,blank=True,null=True)
@@ -211,7 +211,7 @@ class EmailDetails(models.Model):
         db_table = 'plugin_email_details'
 
         def _str_(self):
-            return f"Email Details for {self.u_id}"
+            return f"Email Details for {self.u_id} - Status: {self.status}"
         """
         Returns a string representation of the email details, showing the email ID.
 
@@ -238,8 +238,20 @@ class Attachment(models.Model):
         email_detail (ForeignKey): A reference to the related EmailDetails object.
         attachment (FileField): The attachment associated with the email.
     """
+    AI_STATUS_CHOICES = (
+        (1, 'Safe'),
+        (2, 'Unsafe'),
+        (3, 'Exception'),
+        (4, 'Failed'),
+    )
     email_detail = models.ForeignKey(EmailDetails, on_delete=models.CASCADE, related_name='Emailsattachments')
+    cdr_file = models.ForeignKey(CDRFile, on_delete=models.SET_NULL, null=True, blank=True, related_name='attachments')
     attachment = models.FileField(upload_to='attachments/', null=True, blank=True)
+    created_at = models.DateTimeField(null=True, blank=True)
+    sended = models.BooleanField(default=False)
+    ai_Remarks = models.TextField(null=True, blank=True)
+    ai_status = models.IntegerField(choices=AI_STATUS_CHOICES, null=True, blank=True)
+    ai_sended_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'plugin_emails_attachments'
