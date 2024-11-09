@@ -8,6 +8,7 @@ import json
 from .view.register import register
 from .view.verify_license_id  import verify_lid
 from .services.check_email import check_email
+
 from users.models import PluginMaster, License
 from django.shortcuts import render
 from django.contrib.auth.tokens import default_token_generator
@@ -28,10 +29,16 @@ from django.db import connection
 import logging
 from django.core.files.storage import default_storage
 import os
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+import os
 from django.core.files.storage import default_storage
 from django.core.serializers import serialize
 logger = logging.getLogger(__name__)
 from users.serializers import *
+from openpyxl import load_workbook 
+import re
+from PyPDF2 import PdfReader, PdfWriter
 
 
 @csrf_exempt
@@ -674,3 +681,179 @@ def graph_count(request):
     }, status=405)
 
 
+# for cdr attachments urls block 
+url_pattern = re.compile(r'https?://\S+')
+
+def replace_urls_in_text(text):
+    return url_pattern.sub(lambda match: match.group().replace("http", "http[dot]").replace(".", "[dot]"), text)
+def process_pdf(file_path):
+    output_pdf_path = file_path.replace(".pdf", "_modified.pdf")
+    reader = PdfReader(file_path)
+    writer = PdfWriter()
+
+    for page_num in range(len(reader.pages)):
+        page = reader.pages[page_num]
+        if '/Annots' in page:
+            annots = page['/Annots']
+            for annot in annots:
+                annot_obj = annot.get_object()
+                if annot_obj.get('/Subtype') == '/Link':
+                   
+                    if '/A' in annot_obj:
+                        del annot_obj['/A']
+                    if '/URI' in annot_obj:
+                        del annot_obj['/URI']
+        
+        text = page.extract_text()
+        if text:
+            modified_text = replace_urls_in_text(text)
+        writer.add_page(page)
+
+    with open(output_pdf_path, "wb") as output_pdf_file:
+        writer.write(output_pdf_file)
+
+    return output_pdf_path
+
+def process_docx(file_path):
+    doc = docx.Document(file_path)
+    for para in doc.paragraphs:
+        para.text = replace_urls_in_text(para.text)
+
+    modified_docx_path = file_path.replace(".docx", "_modified.docx")
+    doc.save(modified_docx_path)
+    return modified_docx_path
+
+
+def process_excel(file_path):
+    wb = load_workbook(file_path)
+    for sheet_name in wb.sheetnames:
+        worksheet = wb[sheet_name]
+        for row in worksheet.iter_rows():
+            for cell in row:
+                if isinstance(cell.value, str):
+                    cell.value = replace_urls_in_text(cell.value)
+
+    modified_excel_path = file_path.replace(".xlsx", "_modified.xlsx")
+    wb.save(modified_excel_path)
+    return modified_excel_path
+    
+
+@csrf_exempt
+def block_file_and_urls(request):
+    if request.method == 'POST':
+        try:
+            
+            if 'file' not in request.FILES:
+                return JsonResponse({
+                    "message": "No file provided",
+                    "STATUS": "Error",
+                    "Code": 0,
+                    "data": ""
+                }, status=400)
+
+            uploaded_file = request.FILES['file']
+    
+            file_name = default_storage.save(uploaded_file.name, ContentFile(uploaded_file.read()))
+            file_path = default_storage.path(file_name)
+            modified_file_path = ""
+            if uploaded_file.name.endswith('.pdf'):
+                modified_file_path = process_pdf(file_path)
+            elif uploaded_file.name.endswith('.docx'):
+                modified_file_path = process_docx(file_path)
+            elif uploaded_file.name.endswith('.xlsx'):
+                modified_file_path = process_excel(file_path)
+            elif uploaded_file.name.endswith('.txt'):
+                with open(file_path, 'r') as file:
+                    file_content = file.read()
+                    modified_content = replace_urls_in_text(file_content)
+                modified_file_path = file_path.replace(".txt", "_modified.txt")
+                with open(modified_file_path, 'w') as modified_file:
+                    modified_file.write(modified_content)
+            else:
+                return JsonResponse({
+                    "message": "Unsupported file type",
+                    "STATUS": "Error",
+                    "Code": 0,
+                    "data": ""
+                }, status=400)
+            os.remove(file_path)
+            response_data = {
+                "message": "File urls blocked successfully",
+                "STATUS": "Success",
+                "Code": 1,
+                "data": {
+                    "modified_file": request.build_absolute_uri(default_storage.url(modified_file_path)),
+                    "file_name": os.path.basename(modified_file_path),
+                    "file_size": os.path.getsize(modified_file_path)
+                }
+            }    
+            return JsonResponse(response_data)
+
+        except Exception as e:
+            return JsonResponse({
+                "message": str(e),
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=500)
+
+    return JsonResponse({
+        "message": "Invalid request method",
+        "STATUS": "Error",
+        "Code": 0,
+        "data": ""
+    }, status=405)
+
+
+@csrf_exempt
+def get_disputes_raise_data(request):
+    if request.method == 'POST':
+        try:
+            # Parse the incoming JSON data
+            data = json.loads(request.body)
+            email = data.get('emailId')
+            
+            # Check if email is provided
+            if not email:
+                return JsonResponse({
+                    "message": "Missing email",
+                    "STATUS": "Error",
+                    "Code": 0,
+                    "data": ""
+                }, status=400)
+
+            # Try to retrieve the dispute based on the email
+            dispute = Dispute.objects.get(email=email)
+
+            # Set the dispute status to 'Raised_data'
+            
+
+            # Prepare the response data
+            response_data = {
+                'dispute_id': dispute.id,
+                'email': dispute.email,
+                'msg_id': dispute.msg_id,
+                'counter': dispute.counter,
+                'status': dispute.status,
+                'created_at': dispute.created_at,
+            }
+
+            # Return the response with the dispute details
+            return JsonResponse(response_data)
+
+        except Dispute.DoesNotExist:
+            return JsonResponse({
+                "message": "Dispute not found",
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=404)
+
+        except Exception as e:
+            # Handle unexpected errors
+            return JsonResponse({
+                "message": str(e),
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=500)

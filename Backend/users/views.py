@@ -255,17 +255,19 @@ class LicenseListView(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def allocate(self, request, pk=None):
         try:
+            # Get the License object using the provided primary key (pk)
             license = self.get_object()
             allocated_to = request.data.get('allocated_to')
             
             if not allocated_to:
                 return Response({'error': 'allocated_to is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+            # Set allocation date as the current time
             allocation_date = timezone.now()
 
             # Update the License instance
             license.allocated_to = allocated_to
-            license.status = 1
+            license.status = 1  # Assuming status "1" means allocated
             license.save()
 
             # Create a new LicenseAllocation instance
@@ -274,19 +276,99 @@ class LicenseListView(viewsets.ModelViewSet):
                 allocated_to=allocated_to,
                 allocation_date=allocation_date
             )
-            message = f"License allocated successfully to {allocated_to}, Allocation Date: {allocation_date}, License ID: {license.hashed_license_id}"
-            print("Hashed license id ",license.hashed_license_id)
+
+            # Prepare the HTML email message
+            html_message = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>License Allocation</title>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        color: #333;
+                        margin: 0;
+                        padding: 20px;
+                    }}
+                    .container {{
+                        background-color: #f8f8f8;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }}
+                    .header {{
+                        text-align: center;
+                        margin-bottom: 20px;
+                    }}
+                    .content {{
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 6px;
+                        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                    }}
+                    .content p {{
+                        margin: 10px 0;
+                    }}
+                    .footer {{
+                        margin-top: 20px;
+                        text-align: center;
+                        color: #aaa;
+                        font-size: 12px;
+                    }}
+                    .highlight {{
+                        color: #0044cc;
+                        font-weight: bold;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2>License Allocation </h2>
+                    </div>
+                    <div class="content">
+                        <p><strong>Dear User,</strong></p>
+                        <p>Your license has been successfully allocated. Below are the details:</p>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Allocated to :</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;" class="highlight">{allocated_to}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Allocation Date:</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;" class="highlight">{allocation_date}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">License ID:</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;" class="highlight">{license.hashed_license_id}</td>
+                            </tr>
+                        </table>
+                        <p>If you have any questions, feel free to reach out to us. support@ekvayu.com</p>
+                    </div>
+                    <div class="footer">
+                        <p>&copy; 2024 Ekvayu Tech Pvt Ltd. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
             send_mail(
                 'License Allocation',
-                message,
+                '',
                 'no-reply@yourdomain.com',
                 [allocated_to],
                 fail_silently=False,
+                html_message=html_message
             )
+
+            # Return success response
             return Response({'status': 'License allocated successfully'}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+        except Exception as e:
+            # Return error if something goes wrong
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 
     # Revoke

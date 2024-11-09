@@ -3,6 +3,8 @@ from environs import Env
 import logging
 import os
 from corsheaders.defaults import default_headers
+from django.conf import settings
+
 # import distutils.util
 
 env = Env()
