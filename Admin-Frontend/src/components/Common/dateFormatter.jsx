@@ -1,6 +1,6 @@
 import React from "react";
 
-const DateFormatter = ({ dateString }) => {
+function DateFormatter({ dateString }) {
   const formatDate = (dateString) => {
     if (!dateString || dateString === "null" || dateString === "undefined") {
       return "-";
@@ -29,6 +29,6 @@ const DateFormatter = ({ dateString }) => {
   };
 
   return <span>{formatDate(dateString)}</span>;
-};
+}
 
 export default DateFormatter;
