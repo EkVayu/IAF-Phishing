@@ -22,16 +22,51 @@ const LicenseHistoryModal = ({ history, onClose, licenseId }) => {
     const printContent = document.getElementById(
       "license-history-table"
     ).outerHTML;
-    const windowPrint = window.open("", "", "height=500,width=800");
-    windowPrint.document.write("<html><head><title>License History</title>");
-    windowPrint.document.write(
-      "<style>table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid black; padding: 8px; text-align: left; }</style>"
-    );
-    windowPrint.document.write("</head><body>");
-    windowPrint.document.write(printContent);
-    windowPrint.document.write("</body></html>");
+
+    const windowPrint = window.open("", "_blank", "height=500,width=800");
+    const currentDate = new Date().toLocaleDateString();
+    const currentTime = new Date().toLocaleTimeString();
+
+    windowPrint.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>License Report</title>
+          <style>
+            table { border-collapse: collapse; width: 100%; margin-bottom: 60px; }
+            th, td { border: 1px solid black; padding: 8px; text-align: left; }
+            .footer { 
+              position: fixed;
+              bottom: 0;
+              width: 100%;
+              padding: 10px;
+              border-top: 1px solid #ccc;
+              font-size: 12px;
+              text-align: center;
+            }
+            @media print {
+              .footer { position: fixed; bottom: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <h2 style="text-align: center; margin-bottom: 20px;">License ${licenseId} History Report</h2>
+          ${printContent}
+          <div class="footer">
+            <p>License Management System - Report</p>
+          </div>
+        </body>
+      </html>
+    `);
+
     windowPrint.document.close();
-    windowPrint.print();
+
+    windowPrint.onload = function () {
+      windowPrint.focus();
+      windowPrint.print();
+    };
   };
 
   return (

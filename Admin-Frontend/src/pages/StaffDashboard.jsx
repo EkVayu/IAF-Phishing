@@ -6,24 +6,45 @@ import { LuBoxes } from "react-icons/lu";
 import { FaChartLine } from "react-icons/fa";
 import { GoAlertFill } from "react-icons/go";
 import StaffDashboardGenerator from "../Utils/StaffDashboardGenerator";
-import Notification from "../components/popup/plugin_activity_popup/PluginActivityPopup";
+import { fetchStaffDashboardData } from "../Api/api";
+import { toast } from "react-toastify";
 
 const StaffDashboard = () => {
   const [selectedCard, setSelectedCard] = useState(0);
   const [dashboardData, setDashboardData] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
 
+  // Inside StaffDashboard component
   useEffect(() => {
-    const data = StaffDashboardGenerator();
-    setDashboardData(data);
-  }, []);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetchStaffDashboardData();
+        if (response.ok) {
+          const data = await response.json();
+          setDashboardData(data);
+          toast.success("Dashboard data fetched successfully.");
+          setIsLoading(false);
+        } else {
+          throw new Error(`Server response ${response.status}`);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        // Fallback to dummy data on error
+        const dummyData = StaffDashboardGenerator();
+        setDashboardData(dummyData);
+        toast.error(`${error.message}! Using dummy data.`);
+        setIsLoading(false);
+        // setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  if (!dashboardData) {
-    return (
-      <div className="flex justify-center items-center h-64 bg-background rounded-lg">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-      </div>
-    );
-  }
+    fetchData();
+  }, []);
 
   const cardData = dashboardData
     ? [
@@ -58,9 +79,23 @@ const StaffDashboard = () => {
       ]
     : [];
 
-  const handleCardClick = (index) => {
-    setSelectedCard(index);
-  };
+  const handleCardClick = (index) => setSelectedCard(index);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64 bg-background rounded-lg">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64 bg-background rounded-lg">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full rounded-lg">
@@ -68,7 +103,7 @@ const StaffDashboard = () => {
         Dashboard
       </h1>
       <div className="grid grid-cols-4 gap-6 mb-8">
-        {cardData.map((card, index) => (
+        {cardData?.map((card, index) => (
           <CardComponent
             key={index}
             {...card}
@@ -94,7 +129,7 @@ const StaffDashboard = () => {
           )}
         </div>
         <div className="w-1/2 grid grid-cols-2 gap-4">
-          {cardData.map(
+          {cardData?.map(
             (card, index) =>
               index !== selectedCard && (
                 <div

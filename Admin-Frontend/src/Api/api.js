@@ -77,18 +77,32 @@ export const resetPassword = async ({
   return response;
 };
 
-export const changePassword = (oldPassword, newPassword) => {
+export const changePassword = async (oldPassword, newPassword) => {
   const token = sessionStorage.getItem("token");
-  return api.post(
-    "/change-password/",
-    { old_password: oldPassword, new_password: newPassword },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/change-password/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify({
+      old_password: oldPassword,
+      new_password: newPassword,
+    }),
+  });
+  return response;
+};
+
+export const fetchStaffDashboardData = async () => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/staff-dashboard/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+  return response;
 };
 
 export const allocateLicense = async ({
@@ -389,7 +403,7 @@ export const fetchReports = async () => {
 
 export const fetchRunTestData = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/run-test-data/`, {
+  const response = await fetch(`${API_BASE_URL}/sandbox-data/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -401,7 +415,7 @@ export const fetchRunTestData = async () => {
 
 export const fetchFetchData = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/fetch-data/`, {
+  const response = await fetch(`${API_BASE_URL}/sandbox-data/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -601,7 +615,6 @@ export const deleteRoughMail = async (id) => {
   });
   return response;
 };
-
 
 export const fetchDisabledPlugins = async (id) => {
   const token = sessionStorage.getItem("token");

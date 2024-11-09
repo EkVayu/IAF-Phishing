@@ -217,6 +217,8 @@ const Table = ({
               header === "STARTED ON" ||
               header === "COMPLETED ON" ||
               header === "RELEASE DATE" ||
+              header === "AI Sent At" ||
+              header === "Created At" ||
               header === "QUARANTINED ON"
             ) {
               return <DateFormatter dateString={value} />;
@@ -481,9 +483,6 @@ const Table = ({
                     <tr
                       {...row?.getRowProps()}
                       key={row?.id}
-                      // onClick={(event) =>
-                      //   handleRowClick(event, row?.original?.license_id)
-                      // }
                       className={`border hover:bg-gray-200 dark:hover:bg-gray-900`}
                     >
                       {row?.cells
