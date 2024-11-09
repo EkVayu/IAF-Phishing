@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
 import { FaDownload } from "react-icons/fa";
-import DateFormatter from "../Common/DateFormatter";
+import DateFormatter from "@/components/common/DateFormatter";
 import { toast } from "react-toastify";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 

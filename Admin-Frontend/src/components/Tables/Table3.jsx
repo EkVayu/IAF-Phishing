@@ -6,7 +6,7 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
-import DateFormatter from "../Common/DateFormatter";
+import DateFormatter from "@/components/common/DateFormatter";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const Table3 = ({
