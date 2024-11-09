@@ -867,19 +867,16 @@ def get_allocation_data(request):
         try:
             # Parse the incoming JSON data
             data = json.loads(request.body)
-            license_id = data.get('licenseId')
+            hashed_license_id = data.get('licenseId')
 
             # Check if license_id is provided
-            if not license_id:
+            if not hashed_license_id:
                 return JsonResponse({
                     "message": "Missing licenseId",
                     "STATUS": "Error",
                     "Code": 0,
                     "data": ""
                 }, status=400)
-
-            # Hash the license_id using the same method as the License model
-            hashed_license_id = hashlib.sha256(f"{license_id}127.0.0.1EkVayu".encode('utf-8')).hexdigest()
 
             # Retrieve the License record using the hashed_license_id
             license = License.objects.filter(hashed_license_id=hashed_license_id).first()
@@ -894,16 +891,15 @@ def get_allocation_data(request):
 
             # Prepare the response data
             response_data = {
-                'license_id': license.license_id,
                 'allocated_to': license.allocated_to,
-                'allocated_from': license.allocated_from if hasattr(license, 'allocated_from') else "N/A",
+                'valid_from': license.valid_from.strftime('%Y-%m-%d %H:%M:%S') if license.valid_from else "N/A",
                 'valid_till': license.valid_till.strftime('%Y-%m-%d %H:%M:%S') if license.valid_till else "N/A"
             }
 
             # Return the response with allocation data
             return JsonResponse({
-                "message": "License allocation found",
-                "STATUS": "Success",
+                "message": "License allocation data retrieved successfully",
+                "STATUS": "found",
                 "Code": 1,
                 "data": response_data
             })
