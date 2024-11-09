@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useTable, usePagination, useSortBy } from "react-table";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import LicenseForm from "../popup/licenseFormPopup/LicenseForm";
-import DateFormatter from "@/components/common/DateFormatter";
+import DateFormatter from "@/components/Common/DateFormatter";
 import LicenseHistoryModal from "../popup/LicenseHistoryModal/LicenseHistoryModal";
 import { toast } from "react-toastify";
 import {
