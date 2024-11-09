@@ -1,12 +1,14 @@
-const API_BASE_URL = (() => {
-  if (import.meta.env.MODE === "development") {
-    return "http://35.154.97.4:8002";
-  } else if (import.meta.env.MODE === "production") {
-    return "/api/proxy";
-  } else {
-    return "http://localhost:8000";
-  }
-})();
+// const API_BASE_URL = (() => {
+//   if (import.meta.env.MODE === "development") {
+//     return "http://35.154.97.4:8002";
+//   } else if (import.meta.env.MODE === "production") {
+//     return "/api/proxy";
+//   } else {
+//     return "http://localhost:8000";
+//   }
+// })();
+
+const API_BASE_URL = "/api/proxy";
 
 export const refreshToken = async () => {
   const token = sessionStorage.getItem("token");
