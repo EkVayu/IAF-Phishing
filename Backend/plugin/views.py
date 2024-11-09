@@ -805,6 +805,7 @@ def block_file_and_urls(request):
     }, status=405)
 
 
+
 @csrf_exempt
 def get_disputes_raise_data(request):
     if request.method == 'POST':
@@ -822,32 +823,35 @@ def get_disputes_raise_data(request):
                     "data": ""
                 }, status=400)
 
-            # Try to retrieve the dispute based on the email
-            dispute = Dispute.objects.get(email=email)
+            # Retrieve disputes based on the email
+            disputes = Dispute.objects.filter(email=email)
 
-            # Set the dispute status to 'Raised_data'
-            
+            # Check if no disputes are found
+            if not disputes.exists():
+                return JsonResponse({
+                    "message": "Dispute not found",
+                    "STATUS": "Error",
+                    "Code": 0,
+                    "data": ""
+                }, status=404)
 
-            # Prepare the response data
-            response_data = {
+            # Prepare response data for multiple disputes
+            response_data = [{
                 'dispute_id': dispute.id,
                 'email': dispute.email,
                 'msg_id': dispute.msg_id,
                 'counter': dispute.counter,
                 'status': dispute.status,
                 'created_at': dispute.created_at,
-            }
+            } for dispute in disputes]
 
             # Return the response with the dispute details
-            return JsonResponse(response_data)
-
-        except Dispute.DoesNotExist:
             return JsonResponse({
-                "message": "Dispute not found",
-                "STATUS": "Error",
-                "Code": 0,
-                "data": ""
-            }, status=404)
+                "message": "Disputes retrieved successfully",
+                "STATUS": "Success",
+                "Code": 1,
+                "data": response_data
+            })
 
         except Exception as e:
             # Handle unexpected errors
