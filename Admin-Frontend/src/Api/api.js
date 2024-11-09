@@ -93,6 +93,18 @@ export const changePassword = async (oldPassword, newPassword) => {
   return response;
 };
 
+export const fetchStaffDashboardData = async () => {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/staff-dashboard/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+  return response;
+};
+
 export const allocateLicense = async ({
   allocated_to: email,
   license: licenseId,
@@ -391,7 +403,7 @@ export const fetchReports = async () => {
 
 export const fetchRunTestData = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/run-test-data/`, {
+  const response = await fetch(`${API_BASE_URL}/sandbox-data/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -403,7 +415,7 @@ export const fetchRunTestData = async () => {
 
 export const fetchFetchData = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/fetch-data/`, {
+  const response = await fetch(`${API_BASE_URL}/sandbox-data/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

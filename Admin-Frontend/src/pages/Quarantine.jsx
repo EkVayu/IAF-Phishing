@@ -74,7 +74,7 @@ function Quarantine() {
           <Table tabData={quarantineData} error={error} loading={loading} />
         ) : (
           <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
-            <p className="text-red-500">No data available</p>
+            <p className="text-red-500">{error}</p>
           </div>
         )}
       </div>
