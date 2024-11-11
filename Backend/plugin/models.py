@@ -255,6 +255,7 @@ class Attachment(models.Model):
 
     class Meta:
         db_table = 'plugin_emails_attachments'
+        ordering = ['created_at']
 
     def __str__(self):
         return f"Attachment for message_id {self.email_detail.msg_id}"

@@ -48,5 +48,9 @@ urlpatterns = [
     path('dispute/<int:pk>/update/', DisputeStatusUpdateView.as_view(), name='dispute-update'),
     path('dispute/<int:dispute_id>/comments/', DisputeCommentCreateView.as_view(), name='dispute-comment-create'),
     path('sandbox-data/', AvailableAttachmentsView.as_view(), name='available-attachments'),
+    path('sandbox-data/run-test/', PendingAttachmentsView.as_view(), name='pending-attachments'),
+    path('quarentine-data/', quarentineAttachmentsView.as_view(), name='pending-attachments'),
+    # path('dashboard-data/', CombinedEmailAndAttachmentCount.as_view(), name='unique-emails-with-attachments'),
+    # path('api/monthly-data/', MonthlyCombinedEmailAndAttachmentCount.as_view(), name='monthly_data'),
 
 ]
