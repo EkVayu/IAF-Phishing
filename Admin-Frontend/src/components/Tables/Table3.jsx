@@ -7,6 +7,7 @@ import {
 } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import LoaderComponent from "../Common/Loader";
 
 function DateFormatter({ dateString }) {
   const formatDate = (dateString) => {
@@ -171,9 +172,7 @@ const Table3 = ({
       <ScrollArea className="bg-background">
         <table className="min-w-full">
           {loading ? (
-            <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-            </div>
+            <LoaderComponent />
           ) : error ? (
             <div className="w-full py-5 px-3 bg-background dark:bg-gray-800">
               <p className="text-red-500">{error}</p>

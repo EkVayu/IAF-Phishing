@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { fetchCurrentUserData } from "../Api/api";
+import LoaderComponent from "../components/Common/LoaderComponent";
 
 function Profile() {
   const { user, role } = useAuth();
@@ -60,9 +61,7 @@ function Profile() {
         </h1>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-md mt-5">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-          </div>
+          <LoaderComponent />
         ) : (
           <div className="">
             <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mt-5">

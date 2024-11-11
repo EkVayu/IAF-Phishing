@@ -9,6 +9,7 @@ import { IoFilterSharp } from "react-icons/io5";
 import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import LoaderComponent from "../Common/Loader";
 
 function DateFormatter({ dateString }) {
   const formatDate = (dateString) => {
@@ -298,9 +299,7 @@ function Table2({
       </div>
       <ScrollArea className="rounded-t-lg">
         {loading ? (
-          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-          </div>
+          <LoaderComponent />
         ) : error ? (
           <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
             <p className="text-red-500">{error}</p>

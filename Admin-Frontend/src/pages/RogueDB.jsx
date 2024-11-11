@@ -22,6 +22,7 @@ import {
   updateRoughMail,
   updateRoughUrl,
 } from "../Api/api";
+import LoaderComponent from "../components/Common/LoaderComponent";
 
 const dummyUrlData = [
   { id: 1, url: "https://example.com", protocol: "HTTPS" },
@@ -391,9 +392,7 @@ function RogueDB() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64 bg-background dark:bg-gray-800 rounded-lg mt-5">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-        </div>
+        <LoaderComponent />
       ) : error ? (
         <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-lg mt-5">
           <p className="text-red-500">{error}</p>
