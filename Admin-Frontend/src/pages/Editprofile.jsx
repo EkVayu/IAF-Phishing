@@ -37,7 +37,7 @@ function EditProfile() {
   useEffect(() => {
     if (user && userInfo) {
       setFormData({
-        email: user.email || "",
+        email: userInfo.email || "",
         username: user.username || "",
         first_name: userInfo.first_name || "",
         last_name: userInfo.last_name || "",
@@ -50,20 +50,19 @@ function EditProfile() {
   }, [user, userInfo]);
 
   const fetchUserData = async () => {
+    setIsLoading(true);
     try {
       const response = await fetchCurrentUserData();
       if (response.ok) {
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setUserInfo(data[0]);
-        } else {
-          toast.warn("No user data found");
-        }
+        setUserInfo(data);
       } else {
         toast.warn("No user data found! Update your profile");
       }
     } catch (error) {
       toast.error("Error fetching user data: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -17,7 +17,7 @@ import LoaderComponent from "../components/Common/LoaderComponent";
 
 function Profile() {
   const { user, role } = useAuth();
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState();
   const [loading, setLoading] = useState(true);
 
   const fetchUserData = async () => {
@@ -26,11 +26,7 @@ function Profile() {
       const response = await fetchCurrentUserData();
       if (response.ok) {
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setUserInfo(data[0]);
-        } else {
-          toast.warn("No user data found");
-        }
+        setUserInfo(data);
       } else {
         toast.warn("No user data found! Update your profile");
       }
@@ -63,7 +59,7 @@ function Profile() {
                     <div className="w-14 h-14 rounded-full overflow-hidden">
                       {userInfo?.profile ? (
                         <img
-                          src={userInfo.profile}
+                          src={userInfo?.profile}
                           alt={userInfo?.username}
                           className="w-full h-full object-cover"
                         />
@@ -109,7 +105,7 @@ function Profile() {
                   <ProfileItem
                     icon={<FaEnvelope />}
                     label="Email"
-                    value={user?.email}
+                    value={userInfo?.email}
                   />
                   <ProfileItem
                     icon={<FaPhone />}
@@ -230,9 +226,9 @@ function StatsSection({ userInfo }) {
         </div>
         <div className="text-secondary-foreground">
           <p className="text-sm font-semibold mb-2">Missing Information:</p>
-          {missingFields.length > 0 ? (
+          {missingFields?.length > 0 ? (
             <ul className="list-disc pl-4 text-sm">
-              {missingFields.map((field, index) => (
+              {missingFields?.map((field, index) => (
                 <li key={index} className="text-red-500">
                   {field}
                 </li>
