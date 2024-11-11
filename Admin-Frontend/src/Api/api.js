@@ -421,7 +421,7 @@ export const fetchSandboxFetchedData = async () => {
 //  3 Api for Quarantine
 export const fetchQuarantineData = async () => {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/quarantine/status/`, {
+  const response = await fetch(`${API_BASE_URL}/quarentine-data/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

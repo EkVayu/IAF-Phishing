@@ -146,7 +146,10 @@ function Table2({
   const itemsPerPage = 10;
 
   const filteredData = useMemo(() => {
-    return data?.filter((row) => {
+    // Ensure data is an array before filtering
+  const dataArray = Array.isArray(data) ? data : [];
+
+    return dataArray?.filter((row) => {
       return (
         columns?.some((column) =>
           String(row[column.accessor])
