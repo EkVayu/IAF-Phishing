@@ -280,7 +280,7 @@ class RoughDomain(models.Model):
         ip (CharField): The IP address of the domain.
         prototype (CharField): The prototype of the domain (e.g., IPv4, IPv6).
     """
-    ip = models.CharField(max_length=45)  # Supports both IPv4 and IPv6
+    ip = models.CharField(max_length=45)
     prototype = models.CharField(max_length=20)
 
     class Meta:
