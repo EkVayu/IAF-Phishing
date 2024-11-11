@@ -6,6 +6,7 @@ import ChartComponent from "../../components/chart/LineChart";
 import { fetchUsers, fetchLicenses } from "../../Api/api";
 import { toast } from "react-toastify";
 import SuperAdminDashboardGenerate from "../../Utils/SuperAdminDashboardGenerate";
+import LoaderComponent from "../../components/Common/LoaderComponent";
 
 const SuperAdminDashboard = () => {
   const [selectedCard, setSelectedCard] = useState(0);
@@ -115,11 +116,11 @@ const SuperAdminDashboard = () => {
       </h1>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-        </div>
+        <LoaderComponent />
       ) : error ? (
-        <p className="text-red-500 text-sm font-semibold">{error}</p>
+        <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
+          <p className="text-red-500">{error}</p>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-4 gap-6 mb-8">

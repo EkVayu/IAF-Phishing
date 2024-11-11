@@ -9,13 +9,11 @@ function Quarantine() {
   const [error, setError] = useState(null);
 
   const columns = [
-    { Header: "Message ID", accessor: "message_id" },
+    { Header: "Message ID", accessor: "msg_id" },
+    { Header: "AI Status", accessor: "ai_status" },
     { Header: "Created At", accessor: "created_at" },
-    { Header: "Sender", accessor: "sender_email" },
-    { Header: "Receiver", accessor: "receiver_email" },
-    { Header: "Status", accessor: "status" },
-    { Header: "Threat Score", accessor: "threat_score" },
-    { Header: "Export", accessor: "export" },
+    { Header: "AI Sent At", accessor: "ai_sended_at" },
+    { Header: "Attachment", accessor: "attachment" },
   ];
 
   useEffect(() => {
@@ -31,11 +29,20 @@ function Quarantine() {
         }
 
         const result = await response.json();
+
+        // if (Array.isArray(result) && result.length === 0) {
+        //   setError("No quarantine data available");
+        //   toast.info("No quarantine data available");
+        // }
+
+        setQuarantineData(Array.isArray(result) ? result : []);
+
         setQuarantineData(result);
       } catch (err) {
         console.error("Error fetching quarantine data:", err);
         setError(`Failed to load data: ${err.message}`);
         toast.error(`Failed to load data: ${err.message}`);
+        setQuarantineData([]); 
       } finally {
         setLoading(false);
       }
@@ -51,10 +58,11 @@ function Quarantine() {
       </h1>
       <div className="">
         <Table2
-          data={quarantineData}
+         data={quarantineData || []} 
           columns={columns}
           error={error}
           loading={loading}
+          setError={setError}
         />
       </div>
     </div>

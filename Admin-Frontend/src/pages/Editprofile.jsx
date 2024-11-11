@@ -37,7 +37,7 @@ function EditProfile() {
   useEffect(() => {
     if (user && userInfo) {
       setFormData({
-        email: user.email || "",
+        email: userInfo.email || "",
         username: user.username || "",
         first_name: userInfo.first_name || "",
         last_name: userInfo.last_name || "",
@@ -50,20 +50,19 @@ function EditProfile() {
   }, [user, userInfo]);
 
   const fetchUserData = async () => {
+    setIsLoading(true);
     try {
       const response = await fetchCurrentUserData();
       if (response.ok) {
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setUserInfo(data[0]);
-        } else {
-          toast.warn("No user data found");
-        }
+        setUserInfo(data);
       } else {
         toast.warn("No user data found! Update your profile");
       }
     } catch (error) {
       toast.error("Error fetching user data: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -132,6 +131,7 @@ function EditProfile() {
     { key: "last_name", icon: <FaUser />, type: "text" },
     { key: "phone_number", icon: <FaPhone />, type: "tel" },
     { key: "address", icon: <FaMapMarkerAlt />, type: "text" },
+    { key: "organization", icon: <FaBuilding />, type: "text" },
   ];
 
   return (
@@ -186,6 +186,7 @@ function EditProfile() {
                     required
                     value={formData[key]}
                     onChange={handleInputChange}
+                    placeholder={`Enter ${key}`}
                     className={`block w-full text-secondary-foreground pl-10 sm:text-sm border h-10 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 ${
                       key === "email" || key === "username"
                         ? "bg-gray-100 dark:bg-gray-700 cursor-not-allowed"

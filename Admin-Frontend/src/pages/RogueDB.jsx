@@ -22,6 +22,7 @@ import {
   updateRoughMail,
   updateRoughUrl,
 } from "../Api/api";
+import LoaderComponent from "../components/Common/LoaderComponent";
 
 const dummyUrlData = [
   { id: 1, url: "https://example.com", protocol: "HTTPS" },
@@ -135,29 +136,28 @@ function RogueDB() {
     const formData = new FormData(event.target);
     const newItem = Object.fromEntries(formData.entries());
 
-    console.log(newItem);
+    try {
+      let response;
+      if (activeTab === "url") {
+        response = await createRoughUrl(newItem);
+      } else if (activeTab === "domain") {
+        response = await createRoughDomain(newItem);
+      } else if (activeTab === "mail") {
+        response = await createRoughMail(newItem);
+      }
 
-    // try {
-    //   let response;
-    //   if (activeTab === "url") {
-    //     response = await createRoughUrl(newItem);
-    //   } else if (activeTab === "domain") {
-    //     response = await createRoughDomain(newItem);
-    //   } else if (activeTab === "mail") {
-    //     response = await createRoughMail(newItem);
-    //   }
-
-    //   if (response && response.message) {
-    //     toast.success(response.message);
-    //     setIsModalOpen(false);
-    //     fetchData();
-    //   } else {
-    //     toast.error("Failed to create item");
-    //   }
-    // } catch (error) {
-    //   console.error("Error creating item:", error);
-    //   toast.error("Error creating item");
-    // }
+      if (response.status === 201) {
+        const responseData = await response.json();
+        toast.success(responseData.message);
+        setIsModalOpen(false);
+        fetchData();
+      } else {
+        toast.error("Failed to create item");
+      }
+    } catch (error) {
+      console.error("Error creating item:", error);
+      toast.error("Error creating item");
+    }
   };
 
   const handleEdit = (item) => {
@@ -179,8 +179,9 @@ function RogueDB() {
         response = await updateRoughMail(selectedItem.id, updatedItem);
       }
 
-      if (response && response.message) {
-        toast.success(response.message);
+      if (response.ok) {
+        const responseData = await response.json();
+        toast.success(responseData.message);
         setIsEditModalOpen(false);
         fetchData();
       } else {
@@ -391,9 +392,7 @@ function RogueDB() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64 bg-background dark:bg-gray-800 rounded-lg mt-5">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-        </div>
+        <LoaderComponent />
       ) : error ? (
         <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-lg mt-5">
           <p className="text-red-500">{error}</p>

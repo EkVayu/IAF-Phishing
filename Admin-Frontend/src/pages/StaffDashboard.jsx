@@ -8,6 +8,7 @@ import { GoAlertFill } from "react-icons/go";
 import StaffDashboardGenerator from "../Utils/StaffDashboardGenerator";
 import { fetchStaffDashboardData } from "../Api/api";
 import { toast } from "react-toastify";
+import LoaderComponent from "../components/Common/LoaderComponent";
 
 const StaffDashboard = () => {
   const [selectedCard, setSelectedCard] = useState(0);
@@ -83,9 +84,7 @@ const StaffDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64 bg-background rounded-lg">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-      </div>
+      <LoaderComponent />
     );
   }
 

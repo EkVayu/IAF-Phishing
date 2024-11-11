@@ -14,6 +14,7 @@ import { IoFilterSharp } from "react-icons/io5";
 import { FaEye } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import LoaderComponent from "../Common/LoaderComponent";
 
 function DateFormatter({ dateString }) {
   const formatDate = (dateString) => {
@@ -187,11 +188,13 @@ const Table = ({
   };
 
   const filteredData = useMemo(() => {
-    // Filtering the table data based on the search term
-    if (!searchTerm) return tabData[activeTab]?.data || [];
-    return tabData[activeTab]?.data?.filter((row) =>
-      Object?.values(row)?.some((value) =>
-        String(value)?.toLowerCase()?.includes(searchTerm.toLowerCase())
+    const currentTabData = tabData[activeTab]?.data || [];
+    if (!Array.isArray(currentTabData)) return [];
+    if (!searchTerm) return currentTabData;
+
+    return currentTabData.filter((row) =>
+      Object.values(row).some((value) =>
+        String(value).toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [tabData, activeTab, searchTerm]);
@@ -365,7 +368,7 @@ const Table = ({
   } = useTable(
     {
       columns,
-      data: filteredData,
+      data: Array.isArray(filteredData) ? filteredData : [],
       initialState: {
         pageIndex: 0,
         sortBy: [
@@ -466,9 +469,7 @@ const Table = ({
       <div className="overflow-hidden">
         <ScrollArea className="bg-background rounded-t-lg">
           {loading ? (
-            <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-lg">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-            </div>
+            <LoaderComponent />
           ) : error ? (
             <div className="w-full py-5 px-3 bg-background dark:bg-gray-800 rounded-md">
               <p className="text-red-500">{error}</p>

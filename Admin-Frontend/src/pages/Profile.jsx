@@ -13,10 +13,11 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { fetchCurrentUserData } from "../Api/api";
+import LoaderComponent from "../components/Common/LoaderComponent";
 
 function Profile() {
   const { user, role } = useAuth();
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState();
   const [loading, setLoading] = useState(true);
 
   const fetchUserData = async () => {
@@ -25,11 +26,7 @@ function Profile() {
       const response = await fetchCurrentUserData();
       if (response.ok) {
         const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setUserInfo(data[0]);
-        } else {
-          toast.warn("No user data found");
-        }
+        setUserInfo(data);
       } else {
         toast.warn("No user data found! Update your profile");
       }
@@ -44,14 +41,6 @@ function Profile() {
     fetchUserData();
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-[80vh] bg-white dark:bg-gray-800 rounded-md">
-  //       <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="min-h-[80vh]">
       <div className="w-full">
@@ -60,21 +49,37 @@ function Profile() {
         </h1>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64 bg-white dark:bg-gray-800 rounded-md mt-5">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-          </div>
+          <LoaderComponent />
         ) : (
           <div className="">
             <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mt-5">
               <div className="bg-primary dark:bg-gray-900 h-20 px-5 py-2">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-bold text-white mb-2 capitalize tracking-widest">
-                      {user?.username || "User Name"}
-                    </h2>
-                    <p className="text-white capitalize text-sm">
-                      {role || "User Role"}
-                    </p>
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-full overflow-hidden">
+                      {userInfo?.profile ? (
+                        <img
+                          src={userInfo?.profile}
+                          alt={userInfo?.username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-white dark:bg-gray-700">
+                          <span className="text-xl font-bold text-gray-700 dark:text-white">
+                            {`${userInfo?.first_name?.[0] || ""}`}
+                            {`${userInfo?.last_name?.[0] || ""}`}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white  capitalize tracking-widest">
+                        {user?.username || "User_Name"}
+                      </h2>
+                      <p className="text-white capitalize text-sm">
+                        {role || "User_Role"}
+                      </p>
+                    </div>
                   </div>
                   <Link
                     to="/profile/edit"
@@ -90,17 +95,17 @@ function Profile() {
                   <ProfileItem
                     icon={<FaUser />}
                     label="First Name"
-                    value={user?.name}
+                    value={userInfo?.first_name}
                   />
                   <ProfileItem
                     icon={<FaUser />}
                     label="Last Name"
-                    value={user?.name}
+                    value={userInfo?.last_name}
                   />
                   <ProfileItem
                     icon={<FaEnvelope />}
                     label="Email"
-                    value={user?.email}
+                    value={userInfo?.email}
                   />
                   <ProfileItem
                     icon={<FaPhone />}
@@ -123,7 +128,7 @@ function Profile() {
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
               <ActivitySection />
-              <StatsSection />
+              <StatsSection userInfo={userInfo} />
             </div>
           </div>
         )}
@@ -170,7 +175,41 @@ function ActivitySection() {
   );
 }
 
-function StatsSection() {
+function StatsSection({ userInfo }) {
+  const calculateProfileCompletion = (userInfo) => {
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "email",
+      "phone_number",
+      "address",
+      "organization",
+      "profile",
+    ];
+    const filledFields = requiredFields.filter(
+      (field) => userInfo?.[field]
+    ).length;
+    return Math.round((filledFields / requiredFields.length) * 100);
+  };
+
+  const getMissingFields = () => {
+    const requiredFields = {
+      first_name: "First Name",
+      last_name: "Last Name",
+      email: "Email",
+      phone_number: "Phone Number",
+      address: "Address",
+      organization: "Organization",
+      profile: "Profile Picture",
+    };
+
+    return Object.entries(requiredFields)
+      .filter(([key]) => !userInfo?.[key])
+      .map(([_, label]) => label);
+  };
+
+  const missingFields = getMissingFields();
+
   return (
     <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <h3 className="text-xl font-semibold mb-4 text-secondary-foreground">
@@ -178,14 +217,26 @@ function StatsSection() {
       </h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="text-center text-secondary-foreground">
-          <p className="text-3xl font-bold text-blue-500">25</p>
-          <p className="text-sm text-gray-600 dark:text-white">Total Logins</p>
-        </div>
-        <div className="text-center text-secondary-foreground">
-          <p className="text-3xl font-bold text-green-500">98%</p>
+          <p className="text-3xl font-bold text-green-500">
+            {calculateProfileCompletion(userInfo)}%
+          </p>
           <p className="text-sm text-gray-600 dark:text-white">
             Profile Completion
           </p>
+        </div>
+        <div className="text-secondary-foreground">
+          <p className="text-sm font-semibold mb-2">Missing Information:</p>
+          {missingFields?.length > 0 ? (
+            <ul className="list-disc pl-4 text-sm">
+              {missingFields?.map((field, index) => (
+                <li key={index} className="text-red-500">
+                  {field}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-green-500 text-sm">Profile is complete!</p>
+          )}
         </div>
       </div>
     </div>
