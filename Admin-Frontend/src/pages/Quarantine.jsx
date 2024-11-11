@@ -1,110 +1,37 @@
 import React, { useState, useEffect } from "react";
-import Table from "../components/Tables/Table";
-import {
-  fetchStatusData,
-  fetchCheckLevelData,
-  fetchImportTestData,
-} from "../Api/api";
+import Table2 from "../components/Tables/Table2";
+import { fetchQuarantineData } from "../Api/api";
 import { toast } from "react-toastify";
 
 function Quarantine() {
-  const [quarantineData, setQuarantineData] = useState([
-    {
-      label: "Status",
-      headers: [
-        "Message ID",
-        "Created At",
-        "AI Sent At",
-        "AI Status",
-        "Attachments",
-      ],
-      data: [],
-    },
-    {
-      label: "Check Level",
-      headers: [
-        "Message ID",
-        "Created At",
-        "AI Sent At",
-        "AI Status",
-        "Attachments",
-      ],
-      data: [],
-    },
-    {
-      label: "Import Test Data",
-      headers: [
-        "Message ID",
-        "Created At",
-        "AI Sent At",
-        "AI Status",
-        "Attachments",
-      ],
-      data: [],
-    },
-  ]);
+  const [quarantineData, setQuarantineData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const columns = [
+    { Header: "Message ID", accessor: "message_id" },
+    { Header: "Created At", accessor: "created_at" },
+    { Header: "Sender", accessor: "sender_email" },
+    { Header: "Receiver", accessor: "receiver_email" },
+    { Header: "Status", accessor: "status" },
+    { Header: "Threat Score", accessor: "threat_score" },
+    { Header: "Export", accessor: "export" },
+  ];
 
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const [statusResponse, checkLevelResponse, importTestResponse] =
-          await Promise.all([
-            fetchStatusData(),
-            fetchCheckLevelData(),
-            fetchImportTestData(),
-          ]);
+        const response = await fetchQuarantineData();
 
-        if (
-          !statusResponse.ok ||
-          !checkLevelResponse.ok ||
-          !importTestResponse.ok
-        ) {
-          throw new Error("Failed to fetch data from one or more endpoints");
+        if (!response.ok) {
+          toast.error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const statusResult = await statusResponse.json();
-        const checkLevelResult = await checkLevelResponse.json();
-        const importTestResult = await importTestResponse.json();
-
-        setQuarantineData([
-          {
-            label: "Status",
-            headers: [
-              "Message ID",
-              "Created At",
-              "AI Sent At",
-              "AI Status",
-              "Attachments",
-            ],
-            data: statusResult,
-          },
-          {
-            label: "Check Level",
-            headers: [
-              "Message ID",
-              "Created At",
-              "AI Sent At",
-              "AI Status",
-              "Attachments",
-            ],
-            data: checkLevelResult,
-          },
-          {
-            label: "Import Test Data",
-            headers: [
-              "Message ID",
-              "Created At",
-              "AI Sent At",
-              "AI Status",
-              "Attachments",
-            ],
-            data: importTestResult,
-          },
-        ]);
+        const result = await response.json();
+        setQuarantineData(result);
       } catch (err) {
         console.error("Error fetching quarantine data:", err);
         setError(`Failed to load data: ${err.message}`);
@@ -123,12 +50,11 @@ function Quarantine() {
         Quarantine
       </h1>
       <div className="">
-        <Table
-          tabData={quarantineData}
+        <Table2
+          data={quarantineData}
+          columns={columns}
           error={error}
           loading={loading}
-          setLoading={setLoading}
-          setError={setError}
         />
       </div>
     </div>

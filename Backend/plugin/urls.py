@@ -8,7 +8,7 @@ from .views import spam_email_view
 from plugin.views import DisputeViewSet
 from plugin.views import PluginInstallUninstallViewSet
 from plugin.views import PluginEnableDisableViewSet
-from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data
+from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data
 
 
 
@@ -31,6 +31,7 @@ urlpatterns = [
     path('spam-email/', spam_email, name='spam_email'),
     path('graph-count/',graph_count, name='graph-count'),
     path('get-disputes-raise-data/',get_disputes_raise_data, name='get-disputes-raise-data'),
+    path('get-allocation-data/',get_allocation_data, name='get-allocation-data'),
 
     
     #............................AI Services............................

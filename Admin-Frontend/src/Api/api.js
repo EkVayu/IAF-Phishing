@@ -419,7 +419,7 @@ export const fetchFetchData = async () => {
 };
 
 //  3 Api for Quarantine
-export const fetchStatusData = async () => {
+export const fetchQuarantineData = async () => {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/quarantine/status/`, {
     method: "GET",
@@ -431,29 +431,6 @@ export const fetchStatusData = async () => {
   return response;
 };
 
-export const fetchCheckLevelData = async () => {
-  const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/quarantine/check-level/`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Token ${token}`,
-    },
-  });
-  return response;
-};
-
-export const fetchImportTestData = async () => {
-  const token = sessionStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/quarantine/import-test/`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Token ${token}`,
-    },
-  });
-  return response;
-};
 
 // Apis for RogueDB
 
