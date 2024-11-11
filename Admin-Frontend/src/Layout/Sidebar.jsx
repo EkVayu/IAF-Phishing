@@ -75,7 +75,7 @@ const staffMenuItems = [
     path: "/rogue-db",
     icon: <GiRogue className="text-xl" />,
   },
-  { title: "SIRTs", path: "/sirts", icon: <SiRtlzwei className="text-xl" /> },
+  // { title: "SIRTs", path: "/sirts", icon: <SiRtlzwei className="text-xl" /> },
   {
     title: "Profile",
     path: "/profile",
