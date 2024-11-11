@@ -183,7 +183,6 @@ def check_email(request):
         if existing_email:
             return JsonResponse({
                 "message": "Email already exists",
-                "STATUS": "Found",
                 "messageId": msg_id,
                 "Code": 1,
                 "email_status": existing_email.status
@@ -232,8 +231,8 @@ def check_email(request):
                 email_entry.save()
                 return JsonResponse({
                     "message": "Email failed database validation checks",
-                    "STATUS": "Unsafe",
-                     "messageId": msg_id,
+                    "email_status": "Unsafe",
+                    "messageId": msg_id,
                     "Code": 1
                 })
 
