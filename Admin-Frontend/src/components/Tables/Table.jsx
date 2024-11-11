@@ -14,7 +14,7 @@ import { IoFilterSharp } from "react-icons/io5";
 import { FaEye } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import LoaderComponent from "../Common/Loader";
+import LoaderComponent from "../Common/LoaderComponent";
 
 function DateFormatter({ dateString }) {
   const formatDate = (dateString) => {

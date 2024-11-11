@@ -9,7 +9,7 @@ import { IoFilterSharp } from "react-icons/io5";
 import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import LoaderComponent from "../Common/Loader";
+import LoaderComponent from "../Common/LoaderComponent";
 
 function DateFormatter({ dateString }) {
   const formatDate = (dateString) => {
