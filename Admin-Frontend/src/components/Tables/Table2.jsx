@@ -145,14 +145,14 @@ function Table2({
   const itemsPerPage = 10;
 
   const filteredData = useMemo(() => {
-    return data.filter((row) => {
+    return data?.filter((row) => {
       return (
-        columns.some((column) =>
+        columns?.some((column) =>
           String(row[column.accessor])
             .toLowerCase()
-            .includes(searchTerm.toLowerCase())
+            .includes(searchTerm?.toLowerCase())
         ) &&
-        Object.entries(filters).every(([key, value]) =>
+        Object.entries(filters)?.every(([key, value]) =>
           String(row[key]).toLowerCase().includes(value.toLowerCase())
         )
       );
@@ -160,7 +160,7 @@ function Table2({
   }, [data, columns, searchTerm, filters]);
 
   const sortedData = useMemo(() => {
-    return [...filteredData].sort((a, b) => {
+    return [...filteredData]?.sort((a, b) => {
       if (a.srNo && b.srNo) {
         return a.srNo - b.srNo;
       }
@@ -169,7 +169,7 @@ function Table2({
     });
   }, [filteredData, columns]);
 
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const totalPages = Math?.ceil(sortedData?.length / itemsPerPage);
   const paginatedData = sortedData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
