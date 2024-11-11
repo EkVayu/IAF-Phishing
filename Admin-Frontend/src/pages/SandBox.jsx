@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Table from "../components/Tables/Table";
-import { fetchRunTestData, fetchFetchData } from "../Api/api";
+import { fetchRunTestData, fetchSandboxFetchedData } from "../Api/api";
 import { toast } from "react-toastify";
-import { generateSandBoxData } from "../Utils/generateSandBoxData";
 
 function SandBox() {
   const [sandBoxData, setSandBoxData] = useState([
@@ -37,17 +36,17 @@ function SandBox() {
       setLoading(true);
       setError(null);
       try {
-        const [runTestResponse, fetchDataResponse] = await Promise.all([
+        const [runTestResponse, fetchFetchedResponse] = await Promise.all([
           fetchRunTestData(),
-          fetchFetchData(),
+          fetchSandboxFetchedData(),
         ]);
 
-        if (!runTestResponse.ok || !fetchDataResponse.ok) {
+        if (!runTestResponse.ok || !fetchFetchedResponse.ok) {
           throw new Error("Failed to fetch data from one or more endpoints");
         }
 
         const runTestResult = await runTestResponse.json();
-        const fetchDataResult = await fetchDataResponse.json();
+        const fetchDataResult = await fetchFetchedResponse.json();
 
         setSandBoxData([
           {
