@@ -231,7 +231,7 @@ def check_email(request):
                 email_entry.save()
                 return JsonResponse({
                     "message": "Email failed database validation checks",
-                    "STATUS": "Unsafe",
+                    "email_status": "Unsafe",
                     "messageId": msg_id,
                     "Code": 1
                 })
