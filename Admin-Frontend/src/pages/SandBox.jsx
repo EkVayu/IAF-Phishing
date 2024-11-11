@@ -4,6 +4,8 @@ import { fetchRunTestData, fetchSandboxFetchedData } from "../Api/api";
 import { toast } from "react-toastify";
 
 function SandBox() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [sandBoxData, setSandBoxData] = useState([
     {
       label: "Run Test",
@@ -15,6 +17,8 @@ function SandBox() {
         "Attachments",
       ],
       data: [],
+      error: null,
+      loading: false,
     },
     {
       label: "Fetch Data",
@@ -26,27 +30,41 @@ function SandBox() {
         "Attachments",
       ],
       data: [],
+      error: null,
+      loading: false,
     },
   ]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAllData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const [runTestResponse, fetchFetchedResponse] = await Promise.all([
-          fetchRunTestData(),
-          fetchSandboxFetchedData(),
-        ]);
+      // Set loading state individually for each tab
+      setSandBoxData((prev) => prev.map((tab) => ({ ...tab, loading: true })));
 
-        if (!runTestResponse.ok || !fetchFetchedResponse.ok) {
-          throw new Error("Failed to fetch data from one or more endpoints");
+      try {
+        // Fetch Run Test data
+        const runTestResponse = await fetchRunTestData();
+        const runTestResult = runTestResponse.ok
+          ? await runTestResponse.json()
+          : null;
+
+        if (!runTestResponse.ok) {
+          toast.error("Failed to fetch Run Test data");
         }
 
-        const runTestResult = await runTestResponse.json();
-        const fetchDataResult = await fetchFetchedResponse.json();
+        // Fetch Sandbox data
+        const fetchDataResponse = await fetchSandboxFetchedData();
+        const fetchDataResult = fetchDataResponse.ok
+          ? await fetchDataResponse.json()
+          : null;
+
+        if (!fetchDataResponse.ok) {
+          toast.error("Failed to fetch Sandbox data");
+        }
+
+        // If both requests succeed, show success toast
+        if (runTestResponse.ok && fetchDataResponse.ok) {
+          toast.success("Data fetched successfully!");
+        }
 
         setSandBoxData([
           {
@@ -58,7 +76,9 @@ function SandBox() {
               "AI Status",
               "Attachments",
             ],
-            data: runTestResult,
+            data: runTestResult || [],
+            error: !runTestResponse.ok ? "Failed to fetch Run Test data" : null,
+            loading: false,
           },
           {
             label: "Fetch Data",
@@ -69,15 +89,23 @@ function SandBox() {
               "AI Status",
               "Attachments",
             ],
-            data: fetchDataResult,
+            data: fetchDataResult || [],
+            error: !fetchDataResponse.ok
+              ? "Failed to fetch Sandbox data"
+              : null,
+            loading: false,
           },
         ]);
       } catch (err) {
         console.error("Error fetching sandbox data:", err);
-        setError(`Failed to load data: ${err.message}`);
+        setSandBoxData((prev) =>
+          prev.map((tab) => ({
+            ...tab,
+            error: `Failed to load data: ${err.message}`,
+            loading: false,
+          }))
+        );
         toast.error(`Failed to load data: ${err.message}`);
-      } finally {
-        setLoading(false);
       }
     };
 
