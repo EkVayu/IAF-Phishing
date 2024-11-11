@@ -132,7 +132,7 @@ function Profile() {
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
               <ActivitySection />
-              <StatsSection />
+              <StatsSection userInfo={userInfo} />
             </div>
           </div>
         )}
@@ -179,7 +179,41 @@ function ActivitySection() {
   );
 }
 
-function StatsSection() {
+function StatsSection({ userInfo }) {
+  const calculateProfileCompletion = (userInfo) => {
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "email",
+      "phone_number",
+      "address",
+      "organization",
+      "profile",
+    ];
+    const filledFields = requiredFields.filter(
+      (field) => userInfo?.[field]
+    ).length;
+    return Math.round((filledFields / requiredFields.length) * 100);
+  };
+
+  const getMissingFields = () => {
+    const requiredFields = {
+      first_name: "First Name",
+      last_name: "Last Name",
+      email: "Email",
+      phone_number: "Phone Number",
+      address: "Address",
+      organization: "Organization",
+      profile: "Profile Picture",
+    };
+
+    return Object.entries(requiredFields)
+      .filter(([key]) => !userInfo?.[key])
+      .map(([_, label]) => label);
+  };
+
+  const missingFields = getMissingFields();
+
   return (
     <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <h3 className="text-xl font-semibold mb-4 text-secondary-foreground">
@@ -187,14 +221,26 @@ function StatsSection() {
       </h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="text-center text-secondary-foreground">
-          <p className="text-3xl font-bold text-blue-500">25</p>
-          <p className="text-sm text-gray-600 dark:text-white">Total Logins</p>
-        </div>
-        <div className="text-center text-secondary-foreground">
-          <p className="text-3xl font-bold text-green-500">98%</p>
+          <p className="text-3xl font-bold text-green-500">
+            {calculateProfileCompletion(userInfo)}%
+          </p>
           <p className="text-sm text-gray-600 dark:text-white">
             Profile Completion
           </p>
+        </div>
+        <div className="text-secondary-foreground">
+          <p className="text-sm font-semibold mb-2">Missing Information:</p>
+          {missingFields.length > 0 ? (
+            <ul className="list-disc pl-4 text-sm">
+              {missingFields.map((field, index) => (
+                <li key={index} className="text-red-500">
+                  {field}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-green-500 text-sm">Profile is complete!</p>
+          )}
         </div>
       </div>
     </div>
