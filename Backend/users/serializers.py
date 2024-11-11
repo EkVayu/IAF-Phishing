@@ -121,8 +121,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.save()  # Save changes to UserProfile
         return instance
 
-
-
 class LicenseAllocationSerializer(serializers.ModelSerializer):
     plugin = PluginMasterSerializer(read_only=True)
 
@@ -316,3 +314,8 @@ class AttachmentSerializer(serializers.ModelSerializer):
 #     monthly_data = serializers.DictField(
 #         child=MonthlyDataSerializer()
 #     )
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'is_deleted']
