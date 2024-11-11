@@ -14,14 +14,14 @@ function CreateRogueDBModal({ isOpen, onClose, activeTab, onSubmit, loading }) {
               name="url"
               placeholder="Enter URL"
               required
-              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700"
+              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700 text-secondary-foreground"
             />
             <input
               type="text"
               name="protocol"
               placeholder="Enter Protocol"
               required
-              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700"
+              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700 text-secondary-foreground"
             />
             <button
               type="submit"
@@ -39,14 +39,14 @@ function CreateRogueDBModal({ isOpen, onClose, activeTab, onSubmit, loading }) {
               name="ip"
               placeholder="Enter IP"
               required
-              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700"
+              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700 text-secondary-foreground"
             />
             <input
               type="text"
               name="prototype"
               placeholder="Enter Prototype"
               required
-              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700"
+              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700 text-secondary-foreground"
             />
             <button
               type="submit"
@@ -64,7 +64,7 @@ function CreateRogueDBModal({ isOpen, onClose, activeTab, onSubmit, loading }) {
               name="mailid"
               placeholder="Enter Email"
               required
-              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700"
+              className="border border-primary rounded-md px-2 py-1 dark:bg-gray-700 text-secondary-foreground"
             />
             <button
               type="submit"
