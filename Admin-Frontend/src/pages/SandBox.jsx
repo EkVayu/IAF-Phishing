@@ -51,6 +51,10 @@ function SandBox() {
           toast.error("Failed to fetch Run Test data");
         }
 
+        if (runTestResult.length === 0) {
+          toast.error("No data available for Run Test");
+        }
+
         // Fetch Sandbox data
         const fetchDataResponse = await fetchSandboxFetchedData();
         const fetchDataResult = fetchDataResponse.ok
@@ -61,8 +65,17 @@ function SandBox() {
           toast.error("Failed to fetch Sandbox data");
         }
 
+        if (fetchDataResult.length === 0) {
+          toast.error("No data available for Fetch Data");
+        }
+
         // If both requests succeed, show success toast
-        if (runTestResponse.ok && fetchDataResponse.ok) {
+        if (
+          runTestResponse.ok &&
+          runTestResult.length > 0 &&
+          fetchDataResponse.ok &&
+          fetchDataResult.length > 0
+        ) {
           toast.success("Data fetched successfully!");
         }
 

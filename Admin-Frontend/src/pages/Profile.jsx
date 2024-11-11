@@ -45,14 +45,6 @@ function Profile() {
     fetchUserData();
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-[80vh] bg-white dark:bg-gray-800 rounded-md">
-  //       <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary dark:border-white"></div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="min-h-[80vh]">
       <div className="w-full">
@@ -67,13 +59,31 @@ function Profile() {
             <div className="bg-background dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mt-5">
               <div className="bg-primary dark:bg-gray-900 h-20 px-5 py-2">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-bold text-white mb-2 capitalize tracking-widest">
-                      {user?.username || "User Name"}
-                    </h2>
-                    <p className="text-white capitalize text-sm">
-                      {role || "User Role"}
-                    </p>
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-full overflow-hidden">
+                      {userInfo?.profile ? (
+                        <img
+                          src={userInfo.profile}
+                          alt={userInfo?.username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-white dark:bg-gray-700">
+                          <span className="text-xl font-bold text-gray-700 dark:text-white">
+                            {`${userInfo?.first_name?.[0] || ""}`}
+                            {`${userInfo?.last_name?.[0] || ""}`}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white  capitalize tracking-widest">
+                        {user?.username || "User_Name"}
+                      </h2>
+                      <p className="text-white capitalize text-sm">
+                        {role || "User_Role"}
+                      </p>
+                    </div>
                   </div>
                   <Link
                     to="/profile/edit"
@@ -89,12 +99,12 @@ function Profile() {
                   <ProfileItem
                     icon={<FaUser />}
                     label="First Name"
-                    value={user?.name}
+                    value={userInfo?.first_name}
                   />
                   <ProfileItem
                     icon={<FaUser />}
                     label="Last Name"
-                    value={user?.name}
+                    value={userInfo?.last_name}
                   />
                   <ProfileItem
                     icon={<FaEnvelope />}

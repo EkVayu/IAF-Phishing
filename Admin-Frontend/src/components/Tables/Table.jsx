@@ -188,11 +188,13 @@ const Table = ({
   };
 
   const filteredData = useMemo(() => {
-    // Filtering the table data based on the search term
-    if (!searchTerm) return tabData[activeTab]?.data || [];
-    return tabData[activeTab]?.data?.filter((row) =>
-      Object?.values(row)?.some((value) =>
-        String(value)?.toLowerCase()?.includes(searchTerm.toLowerCase())
+    const currentTabData = tabData[activeTab]?.data || [];
+    if (!Array.isArray(currentTabData)) return [];
+    if (!searchTerm) return currentTabData;
+
+    return currentTabData.filter((row) =>
+      Object.values(row).some((value) =>
+        String(value).toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [tabData, activeTab, searchTerm]);
@@ -366,7 +368,7 @@ const Table = ({
   } = useTable(
     {
       columns,
-      data: filteredData,
+      data: Array.isArray(filteredData) ? filteredData : [],
       initialState: {
         pageIndex: 0,
         sortBy: [
