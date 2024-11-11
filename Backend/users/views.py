@@ -22,13 +22,16 @@ from datetime import timedelta
 from .models import RoughURL, RoughDomain, RoughMail
 from rest_framework.exceptions import ValidationError
 from .serializers import RoughURLSerializer, RoughDomainSerializer, RoughMailSerializer, DisputeUpdateSerializer, AttachmentSerializer
-
+from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import json
 from django.core.files.storage import default_storage
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.views import APIView
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 import traceback
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
@@ -567,19 +570,42 @@ class UserProfileView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path=r'user_id/(?P<user_id>[^/.]+)')
     def get_user_id(self, request, user_id=None):
-        #user_profiles = UserProfile.objects.filter(user_id=user_id)
-        user_profiles = UserProfile.objects.filter(user_id=user_id, user__is_deleted=False) #nidhi
+        # First, attempt to retrieve the UserProfile data
+        user_profiles = UserProfile.objects.filter(user_id=user_id, user__is_deleted=False)
 
         if user_profiles.exists():
-            serializer = self.get_serializer(user_profiles, many=True)
-            return Response(serializer.data)
+            # If UserProfile data exists, return it with user fields in the same format
+            user_profile = user_profiles.first()  # Assuming you want only the first profile
+            user_profile_serializer = UserProfileSerializer(user_profile)
+            return Response(user_profile_serializer.data)
         else:
-            return Response({"detail": "No profiles found for the provided user_id"}, status=status.HTTP_404_NOT_FOUND)
+            # If no UserProfile data, fetch the User data and return it in the same format
+            try:
+                user = User.objects.get(id=user_id, is_deleted=False)
+                # Construct the user data response without the message field
+                user_data = {
+                    "phone_number": "",
+                    "address": "",
+                    "organization": "",
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "full_name": user.get_full_name(),
+                    "email": user.email
+                }
+                return Response(user_data)
+            except User.DoesNotExist:
+                return Response({"detail": "No data found for the provided user_id"}, status=status.HTTP_404_NOT_FOUND)
 
     def get_object_by_user_id(self, user_id):
         """Helper method to retrieve the UserProfile by user_id"""
-        #return get_object_or_404(UserProfile, user_id=user_id)
-        return get_object_or_404(UserProfile, user_id=user_id, user__is_deleted=False)
+        try:
+            return get_object_or_404(UserProfile, user_id=user_id, user__is_deleted=False)
+        except Http404:
+            # If no UserProfile found, try to get User data
+            try:
+                return get_object_or_404(User, id=user_id, is_deleted=False)
+            except Http404:
+                return Response({"detail": "No data found for the provided user_id"}, status=status.HTTP_404_NOT_FOUND)
 
 #Soumya Ranjan(25-10-2024)
     @action(detail=False, methods=['patch'], url_path=r'update_by_user_id/(?P<user_id>[^/.]+)')
