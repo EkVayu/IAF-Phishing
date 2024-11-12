@@ -5,8 +5,8 @@ from django.conf import settings
 import django.utils.timezone
 from django.utils import timezone
 import hashlib
-
-
+from datetime import timedelta
+from django.utils.dateparse import parse_datetime
 # User Models
 class CustomUserManager(BaseUserManager):
     """
@@ -318,6 +318,13 @@ class MachineData(models.Model):
     def __str__(self):
         return self.machine_id
 
+class OTP(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    verified = models.BooleanField(default=False)
 
+    def is_valid(self):
+        return timezone.now() < self.created_at + timedelta(minutes=10)
 
     
