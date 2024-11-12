@@ -41,12 +41,18 @@ const SuperAdminDashboard = () => {
 
         // Process user data
         const userChartData = [
-          users.length,
+          users.length + 496,
           users.length + 1000,
           users.length + 2000,
           users.length + 1500,
           users.length + 3000,
           users.length + 2500,
+          users.length + 2100,
+          users.length + 2600,
+          users.length + 2300,
+          users.length + 2200,
+          users.length + 2100,
+          users.length + 100,
         ];
 
         setUserData({
@@ -62,6 +68,12 @@ const SuperAdminDashboard = () => {
           licenses.length + 400,
           licenses.length + 300,
           licenses.length + 600,
+          licenses.length + 700,
+          licenses.length + 800,
+          licenses.length + 400,
+          licenses.length + 500,
+          licenses.length + 200,
+          licenses.length + 100,
         ];
 
         setLicenseData({
@@ -74,9 +86,9 @@ const SuperAdminDashboard = () => {
         console.error("Error fetching data:", error);
 
         // Use generated data as a fallback
-        const generatedData = SuperAdminDashboardGenerate();
-        setUserData(generatedData.userData);
-        setLicenseData(generatedData.licenseData);
+        // const generatedData = SuperAdminDashboardGenerate();
+        // setUserData(generatedData.userData);
+        // setLicenseData(generatedData.licenseData);
 
         toast.error("Failed to fetch data.");
         // setError(`Failed to fetch data: ${error.message}`);
@@ -150,7 +162,7 @@ const SuperAdminDashboard = () => {
                 <p>Select a card to view its data</p>
               )}
             </div>
-            <div className="w-1/2 grid grid-cols-2 gap-4">
+            <div className="w-1/2 flex items-end gap-4">
               {cardData.map(
                 (card, index) =>
                   index !== selectedCard && (
