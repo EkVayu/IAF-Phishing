@@ -189,3 +189,8 @@ CORS_ALLOW_METHODS = [ 'GET', 'POST', 'OPTIONS', ]
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'content-disposition',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://35.154.97.4:8002",
+    "http://127.0.0.1:8000",
+]
