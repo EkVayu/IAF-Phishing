@@ -68,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'backend.middleware.timezone_middleware.TimezoneMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -147,11 +148,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Kolkata'
 
-USE_I18N = True
+TIME_ZONE = 'Asia/Kolkata'  # Set default timezone to IST
+USE_TZ = True  # Use timezone-aware datetimes
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -181,6 +181,8 @@ DEFAULT_FROM_EMAIL = 'ekvayu.com'
 DEBUG = True
 APPEND_SLASH = False
 
+
+CORS_ALLOW_METHODS = [ 'GET', 'POST', 'OPTIONS', ]  
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'content-disposition',
