@@ -6,6 +6,7 @@ from .models import *
 
 admin.site.register(CustomUser)
 admin.site.register(License)
+admin.site.register(OTP)
 admin.site.register(PluginMaster)
 admin.site.register(MachineData)
 from django.contrib import admin

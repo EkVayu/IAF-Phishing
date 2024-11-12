@@ -302,6 +302,12 @@ class AttachmentSerializer(serializers.ModelSerializer):
         }
         return status_map.get(obj.ai_status, "Unknown")
 
+# class CombinedCountSerializer(serializers.Serializer):
+#     sandbox_data = serializers.IntegerField()
+#     total_mail = serializers.IntegerField()
+#     CDR_Completed = serializers.IntegerField()
+#     impacted_found = serializers.IntegerField()
+
 
 # class MonthlyDataSerializer(serializers.Serializer):
 #     month = serializers.CharField()

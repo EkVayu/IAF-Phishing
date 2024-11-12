@@ -36,6 +36,11 @@ import traceback
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 import pytz
+import random
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import OTP
+from django.contrib.auth.hashers import make_password
 
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
@@ -1177,3 +1182,67 @@ class quarentineAttachmentsView(generics.ListAPIView):
 #         # Serialize the response data
 #         serializer = CombinedCountSerializer(data)
 #         return Response(serializer.data)
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+class ForgotPasswordView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "User with this email does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        otp = generate_otp()
+        OTP.objects.create(user=user, otp=otp)
+
+        # Send email
+        send_mail(
+            'Your OTP Code',
+            f'Your OTP code is {otp}',
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
+        return Response({"message": "OTP sent to email."}, status=status.HTTP_200_OK)
+
+
+class VerifyOTP(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+
+        try:
+            user = User.objects.get(email=email)
+            otp_record = OTP.objects.filter(user=user, otp=otp).latest('created_at')
+        except (User.DoesNotExist, OTP.DoesNotExist):
+            return Response({"error": "Invalid email or OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not otp_record.is_valid():
+            return Response({"error": "OTP has expired."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Mark OTP as verified
+        otp_record.verified = True
+        otp_record.save()
+
+        return Response({"message": "OTP verified successfully."}, status=status.HTTP_200_OK)
+
+class ResetPassword(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        new_password = request.data.get('new_password')
+
+        try:
+            user = User.objects.get(email=email)
+            otp_record = OTP.objects.filter(user=user, verified=True).latest('created_at')
+        except (User.DoesNotExist, OTP.DoesNotExist):
+            return Response({"error": "OTP has not been verified."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set the new password
+        user.password = make_password(new_password)
+        user.save()
+
+        # Optionally, delete the OTP record after a successful password reset
+        otp_record.delete()
+
+        return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)

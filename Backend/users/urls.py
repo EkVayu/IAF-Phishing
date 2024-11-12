@@ -52,5 +52,8 @@ urlpatterns = [
     path('quarentine-data/', quarentineAttachmentsView.as_view(), name='pending-attachments'),
     # path('dashboard-data/', CombinedEmailAndAttachmentCount.as_view(), name='unique-emails-with-attachments'),
     # path('api/monthly-data/', MonthlyCombinedEmailAndAttachmentCount.as_view(), name='monthly_data'),
+    path('api/forget-passwrod/sendotp/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('api/forget-passwrod/verify-otp/', VerifyOTP.as_view(), name='verify-otp'),
+    path('api/forget-passwrod/reset-password/', ResetPassword.as_view(), name='reset-password'),
 
 ]
