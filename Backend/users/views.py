@@ -270,6 +270,7 @@ class LicenseListView(viewsets.ModelViewSet):
 
             # Set allocation date as the current time
             allocation_date = timezone.now()
+            formatted_allocation_date = allocation_date.strftime('%d-%m-%Y %I:%M:%S %p')
 
             # Update the License instance
             license.allocated_to = allocated_to
@@ -344,7 +345,7 @@ class LicenseListView(viewsets.ModelViewSet):
                             </tr>
                             <tr>
                                 <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Allocation Date:</td>
-                                <td style="padding: 8px; border: 1px solid #ddd;" class="highlight">{allocation_date}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;" class="highlight">{formatted_allocation_date}</td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">License ID:</td>
