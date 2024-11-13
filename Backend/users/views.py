@@ -12,7 +12,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 from plugin.models import EmailDetails, DisputeInfo, PluginEnableDisable, Dispute, Attachment
-# from plugin.serializers import EmailDetailsSerializer
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from drf_yasg.utils import swagger_auto_schema
@@ -37,7 +36,6 @@ from django.db.models import Count
 from django.db.models.functions import TruncMonth
 import pytz
 import random
-from django.core.mail import send_mail
 from django.conf import settings
 from .models import OTP
 from django.contrib.auth.hashers import make_password
