@@ -940,7 +940,7 @@ def get_counter_count(request):
                     "STATUS": "Not Found",
                     "Code": 0,
                     "data": 0
-                }, status=404)
+                }, status=200)
 
             # Return the existing counter value
             return JsonResponse({
