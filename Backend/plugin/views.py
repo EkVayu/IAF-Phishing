@@ -36,6 +36,7 @@ from users.serializers import *
 from openpyxl import load_workbook 
 import re
 from PyPDF2 import PdfReader, PdfWriter
+from rest_framework.views import APIView
 
 
 @csrf_exempt
@@ -964,3 +965,21 @@ def get_counter_count(request):
                 "Code": 0,
                 "data": ""
             }, status=500)
+class UpdateEmailDetailsView(APIView):
+
+    def post(self, request):
+        # Pass only the msg_id from the request data to the serializer
+        serializer = DisputeUpdateSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            # Call the update method to perform the update on EmailDetails and related DisputeInfo
+            updated_email_detail = serializer.update(serializer.validated_data)
+            return Response({
+                "message": "Email details updated successfully",
+                "data": {
+                    "msg_id": updated_email_detail.msg_id,  # Use msg_id here
+                    "status": updated_email_detail.status
+                }
+            }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

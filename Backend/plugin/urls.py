@@ -8,7 +8,7 @@ from .views import spam_email_view
 from plugin.views import DisputeViewSet
 from plugin.views import PluginInstallUninstallViewSet
 from plugin.views import PluginEnableDisableViewSet
-from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data,get_counter_count
+from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data,get_counter_count,UpdateEmailDetailsView
 
 
 
@@ -33,6 +33,8 @@ urlpatterns = [
     path('get-disputes-raise-data/',get_disputes_raise_data, name='get-disputes-raise-data'),
     path('get-allocation-data/',get_allocation_data, name='get-allocation-data'),
     path('get-counter-count/',get_counter_count, name='get-counter-count'),
+    path('admin-remarks-info/', UpdateEmailDetailsView.as_view(), name='admin-remarks-info'),
+
 
     
     #............................AI Services............................
