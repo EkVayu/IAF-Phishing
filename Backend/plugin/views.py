@@ -171,8 +171,8 @@ class DisputeViewSet(viewsets.ViewSet):
         active_dispute_count = Dispute.objects.filter(email=email, msg_id=msg_id).count()
 
         try:
-            email_detail = EmailDetail.objects.get(message_id=msg_id)
-        except EmailDetail.DoesNotExist:
+            email_detail = EmailDetails.objects.get(message_id=msg_id)
+        except EmailDetails.DoesNotExist:
             return Response({"error": "Message Id not found in email_details"}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({
