@@ -1068,16 +1068,20 @@ class MonthlyCombinedEmailAndAttachmentCount(APIView):
             target_tz = pytz.timezone(user_timezone)
         except pytz.UnknownTimeZoneError:
             return Response({"error": "Invalid timezone provided."}, status=status.HTTP_400_BAD_REQUEST)
+
         def convert_month_to_timezone(data, target_tz):
             converted_data = []
             for entry in data:
                 month = entry['month']
+                if month is None:
+                    continue
                 if timezone.is_naive(month):
                     month = timezone.make_aware(month, timezone=target_tz)
                 converted_month = month.astimezone(target_tz)
                 entry['month'] = converted_month.strftime('%Y-%m')
                 converted_data.append(entry)
             return converted_data
+
         sandbox_data = (
             Attachment.objects.filter(attachment__isnull=False)
             .annotate(month=TruncMonth('created_at'))
@@ -1106,32 +1110,26 @@ class MonthlyCombinedEmailAndAttachmentCount(APIView):
             .annotate(count=Count('id'))
             .order_by('month')
         )
+
         sandbox_data = convert_month_to_timezone(list(sandbox_data), target_tz)
         total_mail = convert_month_to_timezone(list(total_mail), target_tz)
         CDR_Completed = convert_month_to_timezone(list(CDR_Completed), target_tz)
         impacted_found = convert_month_to_timezone(list(impacted_found), target_tz)
-        combined_data = {}
-        def add_counts(data, field_name):
-            total_count = 0
-            chart_data = []
-            for entry in data:
-                month = entry['month']
-                count = entry['count']
-                total_count += count
-                chart_data.append({
-                    'month': month,
-                    'count': count
-                })
-            for year in combined_data:
-                combined_data[year][field_name] = {
-                    'total_count': total_count,
-                    'chart_data': chart_data
-                }
-        combined_data["2024"] = {}
-        add_counts(sandbox_data, 'sandbox_data')
-        add_counts(total_mail, 'total_mail')
-        add_counts(CDR_Completed, 'CDR_Completed')
-        add_counts(impacted_found, 'impacted_found')
+
+        def add_counts(data):
+            total_count = sum(entry['count'] for entry in data)
+            chart_data = [{"month": entry['month'], "count": entry['count']} for entry in data]
+            return {"total_count": total_count, "chart_data": chart_data}
+
+        combined_data = {
+            "2024": {
+                "sandbox_data": add_counts(sandbox_data),
+                "total_mail": add_counts(total_mail),
+                "CDR_Completed": add_counts(CDR_Completed),
+                "impacted_found": add_counts(impacted_found),
+            }
+        }
+
         return Response(combined_data)
 
 def generate_otp():
