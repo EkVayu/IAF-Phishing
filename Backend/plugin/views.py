@@ -939,7 +939,7 @@ def get_counter_count(request):
                     "message": "Dispute entry not found",
                     "STATUS": "Not Found",
                     "Code": 0,
-                    "data": 0
+                    "counter": 0
                 }, status=200)
 
             # Return the existing counter value
