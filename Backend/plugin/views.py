@@ -916,3 +916,52 @@ def get_allocation_data(request):
                 "Code": 0,
                 "data": ""
             }, status=500)
+        
+@csrf_exempt
+def get_counter_count(request):
+    if request.method == 'POST':
+        try:
+            # Parse the incoming JSON data
+            data = json.loads(request.body)
+            msg_id = data.get('messageId')
+
+            if not msg_id:
+                return JsonResponse({
+                    "message": "Missing messageId",
+                    "STATUS": "Error",
+                    "Code": 0,
+                    "data": ""
+                }, status=400)
+
+            # Fetch the existing Dispute object based on messageId
+            dispute = Dispute.objects.filter(msg_id=msg_id).first()
+            if not dispute:
+                return JsonResponse({
+                    "message": "Dispute entry not found",
+                    "STATUS": "Not Found",
+                    "Code": 0,
+                    "data": ""
+                }, status=404)
+
+            # Return the existing counter value
+            return JsonResponse({
+                "message": "Counter count retrieved successfully",
+                "STATUS": "Found",
+                "Code": 1,
+                "data": {"msg_id": msg_id, "counter": dispute.counter}
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "message": "Invalid JSON format",
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                "message": f"Internal Server Error: {str(e)}",
+                "STATUS": "Error",
+                "Code": 0,
+                "data": ""
+            }, status=500)
