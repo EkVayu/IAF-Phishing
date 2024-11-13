@@ -215,10 +215,9 @@ class DisputeViewSet(viewsets.ViewSet):
             return Response({"error": "Invalid email status in email_details"}, status=status.HTTP_400_BAD_REQUEST)
         
     # Check if the user has fewer than 3 active disputes
-        active_dispute_count = Dispute.objects.filter(email=email).count()
-    
+        active_dispute_count = Dispute.objects.filter(msg_id=msg_id).count()
         if active_dispute_count >= 3:
-            return Response({"error": "You cannot raise more than 3 disputes"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "You have reached the maximum number of active disputes"}, status=status.HTTP_400_BAD_REQUEST)
         
     # Check if a dispute already exists for the given email and msg_id
         dispute, created = Dispute.objects.get_or_create(
@@ -940,7 +939,7 @@ def get_counter_count(request):
                     "message": "Dispute entry not found",
                     "STATUS": "Not Found",
                     "Code": 0,
-                    "data": ""
+                    "data": 0
                 }, status=404)
 
             # Return the existing counter value
@@ -948,7 +947,7 @@ def get_counter_count(request):
                 "message": "Counter count retrieved successfully",
                 "STATUS": "Found",
                 "Code": 1,
-                "data": {"msg_id": msg_id, "counter": dispute.counter}
+                "counter": dispute.counter if dispute.counter is not None else 0
             })
 
         except json.JSONDecodeError:
