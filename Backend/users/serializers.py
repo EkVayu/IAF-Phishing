@@ -302,24 +302,15 @@ class AttachmentSerializer(serializers.ModelSerializer):
         }
         return status_map.get(obj.ai_status, "Unknown")
 
-# class CombinedCountSerializer(serializers.Serializer):
-#     sandbox_data = serializers.IntegerField()
-#     total_mail = serializers.IntegerField()
-#     CDR_Completed = serializers.IntegerField()
-#     impacted_found = serializers.IntegerField()
+class MonthlyDataSerializer(serializers.Serializer):
+    month = serializers.CharField()
+    count = serializers.IntegerField()
 
-
-# class MonthlyDataSerializer(serializers.Serializer):
-#     month = serializers.CharField()
-#     sandbox_data = serializers.IntegerField()
-#     total_mail = serializers.IntegerField()
-#     CDR_Completed = serializers.IntegerField()
-#     impacted_found = serializers.IntegerField()
-#
-# class CombinedCountSerializer(serializers.Serializer):
-#     monthly_data = serializers.DictField(
-#         child=MonthlyDataSerializer()
-#     )
+class CombinedCountSerializer(serializers.Serializer):
+    sandbox_data = MonthlyDataSerializer(many=True)
+    total_mail = MonthlyDataSerializer(many=True)
+    CDR_Completed = MonthlyDataSerializer(many=True)
+    impacted_found = MonthlyDataSerializer(many=True)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

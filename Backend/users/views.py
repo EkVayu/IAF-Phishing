@@ -1061,125 +1061,78 @@ class quarentineAttachmentsView(generics.ListAPIView):
             ai_status__in=[2, 3, 4]  # Filter for 'Unsafe', 'Exception', 'Failed'
         ).exclude(attachment='').order_by('created_at')
 
-# class CombinedEmailAndAttachmentCount(APIView):
-#     def get(self, request, *args, **kwargs):
-#         # Count attachments where the `attachment` field is not null
-#         sandbox_data = Attachment.objects.filter(attachment__isnull=False).count()
-#
-#         # Count unique emails with at least one non-null attachment
-#         total_mail = EmailDetails.objects.filter(
-#             Emailsattachments__attachment__isnull=False
-#         ).values('msg_id').distinct().count()
-#
-#         # Count attachments with `ai_status=2` to get the CDR completed count
-#         CDR_Completed = Attachment.objects.filter(ai_status=2).count()
-#
-#         # Count attachments where `ai_status` is either 'exception' or 'failed' (3 or 4)
-#         impacted_found = Attachment.objects.filter(ai_status__in=[3, 4]).count()
-#
-#         # Prepare combined response data
-#         data = {
-#             'sandbox_data': sandbox_data,
-#             'total_mail': total_mail,
-#             'CDR_Completed': CDR_Completed,
-#             'impacted_found': impacted_found
-#         }
-#
-#         # Serialize the response data
-#         serializer = CombinedCountSerializer(data)
-#         return Response(serializer.data)
-#
-# class MonthlyCombinedEmailAndAttachmentCount(APIView):
-#     """
-#     API to fetch monthly counts for sandbox_data, total_mail, CDR_Completed, and impacted_found.
-#     """
-#     def get(self, request, *args, **kwargs):
-#         # Get the timezone from the query parameters, default to Asia/Kolkata
-#         user_timezone = request.query_params.get('timezone', 'Asia/Kolkata')
-#
-#         try:
-#             target_tz = pytz.timezone(user_timezone)
-#         except pytz.UnknownTimeZoneError:
-#             return Response({"error": "Invalid timezone provided."}, status=400)
-#
-#         # Helper function to convert datetime to the target timezone
-#         def convert_to_timezone(dt):
-#             if timezone.is_naive(dt):
-#                 return timezone.make_aware(dt, target_tz)
-#             return dt.astimezone(target_tz)
-#
-#         # Monthly sandbox_data count
-#         sandbox_data = (
-#             Attachment.objects.filter(attachment__isnull=False)
-#             .annotate(month=TruncMonth('created_at'))
-#             .annotate(month_timezone=TruncMonth(convert_to_timezone(timezone.now())))
-#             .values('month_timezone')
-#             .annotate(count=Count('id'))
-#             .order_by('month_timezone')
-#         )
-#
-#         # Monthly total_mail count
-#         total_mail = (
-#             EmailDetails.objects.filter(
-#                 Emailsattachments__attachment__isnull=False
-#             )
-#             .annotate(month=TruncMonth('create_time'))
-#             .annotate(month_timezone=TruncMonth(convert_to_timezone(timezone.now())))
-#             .values('month_timezone')
-#             .annotate(count=Count('msg_id', distinct=True))
-#             .order_by('month_timezone')
-#         )
-#
-#         # Monthly CDR_Completed count
-#         CDR_Completed = (
-#             Attachment.objects.filter(ai_status=2)
-#             .annotate(month=TruncMonth('created_at'))
-#             .annotate(month_timezone=TruncMonth(convert_to_timezone(timezone.now())))
-#             .values('month_timezone')
-#             .annotate(count=Count('id'))
-#             .order_by('month_timezone')
-#         )
-#
-#         # Monthly impacted_found count
-#         impacted_found = (
-#             Attachment.objects.filter(ai_status__in=[3, 4])
-#             .annotate(month=TruncMonth('created_at'))
-#             .annotate(month_timezone=TruncMonth(convert_to_timezone(timezone.now())))
-#             .values('month_timezone')
-#             .annotate(count=Count('id'))
-#             .order_by('month_timezone')
-#         )
-#
-#         # Combine the data into a single response dictionary with monthly aggregation
-#         combined_data = {}
-#
-#         # Helper function to populate combined_data dictionary
-#         def add_counts_to_combined_data(data, field_name):
-#             for entry in data:
-#                 month = entry['month_timezone'].strftime('%Y-%m')
-#                 if month not in combined_data:
-#                     combined_data[month] = {
-#                         'sandbox_data': 0,
-#                         'total_mail': 0,
-#                         'CDR_Completed': 0,
-#                         'impacted_found': 0,
-#                     }
-#                 combined_data[month][field_name] = entry['count']
-#
-#         # Populate combined_data with each metric's counts
-#         add_counts_to_combined_data(sandbox_data, 'sandbox_data')
-#         add_counts_to_combined_data(total_mail, 'total_mail')
-#         add_counts_to_combined_data(CDR_Completed, 'CDR_Completed')
-#         add_counts_to_combined_data(impacted_found, 'impacted_found')
-#
-#         # Prepare the response data
-#         data = {
-#             'monthly_data': combined_data
-#         }
-#
-#         # Serialize the response data
-#         serializer = CombinedCountSerializer(data)
-#         return Response(serializer.data)
+class MonthlyCombinedEmailAndAttachmentCount(APIView):
+    def get(self, request, *args, **kwargs):
+        user_timezone = request.query_params.get('timezone', 'Asia/Kolkata')
+        try:
+            target_tz = pytz.timezone(user_timezone)
+        except pytz.UnknownTimeZoneError:
+            return Response({"error": "Invalid timezone provided."}, status=status.HTTP_400_BAD_REQUEST)
+        def convert_month_to_timezone(data, target_tz):
+            converted_data = []
+            for entry in data:
+                month = entry['month']
+                if timezone.is_naive(month):
+                    month = timezone.make_aware(month, timezone=target_tz)
+                converted_month = month.astimezone(target_tz)
+                entry['month'] = converted_month.strftime('%Y-%m')
+                converted_data.append(entry)
+            return converted_data
+        sandbox_data = (
+            Attachment.objects.filter(attachment__isnull=False)
+            .annotate(month=TruncMonth('created_at'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        total_mail = (
+            EmailDetails.objects.filter(Emailsattachments__attachment__isnull=False)
+            .annotate(month=TruncMonth('create_time'))
+            .values('month')
+            .annotate(count=Count('msg_id', distinct=True))
+            .order_by('month')
+        )
+        CDR_Completed = (
+            Attachment.objects.filter(ai_status=2)
+            .annotate(month=TruncMonth('created_at'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        impacted_found = (
+            Attachment.objects.filter(ai_status__in=[3, 4])
+            .annotate(month=TruncMonth('created_at'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        sandbox_data = convert_month_to_timezone(list(sandbox_data), target_tz)
+        total_mail = convert_month_to_timezone(list(total_mail), target_tz)
+        CDR_Completed = convert_month_to_timezone(list(CDR_Completed), target_tz)
+        impacted_found = convert_month_to_timezone(list(impacted_found), target_tz)
+        combined_data = {}
+        def add_counts(data, field_name):
+            total_count = 0
+            chart_data = []
+            for entry in data:
+                month = entry['month']
+                count = entry['count']
+                total_count += count
+                chart_data.append({
+                    'month': month,
+                    'count': count
+                })
+            for year in combined_data:
+                combined_data[year][field_name] = {
+                    'total_count': total_count,
+                    'chart_data': chart_data
+                }
+        combined_data["2024"] = {}
+        add_counts(sandbox_data, 'sandbox_data')
+        add_counts(total_mail, 'total_mail')
+        add_counts(CDR_Completed, 'CDR_Completed')
+        add_counts(impacted_found, 'impacted_found')
+        return Response(combined_data)
 
 def generate_otp():
     return str(random.randint(100000, 999999))
