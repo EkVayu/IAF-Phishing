@@ -1195,3 +1195,19 @@ class ResetPassword(APIView):
         otp_record.delete()
 
         return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
+
+
+class DisputeRaiseDataView(APIView):
+    """
+    View to get disputes where the counter is not null and include specific email details.
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Get all disputes where the counter is not null and join with related emaildetails
+        disputes = DisputeInfo.objects.select_related('emaildetails').filter(counter__isnull=False)
+
+        # Serialize the disputes, including the filtered email details
+        serializer = DisputeraiseSerializer(disputes, many=True)
+
+        # Return the serialized data
+        return Response(serializer.data, status=status.HTTP_200_OK)

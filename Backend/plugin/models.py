@@ -77,6 +77,7 @@ class DisputeInfo(models.Model):
         updated_by (User): The user who created the dispute information.
         is_active (bool): Indicates if the dispute information is currently active.
     """
+    emaildetails = models.ForeignKey('EmailDetails', on_delete=models.CASCADE, related_name='info')
     dispute = models.ForeignKey(Dispute, on_delete=models.CASCADE, related_name='info')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
