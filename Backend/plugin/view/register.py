@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from users.models import *
+from users.models import PluginMaster, License,LicenseAllocation
 from django.utils import timezone
 import json
 
@@ -23,15 +23,6 @@ def register(request):
                         "STATUS": "Not Found",
                         "Code": 0
                     }, status=400)
-                plugin = PluginMaster.objects.create(
-                    plugin_id=plugin_id,
-                    license_id=license,
-                    ip_add=ip_add,
-                    browser=browser,
-                    install_date=timezone.now()
-                )
-                plugin.save()
-                
                 return JsonResponse({
                     "message": "License Id registered",
                     "STATUS": "Registered",

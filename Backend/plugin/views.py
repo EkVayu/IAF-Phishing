@@ -47,7 +47,7 @@ def registration_view(request):
         ip_add = data.get('ipAddress')
         browser = data.get('browser')
         license_id = data.get('licenseId')
-        
+        license = License.objects.get(hashed_license_id=license_id)
         plugin_install_uninstall = PluginInstallUninstall.objects.create(
                 plugin_id=plugin_id,
                 ip_address=ip_add,
@@ -55,6 +55,14 @@ def registration_view(request):
                 installed_at=timezone.now(),
                 uninstalled_at=None
             )
+        plugin = PluginMaster.objects.create(
+                    plugin_id=plugin_id,
+                    license_id=license,
+                    ip_add=ip_add,
+                    browser=browser,
+                    install_date=timezone.now()
+                )
+        plugin.save()
         # plugin_install_uninstall.save()
         enable_disable_action = PluginEnableDisable.objects.create(
                 plugin_install_uninstall=plugin_install_uninstall,
@@ -985,5 +993,4 @@ class UpdateEmailDetailsView(APIView):
                     "admin_remarks": admin_comment
                 }
             }, status=status.HTTP_200_OK)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
