@@ -319,14 +319,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class DisputeUpdateSerializer(serializers.Serializer):
-    msg_id = serializers.CharField(required=True)  # Change this to msg_id
+    msg_id = serializers.CharField(required=True)
     status = serializers.CharField(required=False, allow_blank=True)
     admin_comment = serializers.CharField(required=False, allow_blank=True)
 
     def update(self, validated_data):
         try:
             # Find EmailDetails based on msg_id
-            email_detail = EmailDetails.objects.get(msg_id=validated_data['msg_id'])  # Use msg_id here
+            email_detail = EmailDetails.objects.get(msg_id=validated_data['msg_id'])
 
             # Update the status if provided
             if 'status' in validated_data:
@@ -334,12 +334,14 @@ class DisputeUpdateSerializer(serializers.Serializer):
                 email_detail.save()
 
             # Update admin_comment in related DisputeInfo if provided
+            admin_comment = ""
             if 'admin_comment' in validated_data:
-                dispute_info = DisputeInfo.objects.filter(dispute__msg_id=email_detail.msg_id).first()  # Use msg_id here
+                dispute_info = DisputeInfo.objects.filter(dispute__msg_id=email_detail.msg_id).first()
                 if dispute_info:
                     dispute_info.admin_comment = validated_data['admin_comment']
                     dispute_info.save()
+                    admin_comment = dispute_info.admin_comment
 
-            return email_detail
+            return email_detail, admin_comment
         except EmailDetails.DoesNotExist:
             raise serializers.ValidationError("No EmailDetails found with the provided msg_id.")

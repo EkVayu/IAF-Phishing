@@ -965,20 +965,24 @@ def get_counter_count(request):
                 "Code": 0,
                 "data": ""
             }, status=500)
+        
+# 
 class UpdateEmailDetailsView(APIView):
 
     def post(self, request):
-        # Pass only the msg_id from the request data to the serializer
+        # Pass the request data to the serializer
         serializer = DisputeUpdateSerializer(data=request.data)
         
         if serializer.is_valid():
-            # Call the update method to perform the update on EmailDetails and related DisputeInfo
-            updated_email_detail = serializer.update(serializer.validated_data)
+            # Call the update method to perform the update
+            updated_email_detail, admin_comment = serializer.update(serializer.validated_data)
+
             return Response({
                 "message": "Email details updated successfully",
                 "data": {
-                    "msg_id": updated_email_detail.msg_id,  # Use msg_id here
-                    "status": updated_email_detail.status
+                    "msg_id": updated_email_detail.msg_id,  
+                    "status": updated_email_detail.status,
+                    "admin_remarks": admin_comment  # Include admin_comment here
                 }
             }, status=status.HTTP_200_OK)
 
