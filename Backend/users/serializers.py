@@ -345,3 +345,18 @@ class DisputeUpdateSerializer(serializers.Serializer):
             return email_detail, admin_comment
         except EmailDetails.DoesNotExist:
             raise serializers.ValidationError("No EmailDetails found with the provided msg_id.")
+
+
+class DisputeraiseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the DisputeInfo model with only the required fields,
+    including specific EmailDetails fields directly in the response.
+    """
+    recievers_email = serializers.CharField(source='emaildetails.recievers_email')
+    senders_email = serializers.CharField(source='emaildetails.senders_email')
+    subject = serializers.CharField(source='emaildetails.subject')
+    status = serializers.CharField(source='emaildetails.status')
+
+    class Meta:
+        model = DisputeInfo
+        fields = ['counter', 'created_at', 'updated_at', 'recievers_email', 'senders_email', 'subject', 'status']
