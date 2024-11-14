@@ -359,4 +359,4 @@ class DisputeraiseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DisputeInfo
-        fields = ['counter', 'created_at', 'updated_at', 'recievers_email', 'senders_email', 'subject', 'status']
+        fields = ['counter', 'created_at', 'updated_at', 'recievers_email', 'senders_email', 'subject', 'status', 'user_comment']
