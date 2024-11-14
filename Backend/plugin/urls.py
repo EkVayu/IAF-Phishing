@@ -33,7 +33,7 @@ urlpatterns = [
     path('get-disputes-raise-data/',get_disputes_raise_data, name='get-disputes-raise-data'),
     path('get-allocation-data/',get_allocation_data, name='get-allocation-data'),
     path('get-counter-count/',get_counter_count, name='get-counter-count'),
-    path('admin-remarks-info/', UpdateEmailDetailsView.as_view(), name='admin-remarks-info'),
+    path('update-email-details/', UpdateEmailDetailsView.as_view(), name='update-email-details'),
 
 
     
