@@ -982,7 +982,7 @@ class UpdateEmailDetailsView(APIView):
                 "data": {
                     "msg_id": updated_email_detail.msg_id,  
                     "status": updated_email_detail.status,
-                    "admin_remarks": admin_comment  # Include admin_comment here
+                    "admin_remarks": admin_comment
                 }
             }, status=status.HTTP_200_OK)
 
