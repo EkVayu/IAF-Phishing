@@ -55,13 +55,9 @@ def registration_view(request):
                 installed_at=timezone.now(),
                 uninstalled_at=None
             )
-        plugin = PluginMaster.objects.create(
-                    plugin_id=plugin_id,
-                    license_id=license,
-                    ip_add=ip_add,
-                    browser=browser,
-                    install_date=timezone.now()
-                )
+        plugin, created = PluginMaster.objects.update_or_create(
+        plugin_id=plugin_id,
+        defaults={'license_id': license, 'ip_add': ip_add, 'browser': browser, 'install_date': timezone.now()})
         plugin.save()
         # plugin_install_uninstall.save()
         enable_disable_action = PluginEnableDisable.objects.create(
