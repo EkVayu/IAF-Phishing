@@ -360,3 +360,12 @@ class DisputeraiseSerializer(serializers.ModelSerializer):
     class Meta:
         model = DisputeInfo
         fields = ['id','counter', 'created_at', 'updated_at', 'recievers_email', 'senders_email', 'subject', 'status', 'user_comment', 'admin_comment']
+
+
+
+class DisputeISerializer(serializers.ModelSerializer):
+    emaildetails_id = serializers.PrimaryKeyRelatedField(queryset=EmailDetails.objects.all(), source='emaildetails')
+
+    class Meta:
+        model = DisputeInfo
+        fields = ['id', 'dispute', 'user_comment', 'counter', 'emaildetails_id']

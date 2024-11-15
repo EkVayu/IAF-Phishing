@@ -228,6 +228,8 @@ class DisputeViewSet(viewsets.ViewSet):
         if active_dispute_count >= 3:
             return Response({"error": "You have reached the maximum number of active disputes"}, status=status.HTTP_400_BAD_REQUEST)
         
+        
+        
     # Check if a dispute already exists for the given email and msg_id
         dispute, created = Dispute.objects.get_or_create(
         email=email,
@@ -251,13 +253,13 @@ class DisputeViewSet(viewsets.ViewSet):
         'dispute': dispute.id,
         'user_comment': user_comment,
         'counter': dispute.counter,  # Pass the updated counter value
+        'emaildetails_id': email_detail.id,  # Provide the emaildetails_id here
         # 'created_by': request.user.id,  # Uncomment if you want to track created_by
         # 'updated_by': request.user.id,  # Uncomment if you want to track updated_by
     }
 
-        dispute_info_serializer = DisputeInfoSerializer(data=dispute_info_data)
+        dispute_info_serializer = DisputeISerializer(data=dispute_info_data)
         if dispute_info_serializer.is_valid():
-
             dispute_info_serializer.save()
         else:
             return Response(dispute_info_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -265,6 +267,7 @@ class DisputeViewSet(viewsets.ViewSet):
         return Response({
         "message": "Dispute raised successfully",
         "dispute": DisputeSerializer(dispute).data,
+        "counter": dispute.counter,
         "email_status": email_status  # Include the status from email_details
        }, status=status.HTTP_201_CREATED)
     
@@ -306,9 +309,11 @@ class PluginInstallUninstallViewSet(viewsets.ViewSet):
 
         try:
         # Find the plugin action and update uninstalled_at
-           plugin_action = PluginInstallUninstall.objects.get(plugin_id=plugin_id, uninstalled_at__isnull=True)
-           plugin_action.uninstalled_at = timezone.now()
-           plugin_action.save()
+           plugin_action = PluginInstallUninstall.objects.filter(plugin_id=plugin_id, uninstalled_at__isnull=True)
+
+           for action in plugin_action:
+               action.uninstalled_at = timezone.now()
+               action.save()
 
            return Response(PluginInstallUninstallSerializer(plugin_action).data, status=status.HTTP_200_OK)
         except PluginInstallUninstall.DoesNotExist:
