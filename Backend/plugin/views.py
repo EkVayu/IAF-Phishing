@@ -309,13 +309,18 @@ class PluginInstallUninstallViewSet(viewsets.ViewSet):
 
         try:
         # Find the plugin action and update uninstalled_at
-           plugin_action = PluginInstallUninstall.objects.filter(plugin_id=plugin_id, uninstalled_at__isnull=True)
+           plugin_actions = PluginInstallUninstall.objects.filter(plugin_id=plugin_id, uninstalled_at__isnull=True)
 
-           for action in plugin_action:
+           if not plugin_actions:
+               return Response({'error': 'Plugin not found or already uninstalled'}, status=status.HTTP_404_NOT_FOUND)
+           
+            
+           for action in plugin_actions:
                action.uninstalled_at = timezone.now()
                action.save()
-
-           return Response(PluginInstallUninstallSerializer(plugin_action).data, status=status.HTTP_200_OK)
+            
+           serializer = PluginInstallUninstallSerializer(plugin_actions, many=True)
+           return Response(serializer.data, status=status.HTTP_200_OK)
         except PluginInstallUninstall.DoesNotExist:
            return Response({'error': 'Plugin not found or already uninstalled'}, status=status.HTTP_404_NOT_FOUND)
        
