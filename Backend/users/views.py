@@ -39,6 +39,8 @@ import random
 from django.conf import settings
 from .models import OTP
 from django.contrib.auth.hashers import make_password
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.generics import CreateAPIView
 
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
@@ -1020,10 +1022,12 @@ class DisputeStatusUpdateView(generics.UpdateAPIView):
     queryset = Dispute.objects.all()
     serializer_class = DisputeSerializer
 
-# View to add a new comment on DisputeInfo
-class DisputeCommentCreateView(generics.CreateAPIView):
+class DisputeCommentCreateView(CreateAPIView):
     queryset = DisputeInfo.objects.all()
     serializer_class = DisputeCommentSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 class AvailableAttachmentsView(APIView):
     def get(self, request):

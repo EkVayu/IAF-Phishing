@@ -262,24 +262,36 @@ class DisputeSerializer(serializers.ModelSerializer):
 
 
 class DisputeCommentSerializer(serializers.ModelSerializer):
+    dispute = serializers.PrimaryKeyRelatedField(queryset=Dispute.objects.all())
+
     class Meta:
         model = DisputeInfo
-        fields = ['dispute', 'admin_comment', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at']
+        fields = ['dispute', 'admin_comment']
+
+    def validate(self, data):
+        dispute = data.get('dispute')
+        if not dispute.msg_id:
+            raise serializers.ValidationError({
+                "dispute": "The selected dispute does not have a valid msg_id."
+            })
+        emaildetails = EmailDetails.objects.filter(msg_id=dispute.msg_id).first()
+        if not emaildetails:
+            raise serializers.ValidationError({
+                "dispute": "No EmailDetails found for the provided dispute's msg_id."
+            })
+        data['emaildetails'] = emaildetails
+        return data
 
     def create(self, validated_data):
-        dispute_info = DisputeInfo.objects.create(
-            dispute=validated_data['dispute'],
-            admin_comment=validated_data['admin_comment'],
-            updated_at=timezone.now(),
-            created_by=self.context['request'].user,
-            updated_by=self.context['request'].user
-        )
-        dispute_info.dispute.updated_at = timezone.now()
-        dispute_info.dispute.save()
+        admin_comment = validated_data.get('admin_comment')
+        if not admin_comment:
+            raise serializers.ValidationError({
+                "admin_comment": "This field is required."
+            })
+
+        emaildetails = validated_data.pop('emaildetails')
+        dispute_info = DisputeInfo.objects.create(emaildetails=emaildetails, **validated_data)
         return dispute_info
-
-
 
 class AttachmentSerializer(serializers.ModelSerializer):
     msg_id = serializers.SerializerMethodField()
