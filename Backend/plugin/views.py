@@ -841,10 +841,10 @@ def get_disputes_raise_data(request):
             if not disputes.exists():
                 return JsonResponse({
                     "message": "Dispute not found",
-                    "STATUS": "Error",
+                    "STATUS": "Not found",
                     "Code": 0,
-                    "data": ""
-                }, status=404)
+                    "data": 0,
+                }, status=200)
 
             # Prepare response data for multiple disputes
             response_data = [{
