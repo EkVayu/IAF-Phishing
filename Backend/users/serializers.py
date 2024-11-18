@@ -397,12 +397,12 @@ class DisputeUpdateInfoSerializer(serializers.Serializer):
             # Retrieve the admin_comment from DisputeInfo
             admin_comment = ""
             dispute_info = DisputeInfo.objects.filter(dispute__msg_id=email_detail.msg_id).first()
-
             if dispute_info:
                 admin_comment = dispute_info.admin_comment
-
+                print(email_detail, admin_comment,"--------------------------"),
             # Return both email_detail and admin_comment
             return email_detail, admin_comment
-
+    
         except EmailDetails.DoesNotExist:
             raise serializers.ValidationError("No EmailDetails found with the provided msg_id.")
+        
