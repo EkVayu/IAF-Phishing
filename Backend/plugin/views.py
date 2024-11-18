@@ -986,19 +986,18 @@ class UpdateEmailDetailsView(APIView):
     def post(self, request):
         # Pass the request data to the serializer
         serializer = DisputeUpdateInfoSerializer(data=request.data)
-        
+
         if serializer.is_valid():
-            # Call the update method to perform the update
+            # Call the fetch method to retrieve the details
             email_detail, admin_comment = serializer.fetch(serializer.validated_data)
 
             return Response({
                 "message": "Details fetched successfully",
-                "STATUS": "Success",
                 "data": {
                     "msg_id": email_detail.msg_id,
                     "status": email_detail.status,
                     "admin_remarks": admin_comment
                 }
             }, status=status.HTTP_200_OK)
-        print(admin_comment,"admin_comment")
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
