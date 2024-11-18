@@ -137,31 +137,36 @@ class StaffViewset(viewsets.ViewSet):
             'count': count,
             'results': serializer.data
         })
-    
-
-
 
 # Changes password
 class ChangePasswordViewset(viewsets.ViewSet):
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [permissions.AllowAny]
-
+    permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
-        # Check user is valid or not,  if valid then password will changed
         if serializer.is_valid():
             user = request.user
             old_password = serializer.validated_data.get('old_password')
             new_password = serializer.validated_data.get('new_password')
-            # check password will not match to the old password then show error
             if not user.check_password(old_password):
-                return Response({'old_password': 'Wrong password'}, status=status.HTTP_401_BAD_REQUEST)
-            # if everything is good then password will saved
+                return Response({'error': 'Wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
+            recent_passwords = PasswordHistory.objects.filter(user=user).order_by('-created_at')[:3]
+            for record in recent_passwords:
+                if check_password(new_password, record.hashed_password):
+                    return Response(
+                        {'error': 'The new password must be unique from your previous three passwords!'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             user.set_password(new_password)
             user.save()
+            PasswordHistory.objects.create(user=user, hashed_password=user.password)
+            if recent_passwords.count() >= 3:
+                oldest_password = recent_passwords.last()
+                oldest_password.delete()
+
             return Response({'message': 'Password changed successfully'}, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
