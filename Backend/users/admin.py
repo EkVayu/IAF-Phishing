@@ -8,6 +8,7 @@ admin.site.register(CustomUser)
 admin.site.register(License)
 admin.site.register(OTP)
 admin.site.register(PluginMaster)
+admin.site.register(PasswordHistory)
 admin.site.register(MachineData)
 from django.contrib import admin
 from .models import UserProfile

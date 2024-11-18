@@ -31,7 +31,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-import traceback
+from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 import pytz
@@ -1191,12 +1191,29 @@ class ResetPassword(APIView):
         except (User.DoesNotExist, OTP.DoesNotExist):
             return Response({"error": "OTP has not been verified."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Set the new password
+        # Check new password against last 3 passwords
+        recent_passwords = PasswordHistory.objects.filter(user=user).order_by('-created_at')[:3]
+        for record in recent_passwords:
+            if check_password(new_password, record.hashed_password):
+                return Response(
+                    {"error": "This should be unique from your previous three passwords!"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # Update password
         user.password = make_password(new_password)
         user.save()
 
-        # Optionally, delete the OTP record after a successful password reset
+        # Delete OTP record after successful reset
         otp_record.delete()
+
+        # Save new password in PasswordHistory
+        PasswordHistory.objects.create(user=user, hashed_password=user.password)
+
+        # Keep only the last 3 passwords in history
+        if recent_passwords.count() >= 3:
+            oldest_password = recent_passwords.last()
+            oldest_password.delete()
 
         return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
 
