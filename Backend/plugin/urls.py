@@ -1,4 +1,3 @@
-# urls.py
 from rest_framework.routers import DefaultRouter
 from django.urls import path,include
 from .views import registration_view
@@ -11,11 +10,6 @@ from plugin.views import PluginEnableDisableViewSet
 from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data,get_counter_count,UpdateEmailDetailsView
 
 
-
-
-
-
-# Initialize the router
 router = DefaultRouter()
 router.register(r'disputes', DisputeViewSet, basename='dispute')
 router.register(r'plugins/install-uninstall', PluginInstallUninstallViewSet, basename='plugin-install-uninstall')
@@ -43,11 +37,6 @@ urlpatterns = [
     path('cdr-response/', cdr_resposne_to_ai, name='cdr-response'),
     path('url-response/', url_response_to_ai, name='url-response'),
     path('content-response/', content_response_to_ai, name='content-response'),
-    # # path('process-url/',process_url, name='process-url'),
-    # path('process-attachment/', upload_attachment, name='process-attachment'),
-
-    # path('plugin/uninstall/', PluginUninstallView , name='plugin-uninstall'),
-    # path('plugin/disable/', PluginDisableView , name='plugin-disable'),
-    # Include the router URLs
+    
     path('', include(router.urls)),
 ]
