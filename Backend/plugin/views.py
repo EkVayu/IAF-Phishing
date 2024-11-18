@@ -990,7 +990,6 @@ class UpdateEmailDetailsView(APIView):
         if serializer.is_valid():
             # Call the fetch method to retrieve the details
             email_detail, admin_comment = serializer.fetch(serializer.validated_data)
-
             return Response({
                 "message": "Details fetched successfully",
                 "data": {
@@ -999,5 +998,4 @@ class UpdateEmailDetailsView(APIView):
                     "admin_remarks": admin_comment
                 }
             }, status=status.HTTP_200_OK)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
