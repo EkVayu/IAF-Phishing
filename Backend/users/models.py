@@ -188,7 +188,7 @@ class PluginMaster(models.Model):
             timestamp (DateTimeField): The timestamp when the plugin was created.
             last_updated_timestamp (DateTimeField): The timestamp when the plugin was last updated.
         """
-    plugin_id = models.CharField(max_length=35, primary_key=True)
+    plugin_id = models.CharField(max_length=100, primary_key=True)
     # email_id = models.CharField(max_length=150,null=True)
     license_id = models.ForeignKey(License, on_delete=models.CASCADE, related_name='plugins')
     browser = models.CharField(max_length=15)
