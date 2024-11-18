@@ -21,14 +21,6 @@ class DisputeSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['created_at', 'updated_at', 'created_by', 'updated_by']
 
-    # def create(self, validated_data):
-    #     validated_data['created_by'] = self.context['request'].user
-    #     return super().create(validated_data)
-
-    # def update(self, instance, validated_data):
-    #     validated_data['updated_by'] = self.context['request'].user
-    #     return super().update(instance, validated_data)
-
 
 class DisputeInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,25 +37,7 @@ class DisputeInfoSerializer(serializers.ModelSerializer):
             'updated_by',
             'is_active'
         ]
-        read_only_fields = ['created_at', 'updated_at', 'created_by', 'updated_by']
-
-    # def create(self, validated_data):
-    #     validated_data['created_by'] = self.context['request'].user
-    #     return super().create(validated_data)
-
-    # def update(self, instance, validated_data):
-    #     validated_data['updated_by'] = self.context['request'].user
-    #     return super().update(instance, validated_data)
-    
-    
-# class PluginAction(models.Model):
-#     plugin_id = models.CharField(max_length=255)
-#     uninstalled_at = models.DateTimeField(null=True, blank=True)
-#     disabled_at = models.DateTimeField(null=True, blank=True)
-
-#     def __str__(self):
-#         return f"Plugin {self.plugin_id}"
-    
+        read_only_fields = ['created_at', 'updated_at', 'created_by', 'updated_by']    
     
 class PluginInstallUninstallSerializer(serializers.ModelSerializer):
     class Meta:
