@@ -293,6 +293,8 @@ class DisputeCommentSerializer(serializers.ModelSerializer):
         dispute_info = DisputeInfo.objects.create(emaildetails=emaildetails, **validated_data)
         return dispute_info
 
+
+
 class AttachmentSerializer(serializers.ModelSerializer):
     msg_id = serializers.SerializerMethodField()
     ai_status = serializers.SerializerMethodField()
@@ -381,3 +383,26 @@ class DisputeISerializer(serializers.ModelSerializer):
     class Meta:
         model = DisputeInfo
         fields = ['id', 'dispute', 'user_comment', 'counter', 'emaildetails_id']
+
+
+class DisputeUpdateInfoSerializer(serializers.Serializer):
+    msg_id = serializers.CharField(required=True)
+    
+
+    def fetch(self, validated_data):
+        try:
+            # Find EmailDetails using msg_id
+            email_detail = EmailDetails.objects.get(msg_id=validated_data['msg_id'])
+
+            # Retrieve the admin_comment from DisputeInfo
+            admin_comment = ""
+            dispute_info = DisputeInfo.objects.filter(dispute__msg_id=email_detail.msg_id).first()
+
+            if dispute_info:
+                admin_comment = dispute_info.admin_comment
+
+            # Return both email_detail and admin_comment
+            return email_detail, admin_comment
+
+        except EmailDetails.DoesNotExist:
+            raise serializers.ValidationError("No EmailDetails found with the provided msg_id.")
