@@ -90,7 +90,10 @@ class CustomUser(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
-
+class PasswordHistory(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    hashed_password = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Organisations(models.Model):
     """
@@ -326,5 +329,8 @@ class OTP(models.Model):
 
     def is_valid(self):
         return timezone.now() < self.created_at + timedelta(minutes=10)
+
+
+
 
     
