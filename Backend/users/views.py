@@ -953,22 +953,15 @@ class RoughURLViewSet(viewsets.ModelViewSet):
             "message": f"RoughUrl with id {kwargs['pk']} retrieved successfully.",
             "data": serializer.data
         }, status=status.HTTP_200_OK)
+
     def list(self, request, *args, **kwargs):
         """
-        Retrieve a list of all RoughURLs, with optional pagination.
+        Retrieve a list of all RoughURLs without pagination.
 
         Returns:
             - A JSON response containing a list of all RoughURLs.
-            - Supports pagination if enabled.
         """
         queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)  # Handling pagination
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response({
-                "message": "List of all RoughUrls retrieved successfully.",
-                "data": serializer.data
-            })
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             "message": "List of all RoughUrls retrieved successfully.",
@@ -1053,22 +1046,15 @@ class RoughDomainViewSet(viewsets.ModelViewSet):
             "message": f"RoughDomain with id {kwargs['pk']} retrieved successfully.",
             "data": serializer.data
         }, status=status.HTTP_200_OK)
+
     def list(self, request, *args, **kwargs):
         """
-        Retrieve a list of all RoughDomains, with optional pagination.
+        Retrieve a list of all RoughDomains without pagination.
 
         Returns:
             - A JSON response containing a list of all RoughDomains.
-            - Supports pagination if enabled.
         """
         queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response({
-                "message": "List of all RoughDomains retrieved successfully.",
-                "data": serializer.data
-            })
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             "message": "List of all RoughDomains retrieved successfully.",
@@ -1153,21 +1139,15 @@ class RoughMailViewSet(viewsets.ModelViewSet):
             "message": f"RoughMail with id {kwargs['pk']} retrieved successfully.",
             "data": serializer.data
         }, status=status.HTTP_200_OK)
+
     def list(self, request, *args, **kwargs):
         """
-        Retrieve a list of all RoughMails, with optional pagination.
+        Retrieve a list of all RoughMails without pagination.
+
         Returns:
-        - A JSON response containing a list of all RoughMails.
-        - Supports pagination if enabled.
+            - A JSON response containing a list of all RoughMails.
         """
         queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response({
-                "message": "List of all RoughMails retrieved successfully.",
-                "data": serializer.data
-            })
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             "message": "List of all RoughMails retrieved successfully.",
