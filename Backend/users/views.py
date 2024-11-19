@@ -1380,6 +1380,16 @@ class MonthlyCombinedEmailAndAttachmentCount(APIView):
         except pytz.UnknownTimeZoneError:
             return Response({"error": "Invalid timezone provided."}, status=status.HTTP_400_BAD_REQUEST)
         def convert_month_to_timezone(data, target_tz):
+            """
+            Converts the month data from naive datetime to the target timezone and formats it as 'YYYY-MM'.
+
+            Args:
+                - data (list): List of dictionaries containing 'month' and 'count'.
+                - target_tz (timezone): Target timezone for conversion.
+
+            Returns:
+                - List of dictionaries with the 'month' converted to the target timezone.
+            """
             converted_data = []
             for entry in data:
                 month = entry['month']
@@ -1424,6 +1434,15 @@ class MonthlyCombinedEmailAndAttachmentCount(APIView):
         CDR_Completed = convert_month_to_timezone(list(CDR_Completed), target_tz)
         impacted_found = convert_month_to_timezone(list(impacted_found), target_tz)
         def add_counts(data):
+            """
+            Computes the total count and formats data for chart representation.
+
+            Args:
+                - data (list): List of dictionaries with 'month' and 'count'.
+
+            Returns:
+                - A dictionary containing the total count and formatted chart data.
+            """
             total_count = sum(entry['count'] for entry in data)
             chart_data = [{"month": entry['month'], "count": entry['count']} for entry in data]
             return {"total_count": total_count, "chart_data": chart_data}
@@ -1437,8 +1456,47 @@ class MonthlyCombinedEmailAndAttachmentCount(APIView):
         }
         return Response(combined_data)
 def generate_otp():
+    """
+    Generates a 6-digit OTP.
+
+    Returns:
+        - A string containing a randomly generated 6-digit OTP.
+    """
     return str(random.randint(100000, 999999))
 class ForgotPasswordView(APIView):
+    """
+       API View to handle forgot password functionality by sending an OTP to the user's email.
+
+       Endpoint:
+           - POST /forgot-password/
+
+       Request Body:
+           - email (str): The email address of the user requesting the password reset.
+
+       Workflow:
+           1. Extract the email from the request body.
+           2. Check if a user with the provided email exists.
+           3. If the user exists:
+               - Generate a 6-digit OTP using the `generate_otp` function.
+               - Save the OTP in the database by creating an `OTP` object linked to the user.
+               - Send the OTP to the user's email using Django's `send_mail` function.
+           4. Return a success message indicating that the OTP has been sent.
+           5. If the user does not exist, return a 404 error response.
+
+       Returns:
+           - 200 OK: If the OTP is successfully sent to the user's email.
+           - 404 Not Found: If no user exists with the provided email.
+
+       Example Response:
+           - Success:
+               {
+                   "message": "OTP sent to email."
+               }
+           - Error:
+               {
+                   "error": "User with this email does not exist."
+               }
+       """
     def post(self, request):
         email = request.data.get('email')
         try:
@@ -1457,6 +1515,46 @@ class ForgotPasswordView(APIView):
         return Response({"message": "OTP sent to email."}, status=status.HTTP_200_OK)
 class VerifyOTP(APIView):
     def post(self, request):
+        """
+            API View to verify the OTP sent to the user's email during the forgot password process.
+
+            Endpoint:
+                - POST /verify-otp/
+
+            Request Body:
+                - email (str): The email address of the user.
+                - otp (str): The OTP code sent to the user's email.
+
+            Workflow:
+                1. Extract the email and OTP from the request body.
+                2. Validate if the email belongs to an existing user.
+                3. Check if an OTP record exists for the given user and matches the provided OTP.
+                    - If the email or OTP is invalid, return a 400 error response.
+                4. Verify if the OTP has expired by calling the `is_valid` method of the OTP model.
+                    - If the OTP is expired, return a 400 error response.
+                5. If the OTP is valid:
+                    - Mark the OTP record as verified by setting the `verified` field to `True`.
+                    - Save the updated OTP record.
+                    - Return a success message indicating the OTP was verified successfully.
+
+            Returns:
+                - 200 OK: If the OTP is successfully verified.
+                - 400 Bad Request: If the email or OTP is invalid, or if the OTP has expired.
+
+            Example Response:
+                - Success:
+                    {
+                        "message": "OTP verified successfully."
+                    }
+                - Error (Invalid Email or OTP):
+                    {
+                        "error": "Invalid email or OTP."
+                    }
+                - Error (Expired OTP):
+                    {
+                        "error": "OTP has expired."
+                    }
+            """
         email = request.data.get('email')
         otp = request.data.get('otp')
         try:
@@ -1470,6 +1568,53 @@ class VerifyOTP(APIView):
         otp_record.save()
         return Response({"message": "OTP verified successfully."}, status=status.HTTP_200_OK)
 class ResetPassword(APIView):
+    """
+     API View to reset the user's password after OTP verification.
+
+     Endpoint:
+         - POST /reset-password/
+
+     Request Body:
+         - email (str): The email address of the user.
+         - new_password (str): The new password to be set for the user.
+
+     Workflow:
+         1. Extract the email and new password from the request body.
+         2. Validate the email by checking if a user with the given email exists.
+         3. Ensure that an OTP record exists for the user and has been marked as verified.
+             - If the email or OTP is invalid, return a 400 error response.
+         4. Retrieve the user's recent three passwords from the `PasswordHistory` table.
+             - Check if the new password matches any of the last three passwords.
+             - If it matches, return a 400 error response indicating the new password must be unique.
+         5. If the new password is valid:
+             - Hash the new password and update the user's password in the database.
+             - Delete the verified OTP record after the password reset.
+             - Add the new password to the `PasswordHistory` table.
+             - If more than three passwords exist in the history, delete the oldest record.
+         6. Return a success message indicating the password was reset successfully.
+
+     Returns:
+         - 200 OK: If the password is successfully reset.
+         - 400 Bad Request: If the OTP is not verified, the email is invalid, or the new password matches a recent password.
+
+     Example Response:
+         - Success:
+             {
+                 "message": "Password reset successfully."
+             }
+         - Error (OTP not verified):
+             {
+                 "error": "OTP has not been verified."
+             }
+         - Error (Password not unique):
+             {
+                 "error": "This should be unique from your previous three passwords!"
+             }
+
+     Notes:
+         - The `PasswordHistory` model is used to track and enforce password uniqueness for the last three passwords.
+         - The `check_password` function is used to verify if the new password matches previous passwords.
+     """
     def post(self, request):
         email = request.data.get('email')
         new_password = request.data.get('new_password')
