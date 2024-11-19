@@ -232,10 +232,29 @@ class DisputeSerializer(serializers.ModelSerializer):
     with matching `msg_id` and `email`.
     """
 
+    status = serializers.CharField()
     class Meta:
         model = Dispute
         fields = ['id', 'status', 'updated_at']
         read_only_fields = ['updated_at']
+
+    def validate_status(self, value):
+        """
+        Validate and convert string status to its corresponding integer value.
+        """
+        status_map = {v.lower(): k for k, v in dict(Dispute.STATUS_CHOICES).items()}
+        if value.lower() not in status_map:
+            raise serializers.ValidationError(f'"{value}" is not a valid choice.')
+        return status_map[value.lower()]
+
+    def to_representation(self, instance):
+        """
+        Convert integer status to its string representation in the response.
+        """
+        representation = super().to_representation(instance)
+        status_map = dict(Dispute.STATUS_CHOICES)
+        representation['status'] = status_map.get(instance.status, "Unknown")
+        return representation
 
     def update(self, instance, validated_data):
         # Get the new status from validated data
@@ -245,22 +264,17 @@ class DisputeSerializer(serializers.ModelSerializer):
             instance.status = new_status
             instance.updated_at = timezone.now()
             instance.save()
+
+            # Update matching EmailDetails records
             matching_emails = EmailDetails.objects.filter(
                 msg_id=instance.msg_id,
                 recievers_email=instance.email
             )
             for email_detail in matching_emails:
-                if new_status == 1:
-                    email_detail.status = "safe"
-                elif new_status == 2:
-                    email_detail.status = "unsafe"
-
+                email_detail.status = "safe" if new_status == Dispute.SAFE else "unsafe"
                 email_detail.save()
-                email_detail.refresh_from_db()
 
         return instance
-
-
 class DisputeCommentSerializer(serializers.ModelSerializer):
     dispute = serializers.PrimaryKeyRelatedField(queryset=Dispute.objects.all())
 
