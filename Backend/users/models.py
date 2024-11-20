@@ -39,13 +39,11 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Last name is required')
         if not username:
             raise ValueError('Username is required')
-       
         email = self.normalize_email(email)
         user = self.model(email=email, first_name=first_name, last_name=last_name, username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
-
     def create_superuser(self, email, first_name, last_name, username, password=None, **extra_fields):
         """
         Create and save a SuperUser with the given email and password.
@@ -53,7 +51,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, first_name, last_name, username, password, **extra_fields)
-
 class CustomUser(AbstractUser):
     """
     Custom user model that supports using email instead of username.
@@ -69,32 +66,24 @@ class CustomUser(AbstractUser):
     """
     email = models.EmailField(max_length=200, unique=True)
     is_deleted = models.BooleanField(default=False)
-
     objects = CustomUserManager()
-    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
-
-    #nidhi
     def delete(self, *args, **kwargs):
         """Override delete method to perform a soft delete."""
         self.is_deleted = True
         self.save()
-
     def restore(self):
         """Method to restore a soft-deleted user."""
         self.is_deleted = False
         self.save()
-
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
-
 class PasswordHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     hashed_password = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
-
 class Organisations(models.Model):
     """
     Model representing an organisation.
@@ -116,14 +105,10 @@ class Organisations(models.Model):
     organisation_updated_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='updated_by')
     organisation_is_active = models.BooleanField(default=True)
     organisation_is_deleted = models.BooleanField(default=False)
-
     class Meta:
         db_table = 'organisation_masters'
-
     def __str__(self):
             return self.organisation_name
-
-
 class License(models.Model):
     """
     Model representing a license.
@@ -141,23 +126,19 @@ class License(models.Model):
     license_id = models.CharField(max_length=10, primary_key=True)
     organisation = models.CharField(max_length=5,null=True,default='IAF')
     allocated_to = models.CharField(max_length=150, null=True, blank=True)
-    status = models.CharField(max_length=2, null=False, default=0) #nidhi
-    is_reserved = models.IntegerField(blank=True, default=0) #nidhi
-
+    status = models.CharField(max_length=2, null=False, default=0)
+    is_reserved = models.IntegerField(blank=True, default=0)
     valid_from = models.DateTimeField(null=True)
     valid_till = models.DateTimeField(null=True)
     created_timestamp = models.DateTimeField(default=django.utils.timezone.now)
     hashed_license_id = models.CharField(max_length=64, editable=False, null=True)
     plugin_id = models.ForeignKey('PluginMaster', on_delete=models.SET_NULL, null=True, blank=True,
                                   related_name='licenses')
-
     class Meta:
         db_table = 'license_masters'
-
     def save(self, *args, **kwargs):
         self.hashed_license_id = self.generate_hashed_license_id()
         super().save(*args, **kwargs)
-
     def generate_hashed_license_id(self):
         """
         Generate a hashed value for the license ID.
@@ -171,11 +152,8 @@ class License(models.Model):
         message = f"{self.license_id}{ip_address}{secret_key}"
         hashed_value = hashlib.sha256(message.encode()).hexdigest()
         return hashed_value
-
     def __str__(self):
         return self.license_id
-
-
 class PluginMaster(models.Model):
     """
     Model representing a plugin.
@@ -199,16 +177,10 @@ class PluginMaster(models.Model):
     install_date = models.DateTimeField()
     create_timestamp = models.DateTimeField(auto_now_add=True)
     last_updated_timestamp = models.DateTimeField(auto_now=True)
-
     class Meta:
         db_table = 'plugin_masters'
-
     def __str__(self):
         return str(self.plugin_id)
-
-
-
-# User profile
 class UserProfile(models.Model):
     """
     Model representing a user profile.
@@ -223,19 +195,14 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=10)
     address = models.TextField(max_length=500)
     organization = models.CharField(max_length=255)
-
     def __str__(self):
         return self.user.email
-
     @property
     def full_name(self):
         return f"{self.user.first_name} {self.user.last_name}"
-
     @property
     def email(self):
         return self.user.email
-
-
 class LicenseAllocation(models.Model):
     """
     Model representing a license allocation.
@@ -252,63 +219,64 @@ class LicenseAllocation(models.Model):
     allocated_to = models.CharField(max_length=50)
     allocation_date = models.DateTimeField(default=timezone.now)
     revoke_date = models.DateTimeField(null=True, blank=True)
-
     class Meta:
         unique_together = (('license', 'allocation_date'),)                         
         db_table = 'license_allocations'
-#nidhi
 class RoughURL(models.Model):
     """
     Model representing a rough URL.
-    
     attributes:
         url (CharField): The URL string.
         protocol (CharField): The protocol used (e.g., HTTP, HTTPS).
     """
     url = models.CharField(max_length=255)
     protocol = models.CharField(max_length=20)
-
     class Meta:
         db_table = 'rough_url'
-
     def __str__(self):
         return f"{self.url} ({self.protocol})"
-
-
 class RoughDomain(models.Model):
     """
     Model representing a rough domain.
-    
     attributes:
         ip (CharField): The IP address of the domain.
         prototype (CharField): The prototype of the domain (e.g., IPv4, IPv6).
     """
     ip = models.CharField(max_length=45)
     prototype = models.CharField(max_length=20)
-
     class Meta:
         db_table = 'rough_domain'
-
     def __str__(self):
         return f"{self.ip} ({self.prototype})"
-
-
 class RoughMail(models.Model):
     """
     Model representing a rough email ID.
-    
     attributes:
         mailid (EmailField): The email ID.
     """
     mailid = models.EmailField()
-
     class Meta:
         db_table = 'rough_mail'
-
     def __str__(self):
         return self.mailid
-    
 class MachineData(models.Model):
+    """
+    Model to store detailed hardware and system information for a machine.
+    Fields:
+        - machine_id (str): A unique identifier for the machine.
+        - system (str): The operating system of the machine (e.g., Windows, Linux).
+        - machine (str): The machine type or model (e.g., x86_64, ARM).
+        - processor (str): Information about the processor (e.g., Intel Core i7).
+        - platform_version (str): The version of the platform or operating system.
+        - serial_number (str): The machine's serial number (optional, can be null).
+        - uuid (str): The universally unique identifier (UUID) of the machine (optional, can be null).
+        - mac_addresses (JSON): A JSON field containing one or more MAC addresses associated with the machine.
+    Methods:
+        - __str__: Returns the `machine_id` as the string representation of the model.
+    Purpose:
+        This model is designed to store and manage machine-specific data, including hardware and network
+        information, to facilitate identification and tracking of machines in a system or application.
+    """
     machine_id = models.CharField(max_length=255)
     system = models.CharField(max_length=100)
     machine = models.CharField(max_length=100)
@@ -316,18 +284,35 @@ class MachineData(models.Model):
     platform_version = models.CharField(max_length=100)
     serial_number = models.CharField(max_length=100, blank=True, null=True)
     uuid = models.CharField(max_length=100, blank=True, null=True)
-    mac_addresses = models.JSONField()  # Storing mac_addresses as a list of strings
-
+    mac_addresses = models.JSONField()
     def __str__(self):
         return self.machine_id
-
 class OTP(models.Model):
+    """
+    Model to store One-Time Passwords (OTP) for user verification.
+    Fields:
+        - user (ForeignKey): A foreign key linking the OTP to a specific user from the authentication system.
+        - otp (str): A 6-character string representing the one-time password.
+        - created_at (datetime): The timestamp when the OTP was created. Automatically set on creation.
+        - verified (bool): A boolean indicating whether the OTP has been verified. Defaults to `False`.
+    Methods:
+        - is_valid: Checks if the OTP is still valid by comparing the current time with the time it was created.
+          The OTP is valid for 10 minutes from its creation.
+    Purpose:
+        This model is designed to handle OTP generation, storage, and validation for purposes like user verification
+        or password reset. Each OTP is linked to a specific user and expires after 10 minutes.
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
     verified = models.BooleanField(default=False)
-
     def is_valid(self):
+        """
+        Determines if the OTP is still valid based on its creation time.
+
+        Returns:
+            bool: `True` if the OTP is valid (within 10 minutes of creation), otherwise `False`.
+        """
         return timezone.now() < self.created_at + timedelta(minutes=10)
 
 
