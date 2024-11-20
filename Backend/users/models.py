@@ -81,6 +81,16 @@ class CustomUser(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
 class PasswordHistory(models.Model):
+    """
+    Model to store a history of hashed passwords for a user.
+    Fields:
+        - user (ForeignKey): A foreign key linking the password history entry to a specific user in the authentication system.
+        - hashed_password (str): The hashed representation of a user's password.
+        - created_at (datetime): The timestamp when the password was added to the history. Automatically set on creation.
+    Purpose:
+        This model is designed to maintain a record of previous passwords for each user.
+        It can be used to enforce password policies, such as preventing reuse of old passwords.
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     hashed_password = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -314,8 +324,3 @@ class OTP(models.Model):
             bool: `True` if the OTP is valid (within 10 minutes of creation), otherwise `False`.
         """
         return timezone.now() < self.created_at + timedelta(minutes=10)
-
-
-
-
-    

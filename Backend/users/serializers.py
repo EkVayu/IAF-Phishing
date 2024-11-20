@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from plugin.models import EmailDetails, DisputeInfo, Dispute, Attachment
 from .models import RoughURL, RoughDomain, RoughMail
-
+from django.db import transaction
 
 User = get_user_model()
 class LoginSerializer(serializers.Serializer):
@@ -477,6 +477,8 @@ class DisputeSerializer(serializers.ModelSerializer):
             for email_detail in matching_emails:
                 email_detail.status = "safe" if new_status == Dispute.SAFE else "unsafe"
                 email_detail.save()
+            dispute_infos = DisputeInfo.objects.filter(dispute=instance)
+            dispute_infos.update(updated_at=timezone.now())
         return instance
 class DisputeCommentSerializer(serializers.ModelSerializer):
     dispute = serializers.PrimaryKeyRelatedField(queryset=Dispute.objects.all())
@@ -530,7 +532,15 @@ class DisputeCommentSerializer(serializers.ModelSerializer):
                 "admin_comment": "This field is required."
             })
         emaildetails = validated_data.pop('emaildetails')
-        dispute_info = DisputeInfo.objects.create(emaildetails=emaildetails, **validated_data)
+        dispute = validated_data.get('dispute')
+        with transaction.atomic():
+            dispute_info = DisputeInfo.objects.create(emaildetails=emaildetails, **validated_data)
+            dispute.updated_at = timezone.now()
+            dispute.save()
+
+            # Update the `updated_at` field for DisputeInfo
+            dispute_info.updated_at = timezone.now()
+            dispute_info.save()
         return dispute_info
 class AttachmentSerializer(serializers.ModelSerializer):
     msg_id = serializers.SerializerMethodField()
