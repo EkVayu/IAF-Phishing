@@ -15,6 +15,7 @@ def register(request):
                 plugin_id = data.get('pluginId')
                 ip_add = data.get('ipAddress')
                 browser = data.get('browser')
+                
                 try:
                     license = License.objects.get(hashed_license_id=license_id)
                 except License.DoesNotExist:
