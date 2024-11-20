@@ -265,6 +265,7 @@ class Attachment(models.Model):
 class URL(models.Model):
         
         """
+    # 
         Attributes:
             email_detail (ForeignKey): A reference to the related EmailDetails object.
             url (URLField): The URL associated with the email.
@@ -276,3 +277,61 @@ class URL(models.Model):
 
         def __str__(self):
              return f"URL for message_id {self.email_detail.msg_id}"
+
+
+class UserSystemDetails(models.Model):
+    """
+    Attributes:
+        uuid (CharField): The UUID of the device.
+        mac_address (CharField): The MAC address of the device.
+        serial_number (CharField): The serial number of the device.
+        os_type (CharField): The type of operating system.
+        os_platform (CharField): The platform of the operating system.
+        os_release (CharField): The release version of the operating system.
+        host_name (CharField): The host name of the device.
+        architeecture (CharField): The architecture of the device.
+        created_at (DateTimeField): The timestamp when the device information was created.
+
+            """
+    license_allocation = models.ForeignKey(LicenseAllocation, on_delete=models.CASCADE, related_name='device_information')
+    uuid = models.CharField(max_length=100, unique=True)
+    mac_address = models.CharField(max_length=100, blank=True, null=True)
+    serial_number = models.CharField(max_length=100, blank=True, null=True)
+    os_type = models.CharField(max_length=30, blank=True, null=True)
+    os_platform = models.CharField(max_length=30, blank=True, null=True)
+    os_release = models.CharField(max_length=30, blank=True, null=True)
+    host_name = models.CharField(max_length=100, blank=True, null=True)
+    architecture = models.CharField(max_length=20, blank=True, null=True)
+    registered_at= models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'user_system_details'
+        def __str__(self):
+            return f"Device Information for {self.serial_number}"
+        
+
+class SystemBrowserDetails(models.Model):
+    """
+    Attributes:
+        device_information (ForeignKey): A reference to the related DeviceInformation object.
+        url (URLField): The URL associated with the browser history.
+        title (CharField): The title of the browser history.
+        created_at (DateTimeField): The timestamp when the browser history was created.
+
+    """
+    BROWSER_CHOICES = [
+    ('Chrome', 'Chrome'),
+    ('Edge', 'Edge'),
+    ('Firefox', 'Firefox'),
+    ]
+    device_information = models.ForeignKey(UserSystemDetails, on_delete=models.CASCADE, related_name='browser_histories')
+    ipv4 = models.GenericIPAddressField(null=True, blank=True)
+    browser = models.CharField(max_length=100, choices=BROWSER_CHOICES, blank=True, null=True)
+    registered_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'system_browser_details'
+        def __str__(self):
+            return f"Browser History for {self.device_information.serial_number}"
+    
