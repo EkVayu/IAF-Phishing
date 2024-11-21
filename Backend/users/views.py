@@ -1626,3 +1626,34 @@ class DisputeRaiseDataView(APIView):
         disputes = DisputeInfo.objects.select_related('emaildetails').filter(counter__isnull=False)
         serializer = DisputeraiseSerializer(disputes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+class EmailDetailsView(APIView):
+    """
+    API to fetch email details and related attachment data by msg_id.
+    """
+
+    def get(self, request):
+        msg_id = request.GET.get("msg_id")
+        if not msg_id:
+            return Response({"error": "msg_id is required"}, status=400)
+        try:
+            email_detail = EmailDetails.objects.get(msg_id=msg_id)
+        except EmailDetails.DoesNotExist:
+            raise NotFound("Email details not found.")
+        attachments = Attachment.objects.filter(email_detail=email_detail)
+        data = {
+            "receivers_email": email_detail.recievers_email,
+            "senders_email": email_detail.senders_email,
+            "subject": email_detail.subject,
+            "eml_file_name": email_detail.eml_file_name,
+            "urls": email_detail.urls,
+            "attachments": [
+                {
+                    "file_name": attachment.attachment.name,
+                    "ai_status": attachment.get_ai_status_display(),
+                    "ai_remarks": attachment.ai_Remarks,
+                }
+                for attachment in attachments
+            ],
+            "email_body": email_detail.email_body,
+        }
+        return Response(data, status=200)

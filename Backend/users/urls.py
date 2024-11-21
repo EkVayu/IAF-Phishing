@@ -55,5 +55,6 @@ urlpatterns = [
     path('api/forget-passwrod/verify-otp/', VerifyOTP.as_view(), name='verify-otp'),
     path('api/forget-passwrod/reset-password/', ResetPassword.as_view(), name='reset-password'),
     path('dispute-raise-data/', DisputeRaiseDataView.as_view(), name='dispute-raise-data'),
+    path('email-datails/', EmailDetailsView.as_view(), name='email-details'),
 
 ]
