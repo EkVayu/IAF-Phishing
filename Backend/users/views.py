@@ -41,6 +41,7 @@ from .models import OTP
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.generics import CreateAPIView
+from django.utils.timezone import localtime
 
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
@@ -1657,3 +1658,25 @@ class EmailDetailsView(APIView):
             "email_body": email_detail.email_body,
         }
         return Response(data, status=200)
+class DisputeCommentsView(APIView):
+    """
+    API to fetch user comments with user-time and admin comments with admin-time for a given msg_id.
+    """
+    def get(self, request):
+        msg_id = request.query_params.get('msg_id')
+        if not msg_id:
+            return Response({"error": "msg_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        email_details = get_object_or_404(EmailDetails, msg_id=msg_id)
+        dispute_info = DisputeInfo.objects.filter(emaildetails=email_details).values(
+            'user_comment', 'created_at', 'admin_comment', 'updated_at'
+        )
+        formatted_data = [
+            {
+                "user_comment": info["user_comment"],
+                "user_time": info["created_at"].strftime("%Y-%m-%d %H:%M:%S") if info["created_at"] else None,
+                "admin_comment": info["admin_comment"],
+                "admin_time": info["updated_at"].strftime("%Y-%m-%d %H:%M:%S") if info["updated_at"] else None,
+            }
+            for info in dispute_info
+        ]
+        return Response({"data": formatted_data}, status=status.HTTP_200_OK)
