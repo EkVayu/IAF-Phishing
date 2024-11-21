@@ -329,6 +329,7 @@ class SystemBrowserDetails(models.Model):
     ipv4 = models.GenericIPAddressField(null=True, blank=True)
     browser = models.CharField(max_length=100, choices=BROWSER_CHOICES, blank=True, null=True)
     registered_at = models.DateTimeField(auto_now_add=True)
+    unregistered_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'system_browser_details'
