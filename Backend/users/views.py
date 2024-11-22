@@ -1624,9 +1624,16 @@ class DisputeRaiseDataView(APIView):
     View to get disputes where the counter is not null and include specific email details.
     """
     def get(self, request, *args, **kwargs):
-        disputes = DisputeInfo.objects.select_related('emaildetails').filter(counter__isnull=False)
-        serializer = DisputeraiseSerializer(disputes, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            disputes = DisputeInfo.objects.select_related('dispute__emaildetails').filter(counter__isnull=False)
+            if not disputes.exists():
+                raise NotFound("No disputes found.")
+            serializer = DisputeraiseSerializer(disputes, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except NotFound as e:
+            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": "An unexpected error occurred.", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class EmailDetailsView(APIView):
     """
     API to fetch email details and related attachment data by msg_id.
