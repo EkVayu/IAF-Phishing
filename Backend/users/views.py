@@ -1278,19 +1278,28 @@ def get_disabled_plugins_count(request):
 class DisputeStatusUpdateView(generics.UpdateAPIView):
     """
     API view for updating the status of a Dispute.
-
-    This view allows updating the status of a dispute object.
-
-    Args:
-        - pk (str): The ID of the Dispute to update.
-        - status (str): The new status to assign to the Dispute.
-
-    Returns:
-        - A JSON response with the updated dispute data.
-        - 400 error if the data is invalid.
     """
     queryset = Dispute.objects.all()
     serializer_class = DisputeSerializer
+
+    def update(self, request, *args, **kwargs):
+        """
+        Overrides the default update method to handle exceptions and provide meaningful responses.
+        """
+        try:
+            response = super().update(request, *args, **kwargs)
+            return Response({
+                "message": "Dispute status updated successfully.",
+                "data": response.data
+            }, status=status.HTTP_200_OK)
+        except serializers.ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                "error": "An unexpected error occurred.",
+                "details": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class DisputeCommentCreateView(CreateAPIView):
     """
     API view for creating a new comment on a Dispute.
