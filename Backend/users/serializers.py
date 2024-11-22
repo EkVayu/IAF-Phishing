@@ -421,22 +421,24 @@ class DisputeUpdateSerializer(serializers.ModelSerializer):
         fields = ['status']
 class DisputeSerializer(serializers.ModelSerializer):
     """
-    Serializer for Dispute model that updates the `status` and corresponding `EmailDetails` records
-    with matching `msg_id` and `email`.
+    Serializer for Dispute model that updates the `status` and corresponding `EmailDetails` records.
     """
     status = serializers.CharField()
+
     class Meta:
         model = Dispute
         fields = ['id', 'status', 'updated_at']
         read_only_fields = ['updated_at']
+
     def validate_status(self, value):
         """
         Validate and convert string status to its corresponding integer value.
         """
-        status_map = {v.lower(): k for k, v in dict(Dispute.STATUS_CHOICES).items()}
-        if value.lower() not in status_map:
+        status_map = {v.casefold(): k for k, v in dict(Dispute.STATUS_CHOICES).items()}
+        if value.casefold() not in status_map:
             raise serializers.ValidationError(f'"{value}" is not a valid choice.')
-        return status_map[value.lower()]
+        return status_map[value.casefold()]
+
     def to_representation(self, instance):
         """
         Convert integer status to its string representation in the response.
@@ -445,40 +447,22 @@ class DisputeSerializer(serializers.ModelSerializer):
         status_map = dict(Dispute.STATUS_CHOICES)
         representation['status'] = status_map.get(instance.status, "Unknown")
         return representation
+
     def update(self, instance, validated_data):
         """
-        Updates the status of a dispute and its associated email details based on the new status.
-
-        Args:
-            instance (Dispute): The existing dispute instance that is being updated.
-            validated_data (dict): The validated data containing the new status value.
-
-        Returns:
-            Dispute: The updated dispute instance after applying the status change.
-
-        Side Effects:
-            - The `status` of the dispute is updated.
-            - The `updated_at` timestamp is set to the current time.
-            - The status of the associated email details is updated based on the new dispute status.
-
-        Logic:
-            - If the dispute's current status is different from the new status, update the status and set the `updated_at` field to the current timestamp.
-            - The associated `EmailDetails` records that match the `msg_id` and `recievers_email` are fetched, and their status is set to 'safe' or 'unsafe' depending on the dispute's new status.
+        Updates the status of a dispute and its associated email details.
         """
         new_status = validated_data.get('status', instance.status)
         if instance.status != new_status:
             instance.status = new_status
             instance.updated_at = timezone.now()
             instance.save()
-            matching_emails = EmailDetails.objects.filter(
+            new_email_status = "safe" if new_status == Dispute.SAFE else "unsafe"
+            EmailDetails.objects.filter(
                 msg_id=instance.msg_id,
                 recievers_email=instance.email
-            )
-            for email_detail in matching_emails:
-                email_detail.status = "safe" if new_status == Dispute.SAFE else "unsafe"
-                email_detail.save()
-            dispute_infos = DisputeInfo.objects.filter(dispute=instance)
-            dispute_infos.update(updated_at=timezone.now())
+            ).update(status=new_email_status)
+            DisputeInfo.objects.filter(dispute=instance).update(updated_at=timezone.now())
         return instance
 class DisputeCommentSerializer(serializers.ModelSerializer):
     dispute = serializers.PrimaryKeyRelatedField(queryset=Dispute.objects.all())
@@ -666,6 +650,7 @@ class DisputeraiseSerializer(serializers.ModelSerializer):
     """
     Serializer for the DisputeInfo model with specific EmailDetails fields.
     """
+    dispute_id = serializers.IntegerField(source='dispute.id', read_only=True)  # Add Dispute ID
     recievers_email = serializers.CharField(source='dispute.emaildetails.recievers_email', allow_null=True)
     senders_email = serializers.CharField(source='dispute.emaildetails.senders_email', allow_null=True)
     subject = serializers.CharField(source='dispute.emaildetails.subject', allow_null=True)
@@ -675,6 +660,7 @@ class DisputeraiseSerializer(serializers.ModelSerializer):
         model = DisputeInfo
         fields = [
             'id',
+            'dispute_id',
             'counter',
             'created_at',
             'updated_at',
