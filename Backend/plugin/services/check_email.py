@@ -2,6 +2,7 @@ import os
 import logging
 import re
 import email
+import requests
 from email import policy
 from django.conf import settings
 from pathlib import Path
@@ -12,7 +13,8 @@ import dkim
 import spf
 import dns.resolver
 from plugin.models import EmailDetails, URL, RoughURL, RoughDomain, RoughMail, Attachment
-import time  # Added for timeout handling
+import time
+import ipaddress
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -21,44 +23,26 @@ logger = logging.getLogger(__name__)
 # Define file path for email backups
 FILE_PATH = Path(settings.EMAIL_BACKUP_DIR)
 
-# Timeout threshold in seconds (e.g., 30 seconds)
-AI_RESPONSE_TIMEOUT = 30
+# Timeout threshold in seconds
+AI_RESPONSE_TIMEOUT = 1
 
-# Function to extract email details from .eml file
 def check_eml(eml_content, newpath_set, msg_id):
     try:
         msg = email.message_from_bytes(eml_content, policy=policy.default)
-
-        # Extract headers
-        to_email = msg.get('To', '') or ''
-        from_email = msg.get('From', '') or ''
-        cc = msg.get('Cc', '') or ''
-        bcc = msg.get('Bcc', '') or ''
-        subject = msg.get('Subject', '') or ''
-
-        # Extract body and attachments
-        body = extract_body(msg) or ""
-        attachment_info = extract_attachments(msg, newpath_set)
-
-        # Extract URLs
-        urls = extract_urls(eml_content) or []
-
         return {
-            'to_email': to_email,
-            'from_email': from_email,
-            'cc': cc,
-            'bcc': bcc,
-            'subject': subject,
-            'body': body,
-            'urls': urls,
-            'attachments': attachment_info['attachments'],
+            'to_email': msg.get('To', '') or '',
+            'from_email': msg.get('From', '') or '',
+            'cc': msg.get('Cc', '') or '',
+            'bcc': msg.get('Bcc', '') or '',
+            'subject': msg.get('Subject', '') or '',
+            'body': extract_body(msg) or "",
+            'urls': extract_urls(eml_content) or [],
+            'attachments': extract_attachments(msg, newpath_set)['attachments'],
         }
-
     except Exception as e:
         logger.error(f"Error extracting email details: {e}")
         return None
 
-# Extract body of the email (for simplicity, just text/plain or text/html)
 def extract_body(msg):
     for part in msg.iter_parts():
         if part.get_content_type() == 'text/plain':
@@ -67,7 +51,6 @@ def extract_body(msg):
             return part.get_payload(decode=True).decode(part.get_content_charset(), errors='ignore')
     return ""
 
-# Extract attachments from the email
 def extract_attachments(msg, newpath_set):
     attachments = []
     for part in msg.iter_parts():
@@ -80,95 +63,190 @@ def extract_attachments(msg, newpath_set):
                 attachments.append(filename)
     return {'attachments': attachments}
 
-# Extract URLs from the email content
 def extract_urls(eml_content):
-    url_regex = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'  # Regex to match URLs
-    urls = set()  # Use a set to avoid duplicate URLs
+    url_regex = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+    urls = set()
     msg = email.message_from_bytes(eml_content, policy=email.policy.default)
     body = extract_body(msg)
-    
     if body:
         urls.update(re.findall(url_regex, body))
-
     return list(urls)
 
-# Function to perform DKIM, SPF, and DMARC checks on the email
-def check_email_authentication(from_email, eml_content):
-    dkim_check = verify_dkim(eml_content)
-    logger.info(f"DKIM check result: {'pass' if dkim_check else 'fail'}")
-    spf_check = verify_spf(from_email)
-    logger.info(f"SPF check result: {'pass' if spf_check else 'fail'}")
-    
-    dmarc_check = verify_dmarc(from_email)
-    logger.info(f"DMARC check result: {'pass' if dmarc_check else 'fail'}")
-   
-    return "safe" if dkim_check and spf_check and dmarc_check else "unsafe"
-
-# DKIM Verification
 def verify_dkim(eml_content):
     try:
+        headers = email.message_from_bytes(eml_content)
+        if 'DKIM-Signature' not in headers:
+            logger.info("No DKIM signature found")
+            return False
         return dkim.verify(eml_content)
     except Exception as e:
         logger.error(f"Error in DKIM check: {e}")
         return False
 
-# SPF Verification
-def verify_spf(from_email):
-    try:
-        ip = '127.0.0.1'  # This is a dummy IP. Replace with the sender's IP if available.
-        domain = from_email.split('@')[-1]
-        result = spf.check(i=ip, s=from_email, h=domain)
-        return result[0] == 'pass'
-    except Exception as e:
-        logger.error(f"Error in SPF check: {e}")
-        return False
+def get_sender_ip_from_eml(eml_content):
+    msg = email.message_from_bytes(eml_content)
+    ip_headers = ['X-Originating-IP', 'X-Sender-IP', 'Received-SPF', 'Authentication-Results', 'Received']
+    for header in ip_headers:
+        if header in msg:
+            ip_match = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', msg[header])
+            if ip_match:
+                return ip_match.group(0)
+    return None
 
-# DMARC Verification
+def verify_spf(from_email, eml_content):
+    sender_ip = get_sender_ip_from_eml(eml_content) or '127.0.0.1'
+    domain = from_email.split('@')[-1].strip('>')
+    if 'google.com' in domain:
+        google_ips = ['209.85.220.0/24', '64.233.160.0/19', '66.102.0.0/20']
+        for ip_range in google_ips:
+            if ipaddress.ip_address(sender_ip) in ipaddress.ip_network(ip_range):
+                return True
+    result = spf.check(i=sender_ip, s=from_email, h=domain)
+    logger.info(f"SPF check with IP {sender_ip} for domain: {domain}")
+    return result[0] == 'pass'
+
 def verify_dmarc(from_email):
     try:
-        domain = from_email.split('@')[-1]
-        dmarc_record = dns.resolver.resolve(f'_dmarc.{domain}', 'TXT')
-        return bool(dmarc_record)
-    except dns.resolver.NoAnswer:
-        logger.error(f"No DMARC record found for domain {domain}")
-        return False
-    except dns.resolver.NXDOMAIN:
-        logger.error(f"Domain {domain} does not exist")
-        return False
+        domain = from_email.split('@')[-1].strip('>')
+        resolver = dns.resolver.Resolver()
+        resolver.timeout = 5
+        resolver.lifetime = 5
+        dmarc_record = resolver.resolve(f'_dmarc.{domain}', 'TXT')
+        return any('v=DMARC1' in str(record) for record in dmarc_record)
     except Exception as e:
-        logger.error(f"Error in DMARC check: {e}")
+        logger.error(f"Error in DMARC check for {domain}: {e}")
         return False
 
-# Check RoughURL, RoughDomain, and RoughMail database validations
-def check_rough_data(email_details):
-    for url in email_details['urls']:
-        protocol = 'https' if url.startswith('https://') else 'http' if url.startswith('http://') else ''
-        if not RoughURL.objects.filter(url=url, protocol=protocol).exists():
-            logger.warning(f"URL {url} with protocol {protocol} not found in RoughURL.")
-            return False
-    
-    domain = email_details['from_email'].split('@')[-1]
-    if not RoughDomain.objects.filter(ip=domain).exists():
-        logger.warning(f"Domain {domain} not found in RoughDomain.")
-        return False
-    
-    if not RoughMail.objects.filter(mailid=email_details['from_email']).exists():
-        logger.warning(f"Email {email_details['from_email']} not found in RoughMail.")
-        return False
-    
-    return True
+import os
+import re
+import requests
+from requests.adapters import HTTPAdapter, Retry
+from django.conf import settings
+import logging
 
-# Django view to check the email
+logger = logging.getLogger(__name__)
+
+def check_external_apis(email_details, msg_id):
+    status = "safe"
+
+    def clean_email(email_str):
+        email = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', email_str)
+        return email.group(0) if email else ''
+
+    from_email = clean_email(email_details['from_email'])
+    to_email = clean_email(email_details['to_email'])
+
+    # Retry logic setup
+    session = requests.Session()
+    retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+    session.mount('https://', HTTPAdapter(max_retries=retries))
+
+    try:
+        # 1. Content Check
+        content_payload = {
+            "msg_id": msg_id,
+            "subject": email_details['subject'],
+            "from_ids": [from_email],
+            "to_ids": [to_email],
+            "body": email_details['body']
+        }
+
+        logger.info(f"Sending content payload: {content_payload}")
+        content_response = session.post(
+            'https://anti-phishing.voxomos.ai/voxpd/process_content',
+            json=content_payload,
+            timeout=10  # Increased timeout for content check
+        )
+        content_data = content_response.json()
+        logger.info(f"Content API Response: {content_data}")
+
+        if content_data.get('status') == 200 and content_data.get('data', {}).get('result') == 'unsafe':
+            return "unsafe"
+
+        # 2. URL Check
+        if email_details.get('urls'):
+            for url in email_details['urls']:
+                url_payload = {
+                    "msg_id": msg_id,
+                    "urls": [url]
+                }
+
+                logger.info(f"Sending URL payload: {url_payload}")
+                url_response = session.post(
+                    'https://anti-phishing.voxomos.ai/voxpd/process_url',
+                    json=url_payload,
+                    timeout=3 # Increased timeout for URL check
+                )
+                url_data = url_response.json()
+                logger.info(f"URL API Response for {url}: {url_data}")
+
+                if url_data.get('status') == 200 and url_data.get('data', {}).get('result') == 'unsafe':
+                    return "unsafe"
+
+        # 3. Attachment Check
+        if email_details.get('attachments'):
+            for attachment in email_details['attachments']:
+                file_path = os.path.join(settings.MEDIA_ROOT, f'temp_attachments/{attachment}')
+                if os.path.exists(file_path):
+                    with open(file_path, 'rb') as f:
+                        files = {'attachment': (attachment, f, 'application/octet-stream')}
+                        attachment_payload = {'msg_id': msg_id}
+
+                        logger.info(f"Sending attachment payload for: {attachment}")
+                        attachment_response = session.post(
+                            'https://anti-phishing.voxomos.ai/voxpd/process_attachment',
+                            data=attachment_payload,
+                            files=files,
+                            timeout=3  # Increased timeout for attachment check
+                        )
+                        attachment_data = attachment_response.json()
+                        logger.info(f"Attachment API Response for {attachment}: {attachment_data}")
+
+                        if attachment_data.get('status') == 200 and attachment_data.get('data', {}).get('result') == 'unsafe':
+                            return "unsafe"
+
+        return status
+
+    except requests.exceptions.Timeout:
+        logger.warning(f"API timeout for msg_id: {msg_id}")
+        return "pending"
+    except requests.RequestException as e:
+        logger.error(f"API request error: {e}")
+        return "pending"
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return "pending"
+
+
+
+def check_email_authentication(from_email, eml_content, email_details, msg_id):
+    start_time = time.time()
+    
+    dkim_check = verify_dkim(eml_content)
+    spf_check = verify_spf(from_email, eml_content)
+    dmarc_check = verify_dmarc(from_email)
+    
+    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
+        logger.warning("Security checks timeout - marking as pending")
+        return "pending"
+    
+    external_status = check_external_apis(email_details, msg_id)
+    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
+        return "pending"
+        
+    if external_status == "unsafe":
+        return "unsafe"
+    if all([dkim_check, spf_check, dmarc_check]):
+        return "safe"
+    return "unsafe"
+
 @csrf_exempt
 @transaction.atomic
 def check_email(request):
     try:
         logger.info("Processing check_email request")
-
-        # Start time tracking for AI response
         start_time = time.time()
 
-        # Extract request parameters
         msg_id = request.POST.get('messageId')
         plugin_id = request.POST.get('pluginId')
         browser = request.POST.get('browser')
@@ -178,7 +256,6 @@ def check_email(request):
         if not msg_id:
             return JsonResponse({"message": "Please provide message Id", "STATUS": "Not Found", "Code": 0})
 
-        # Check if email already exists
         existing_email = EmailDetails.objects.filter(msg_id=msg_id).first()
         if existing_email:
             return JsonResponse({
@@ -190,7 +267,6 @@ def check_email(request):
 
         sanitized_msg_id = msg_id.replace("\\", "_").replace("/", "_").replace(":", "_")
         newpath_set = FILE_PATH / sanitized_msg_id
-
         os.makedirs(newpath_set, exist_ok=True)
 
         if uploaded_file:
@@ -219,43 +295,28 @@ def check_email(request):
                 bcc=email_details['bcc'],
                 urls=email_details['urls'],
                 attachments=email_details['attachments'],
-                status="pending"  # Initially mark as pending
+                status="pending"
             )
             email_entry.save()
 
-            email_status = check_email_authentication(email_details['from_email'], eml_content)
-            
-            # Perform database validation for RoughURL, RoughDomain, RoughMail
-            if not check_rough_data(email_details):
-                email_entry.status = "unsafe"
-                email_entry.save()
-                return JsonResponse({
-                    "message": "Email failed database validation checks",
-                    "email_status": "unsafe",
-                    "messageId": msg_id,
-                    "Code": 1
-                })
+            email_status = check_email_authentication(
+                email_details['from_email'], 
+                eml_content,
+                email_details,
+                msg_id
+            )
 
-            # Check AI response time
-            elapsed_time = time.time() - start_time
-            if elapsed_time > AI_RESPONSE_TIMEOUT:
-                logger.warning(f"AI response time exceeded the timeout of {AI_RESPONSE_TIMEOUT} seconds.")
+            if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
                 email_entry.status = "pending"
-                email_entry.save()
-
-            if email_status == "safe":
-                email_entry.status = "safe"
             else:
-                email_entry.status = "unsafe"
+                email_entry.status = email_status
             email_entry.save()
 
-            # Save URLs in URL model
             for url in email_details['urls']:
                 URL.objects.create(email_detail=email_entry, url=url)
 
-            # Save Attachments in Attachment model (Assuming an Attachment model exists)
             for attachment_filename in email_details['attachments']:
-                Attachment.objects.create(email_detail=email_entry, filename=attachment_filename)
+                Attachment.objects.create(email_detail=email_entry, name=attachment_filename)
 
             return JsonResponse({
                 "message": "Email processed successfully",
