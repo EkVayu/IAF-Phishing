@@ -671,6 +671,7 @@ class DisputeraiseSerializer(serializers.ModelSerializer):
     senders_email = serializers.CharField(source='emaildetails.senders_email')
     subject = serializers.CharField(source='emaildetails.subject')
     status = serializers.CharField(source='emaildetails.status')
+    # msg_id = serializers.CharField(source='emaildetails.status')
 
     class Meta:
         model = DisputeInfo
