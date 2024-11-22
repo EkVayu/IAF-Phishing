@@ -446,6 +446,7 @@ class DisputeSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         status_map = dict(Dispute.STATUS_CHOICES)
         representation['status'] = status_map.get(instance.status, "Unknown")
+        representation['dispute_id'] = representation.pop('id')
         return representation
 
     def update(self, instance, validated_data):
