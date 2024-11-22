@@ -37,7 +37,7 @@ from openpyxl import load_workbook
 import re
 from PyPDF2 import PdfReader, PdfWriter
 from rest_framework.views import APIView
-
+import time
 
 @csrf_exempt
 def registration_view(request):
@@ -392,6 +392,7 @@ def cdr_resposne_to_ai(request):
         if not msg_id or not status:
             return JsonResponse({"error": "All fields (id, msg_id, status, cdr_file) are required"}, status=400)
 
+        time.sleep(1)
         
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
@@ -423,7 +424,7 @@ def url_response_to_ai(request):
         if not id or not msg_id or not status or not url:
             return JsonResponse({"error": "All fields (id, msg_id, status, url) are required"}, status=400)
     
-
+        time.sleep(1)
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
             defaults={
@@ -460,7 +461,8 @@ def content_response_to_ai(request):
         if not from_email or not msg_id or not status or not to_email:
             return JsonResponse({"error": "All fields ( msg_id, status,from_email,to_email ) are required"}, status=400)
 
-        #
+        time.sleep(1)
+
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
             defaults={
