@@ -11,6 +11,67 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+class EmailDetails(models.Model):
+    """
+    Attributes:
+        msg_id (str): The ID of the email message.
+        u_id (str): The unique identifier of the email.
+        recievers_email (str): The email address of the recipient.
+        senders_email (str): The email address of the sender.
+        eml_file_name (str): The name of the email file.
+        plugin_id (str): The ID of the plugin associated with the email.
+        message_id (str): The ID of the message associated with the email.
+        status (str): The status of the email.
+        subject (str): The subject of the email.
+        urls (
+        TextField): The URLs associated with the email.
+        create_time (datetime): The datetime when the email details were created.
+        bcc (str): The BCC (Blind Carbon Copy) recipients of the email.
+
+        cc (str): The CC (Carbon Copy) recipients of the email.
+        attachments (str): The attachments associated with the email.
+        ipv4 (str): The IPv4 address associated with the email.
+        browser (str): The browser used to send the email.
+        email_body (str): The body of the email.
+
+        """
+    STATUS_CHOICES = [
+        ('safe', 'Safe'),
+        ('unsafe', 'Unsafe'),
+        ('pending', 'Pending')
+    ]
+    u_id = models.CharField(max_length=90, blank=True, null=True)
+    recievers_email = models.EmailField(max_length=200)
+    senders_email = models.CharField(max_length=100, blank=True, null=True)
+    eml_file_name = models.CharField(max_length=100, blank=True, null=True)
+    plugin_id = models.CharField(max_length=80, blank=True, null=True)
+    msg_id = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    subject = models.TextField(blank=True, null=True)
+    urls = models.TextField(blank=True, null=True)
+    create_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    bcc = models.CharField(max_length=100, blank=True, null=True)
+    cc = models.CharField(max_length=100, blank=True, null=True)
+    attachments = models.TextField(blank=True, null=True)
+    ipv4 = models.GenericIPAddressField(null=True, blank=True)
+    browser = models.CharField(max_length=255, null=True, blank=True)
+    email_body = models.TextField(blank=True, null=True)
+    cdr_file = models.FileField(upload_to='cdr_files/', null=True, blank=True)
+
+    class Meta:
+        """
+        Meta class for the EmailDetails model.
+        """
+        managed = True
+        db_table = 'plugin_email_details'
+
+        def _str_(self):
+            return f"Email Details for {self.u_id} - Status: {self.status}"
+
+        """
+        Returns a string representation of the email details, showing the email ID.
+
+        """
 # Dispute model represents a record of a dispute in the system.
 class Dispute(models.Model):
     """
@@ -32,7 +93,7 @@ class Dispute(models.Model):
         (SAFE, 'Safe'),
         (UNSAFE, 'Unsafe'),
     ]
-
+    emaildetails = models.ForeignKey('EmailDetails', on_delete=models.CASCADE, related_name='info')
     msg_id = models.CharField(max_length=256, null=True, blank=True)
     email = models.EmailField()
     counter = models.IntegerField(null=True)
@@ -77,7 +138,7 @@ class DisputeInfo(models.Model):
         updated_by (User): The user who created the dispute information.
         is_active (bool): Indicates if the dispute information is currently active.
     """
-    emaildetails = models.ForeignKey('EmailDetails', on_delete=models.CASCADE, related_name='info')
+    # emaildetails = models.ForeignKey('EmailDetails', on_delete=models.CASCADE, related_name='info')
     dispute = models.ForeignKey(Dispute, on_delete=models.CASCADE, related_name='info')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -157,66 +218,7 @@ class PluginEnableDisable(models.Model):
     """
 
     # EmailDetails model stores details related to an email, including its subject, body, and attachments.
-class EmailDetails(models.Model):
-    """
-    Attributes:
-        msg_id (str): The ID of the email message.
-        u_id (str): The unique identifier of the email.
-        recievers_email (str): The email address of the recipient.
-        senders_email (str): The email address of the sender.
-        eml_file_name (str): The name of the email file.
-        plugin_id (str): The ID of the plugin associated with the email.
-        message_id (str): The ID of the message associated with the email.
-        status (str): The status of the email.
-        subject (str): The subject of the email.
-        urls (
-        TextField): The URLs associated with the email.
-        create_time (datetime): The datetime when the email details were created.
-        bcc (str): The BCC (Blind Carbon Copy) recipients of the email.
 
-        cc (str): The CC (Carbon Copy) recipients of the email.
-        attachments (str): The attachments associated with the email.
-        ipv4 (str): The IPv4 address associated with the email.
-        browser (str): The browser used to send the email.
-        email_body (str): The body of the email.
-        
-        """
-    STATUS_CHOICES=[
-        ('safe', 'Safe'),
-        ('unsafe', 'Unsafe'),
-        ('pending', 'Pending')
-    ]
-    u_id = models.CharField(max_length=90, blank=True, null=True)
-    recievers_email = models.EmailField(max_length=200)
-    senders_email = models.CharField(max_length=100, blank=True, null=True)
-    eml_file_name = models.CharField(max_length=100, blank=True, null=True)
-    plugin_id = models.CharField(max_length=80, blank=True, null=True)
-    msg_id = models.CharField(max_length=100, blank=True, null=True)    
-    status = models.CharField(max_length=50,choices=STATUS_CHOICES)
-    subject = models.TextField(blank=True, null=True)
-    urls = models.TextField(blank=True, null=True)
-    create_time = models.DateTimeField(auto_now_add=True,blank=True,null=True)
-    bcc = models.CharField(max_length=100, blank=True, null=True)
-    cc = models.CharField(max_length=100, blank=True, null=True)
-    attachments = models.TextField(blank=True, null=True)
-    ipv4 = models.GenericIPAddressField(null=True, blank=True)
-    browser = models.CharField(max_length=255, null=True, blank=True)
-    email_body = models.TextField(blank=True, null=True)
-    cdr_file= models.FileField(upload_to='cdr_files/', null=True, blank=True)
-
-    class Meta:
-        """
-        Meta class for the EmailDetails model.
-        """
-        managed = True
-        db_table = 'plugin_email_details'
-
-        def _str_(self):
-            return f"Email Details for {self.u_id} - Status: {self.status}"
-        """
-        Returns a string representation of the email details, showing the email ID.
-
-        """
 class CDRFile(models.Model):
     """
     Attributes:
