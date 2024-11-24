@@ -1676,16 +1676,22 @@ class EmailDetailsView(APIView):
         return Response(data, status=200)
 class DisputeCommentsView(APIView):
     """
-    API to fetch user comments with user-time and admin comments with admin-time for a given msg_id.
+    API to fetch user comments with user-time and admin comments with admin-time for a given dispute_id.
     """
     def get(self, request):
-        msg_id = request.query_params.get('msg_id')
-        if not msg_id:
-            return Response({"error": "msg_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-        email_details = get_object_or_404(EmailDetails, msg_id=msg_id)
-        dispute_info = DisputeInfo.objects.filter(emaildetails=email_details).values(
+        dispute_id = request.query_params.get('dispute_id')
+        if not dispute_id:
+            return Response({"error": "dispute_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the Dispute object
+        dispute = get_object_or_404(Dispute, id=dispute_id)
+
+        # Fetch related DisputeInfo objects
+        dispute_info = DisputeInfo.objects.filter(dispute=dispute).values(
             'user_comment', 'created_at', 'admin_comment', 'updated_at'
         )
+
+        # Format the response data
         formatted_data = [
             {
                 "user_comment": info["user_comment"],
@@ -1695,4 +1701,5 @@ class DisputeCommentsView(APIView):
             }
             for info in dispute_info
         ]
+
         return Response({"data": formatted_data}, status=status.HTTP_200_OK)
