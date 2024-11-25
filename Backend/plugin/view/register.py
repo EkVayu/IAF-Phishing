@@ -4,6 +4,7 @@ from django.db import transaction
 from users.models import PluginMaster, License,LicenseAllocation
 from django.utils import timezone
 import json
+from plugin.models import UserSystemDetails, SystemBrowserDetails
 
 @csrf_exempt
 def register(request):
@@ -24,6 +25,8 @@ def register(request):
                         "STATUS": "Not Found",
                         "Code": 0
                     }, status=400)
+                license_allocation = LicenseAllocation.objects.filter(license=license).order_by('-allocation_date').first()
+                
                 return JsonResponse({
                     "message": "License Id registered",
                     "STATUS": "Registered",

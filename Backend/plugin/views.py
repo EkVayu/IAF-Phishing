@@ -43,30 +43,131 @@ from django.utils.timezone import now
 def registration_view(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        
+        # Extract required fields from input data
+        license_id = data.get('licenseId')
         plugin_id = data.get('pluginId')
         ip_add = data.get('ipAddress')
         browser = data.get('browser')
-        license_id = data.get('licenseId')
-        license = License.objects.get(hashed_license_id=license_id)
+        uuid = data.get('uuid')  # UUID of the device
+        mac_address = data.get('macAddress')  # MAC address of the device
+        
+        # Validate mandatory fields
+        if not license_id or not uuid or not mac_address or not browser:
+            return JsonResponse({
+                "message": "Missing required fields (licenseId, uuid, macAddress, browser)",
+                "STATUS": "Error",
+                "Code": 0
+            }, status=400)
+
+        try:
+            # Fetch license
+            license = License.objects.get(hashed_license_id=license_id)
+        except License.DoesNotExist:
+            return JsonResponse({
+                "message": "License not found",
+                "STATUS": "Not Found",
+                "Code": 0
+            }, status=404)
+
+        # Fetch the latest license allocation
+        allocation = LicenseAllocation.objects.filter(license=license).order_by('-allocation_date').first()
+        if not allocation:
+            return JsonResponse({
+                "message": "License found but no allocation. Please contact the administrator.",
+                "STATUS": "Allocation Not Found",
+                "Code": 0
+            }, status=400)
+
+        # Check if the mac_address and uuid are already registered
+        existing_system = UserSystemDetails.objects.filter(license_allocation=allocation, uuid=uuid).first()
+        if existing_system:
+            # If mac_address matches, proceed
+            if existing_system.mac_address == mac_address:
+                # Check if the browser is already registered
+                if SystemBrowserDetails.objects.filter(device_information=existing_system, browser=browser).exists():
+                    return JsonResponse({
+                        "message": "This device with this browser is already registered.",
+                        "STATUS": "Already Registered",
+                        "Code": 0
+                    }, status=400)
+                else:
+                    # Allow new browser registration for the same device
+                    SystemBrowserDetails.objects.create(
+                        device_information=existing_system,
+                        ipv4=ip_add,
+                        browser=browser
+                    )
+                    return JsonResponse({
+                        "message": "New browser registered successfully.",
+                        "STATUS": "Browser Registered",
+                        "Code": 1,
+                        "data": {"email": allocation.allocated_to}
+                    }, status=200)
+            else:
+                # mac_address mismatch
+                return JsonResponse({
+                    "message": "License is already registered on another device.",
+                    "STATUS": "Device Mismatch",
+                    "Code": 0
+                }, status=400)
+
+        # If no existing record, create new system details and browser registration
+        with transaction.atomic():
+            user_system_details, created = UserSystemDetails.objects.update_or_create(
+                uuid=uuid,
+                defaults={
+                    "license_allocation": allocation,
+                    "mac_address": mac_address,
+                    "serial_number": data.get('serialNumber'),
+                    "os_type": data.get('osType'),
+                    "os_platform": data.get('osPlatform'),
+                    "os_release": data.get('osRelease'),
+                    "host_name": data.get('hostName'),
+                    "architecture": data.get('architecture'),
+                }
+            )
+            # Register the browser details
+            SystemBrowserDetails.objects.create(
+                device_information=user_system_details,
+                ipv4=ip_add,
+                browser=browser
+            )
+
+        # Now proceed with PluginMaster and PluginInstallUninstall creation
         plugin_install_uninstall = PluginInstallUninstall.objects.create(
-                plugin_id=plugin_id,
-                ip_address=ip_add,
-                browser=browser,
-                installed_at=timezone.now(),
-                uninstalled_at=None
-            )
+            plugin_id=plugin_id,
+            ip_address=ip_add,
+            browser=browser,
+            installed_at=timezone.now(),
+            uninstalled_at=None
+        )
+        
+        # Update or create PluginMaster entry
         plugin, created = PluginMaster.objects.update_or_create(
-        plugin_id=plugin_id,
-        defaults={'license_id': license, 'ip_add': ip_add, 'browser': browser, 'install_date': timezone.now()})
+            plugin_id=plugin_id,
+            defaults={'license_id': license, 'ip_add': ip_add, 'browser': browser, 'install_date': timezone.now()}
+        )
+        
         plugin.save()
-        # plugin_install_uninstall.save()
+        
+        # Create PluginEnableDisable entry
         enable_disable_action = PluginEnableDisable.objects.create(
-                plugin_install_uninstall=plugin_install_uninstall,
-                enabled_at=timezone.now()
-            )
+            plugin_install_uninstall=plugin_install_uninstall,
+            enabled_at=timezone.now()
+        )
+
+        # Optionally, serialize the response
         serializer = PluginEnableDisableSerializer(enable_disable_action)
+
+        # Return the verification response
         response = verify_lid(data)
         return response
+    else:
+        return JsonResponse({
+            "error": "Invalid request method",
+            "Code": 0
+        }, status=405)
 
 @csrf_exempt
 def verify_license_id_view(request):
@@ -950,6 +1051,7 @@ class UpdateEmailDetailsView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 @csrf_exempt    
+@csrf_exempt
 def browser_uninstall(request):
     """
     Handles browser unregistration for a user's system based on email and browser name.
@@ -958,15 +1060,19 @@ def browser_uninstall(request):
         try:
             # Parse incoming JSON
             data = json.loads(request.body)
-            email = data.get('email')
+            email = data.get('email')  # Expecting email in the request
             browser_name = data.get('browser')
 
             # Validate input
             if not email or not browser_name:
                 return JsonResponse({"error": "email and browser are required fields."}, status=400)
 
-            # Retrieve LicenseAllocation object(s) using allocated_to (email)
-            license_allocations = LicenseAllocation.objects.filter(allocated_to=email)
+            # Retrieve LicenseAllocation object(s) using allocated_to (assuming allocated_to is a CharField)
+            try:
+                # Filter by allocated_to, assuming it's a CharField storing email addresses directly
+                license_allocations = LicenseAllocation.objects.filter(allocated_to=email)
+            except Exception as e:
+                return JsonResponse({"error": f"Error fetching license allocation: {str(e)}"}, status=500)
 
             if not license_allocations.exists():
                 return JsonResponse({"error": "No license allocation found for the provided email."}, status=404)
