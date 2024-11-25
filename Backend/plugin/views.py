@@ -37,8 +37,8 @@ from openpyxl import load_workbook
 import re
 from PyPDF2 import PdfReader, PdfWriter
 from rest_framework.views import APIView
-
-
+import time
+from django.utils.timezone import now
 @csrf_exempt
 def registration_view(request):
     if request.method == 'POST':
@@ -392,6 +392,7 @@ def cdr_resposne_to_ai(request):
         if not msg_id or not status:
             return JsonResponse({"error": "All fields (id, msg_id, status, cdr_file) are required"}, status=400)
 
+        time.sleep(1)
         
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
@@ -423,7 +424,7 @@ def url_response_to_ai(request):
         if not id or not msg_id or not status or not url:
             return JsonResponse({"error": "All fields (id, msg_id, status, url) are required"}, status=400)
     
-
+        time.sleep(1)
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
             defaults={
@@ -460,7 +461,8 @@ def content_response_to_ai(request):
         if not from_email or not msg_id or not status or not to_email:
             return JsonResponse({"error": "All fields ( msg_id, status,from_email,to_email ) are required"}, status=400)
 
-        #
+        time.sleep(1)
+
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
             defaults={
@@ -947,3 +949,59 @@ class UpdateEmailDetailsView(APIView):
                 }
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@csrf_exempt    
+def browser_uninstall(request):
+    """
+    Handles browser unregistration for a user's system based on email and browser name.
+    """
+    if request.method == 'POST':
+        try:
+            # Parse incoming JSON
+            data = json.loads(request.body)
+            email = data.get('email')
+            browser_name = data.get('browser')
+
+            # Validate input
+            if not email or not browser_name:
+                return JsonResponse({"error": "email and browser are required fields."}, status=400)
+
+            # Retrieve LicenseAllocation object(s) using allocated_to (email)
+            license_allocations = LicenseAllocation.objects.filter(allocated_to=email)
+
+            if not license_allocations.exists():
+                return JsonResponse({"error": "No license allocation found for the provided email."}, status=404)
+
+            if license_allocations.count() > 1:
+                return JsonResponse({"error": "Multiple license allocations found for the provided email. Please clarify."}, status=400)
+
+            # Get the first matching LicenseAllocation (if there is exactly one)
+            license_allocation = license_allocations.first()
+
+            # Retrieve the user's system details using the license allocation
+            try:
+                user_system = UserSystemDetails.objects.get(license_allocation=license_allocation)
+            except UserSystemDetails.DoesNotExist:
+                return JsonResponse({"error": "User system not found for the given license."}, status=404)
+
+            # Retrieve the browser history for unregistration
+            try:
+                browser_details = SystemBrowserDetails.objects.get(
+                    device_information=user_system, browser=browser_name
+                )
+                if browser_details.unregistered_at:
+                    return JsonResponse({"error": "Browser is already unregistered."}, status=400)
+
+                # Soft delete (mark unregistered)
+                browser_details.unregistered_at = now()
+                browser_details.save()
+                return JsonResponse({"success": f"Browser '{browser_name}' unregistered successfully."})
+
+            except SystemBrowserDetails.DoesNotExist:
+                return JsonResponse({"error": "Browser not found for the specified license and system."}, status=404)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)

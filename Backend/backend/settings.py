@@ -5,8 +5,6 @@ import os
 from corsheaders.defaults import default_headers
 from django.conf import settings
 
-# import distutils.util
-
 env = Env()
 env.read_env()
 DB_ENGINE = env.str('DB_ENGINE')
@@ -189,7 +187,7 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'content-disposition',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://35.154.97.4:8002",
-    "http://127.0.0.1:8000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://35.154.97.4:8002",
+#     "http://127.0.0.1:8000",
+# ]
