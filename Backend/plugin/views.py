@@ -233,89 +233,6 @@ class DisputeViewSet(viewsets.ViewSet):
             "subject": email_detail.subject,
             "plugin_id": email_detail.plugin_id
         }, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=['post'], url_path='raise')
-    def raise_dispute(self, request):
-        email = request.data.get('email')
-        msg_id = request.data.get('msgId')
-        user_comment = request.data.get('userComment')
-        print(email, msg_id, user_comment)
-
-        if not email or not msg_id:
-            return Response({"error": "Email and msg_id are required"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if not user_comment:
-            return Response({"error": "User comment is required"}, status=status.HTTP_400_BAD_REQUEST)
-        
-    
-        email_detail = EmailDetails.objects.filter(msg_id=msg_id).first()
-    
-        if not email_detail:
-            return Response({"error": "Message Id not found in email_details"}, status=status.HTTP_404_NOT_FOUND)
-        
-
-        email_status = email_detail.status
-        print(email_status)
-
-    
-        email_status_code = {
-        'unsafe': 0,
-        'safe': 1,  
-        'Safe': 1,  
-        
-    }.get(email_status.lower())
-
-        if email_status_code is None:
-            return Response({"error": "Invalid email status in email_details"}, status=status.HTTP_400_BAD_REQUEST)
-        
-    # Check if the user has fewer than 3 active disputes
-        active_dispute_count = Dispute.objects.filter(msg_id=msg_id).count()
-        if active_dispute_count >= 3:
-            return Response({"error": "You have reached the maximum number of active disputes"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-        
-    # Check if a dispute already exists for the given email and msg_id
-        dispute, created = Dispute.objects.get_or_create(
-        email=email,
-        msg_id=msg_id,
-        defaults={
-            'counter': 1,
-            'status': email_status_code,
-            # 'created_by': request.email,  # Uncomment if you want to track created_by
-            # 'updated_by': request.email,  # Uncomment if you want to track updated_by
-        }
-    )
-
-    # If the dispute already exists, increment the counter
-        if not created:
-            dispute.counter += 1  # Increment the counter
-            dispute.save()
-        
-
-    # Create the DisputeInfo entry
-        dispute_info_data = {
-        'dispute': dispute.id,
-        'user_comment': user_comment,
-        'counter': dispute.counter,  # Pass the updated counter value
-        'emaildetails_id': email_detail.id,  # Provide the emaildetails_id here
-        # 'created_by': request.user.id,  # Uncomment if you want to track created_by
-        # 'updated_by': request.user.id,  # Uncomment if you want to track updated_by
-    }
-
-        dispute_info_serializer = DisputeISerializer(data=dispute_info_data)
-        if dispute_info_serializer.is_valid():
-            dispute_info_serializer.save()
-        else:
-            return Response(dispute_info_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response({
-        "message": "Dispute raised successfully",
-        "dispute": DisputeSerializer(dispute).data,
-        "counter": dispute.counter,
-        "email_status": email_status  # Include the status from email_details
-       }, status=status.HTTP_201_CREATED)
-    
         
 
 class PluginInstallUninstallViewSet(viewsets.ViewSet):
@@ -1111,3 +1028,86 @@ def browser_uninstall(request):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)
+
+@csrf_exempt # Ensure the user is logged in before allowing dispute creation
+def raise_dispute_view(request):
+    """
+    Handle raising a dispute and creating the related dispute info in a single function.
+    Prevent raising a dispute if the counter in Dispute is >= 3.
+    """
+    if request.method == 'POST':
+        try:
+            # Parse the JSON data from the request body
+            data = json.loads(request.body)
+
+            # Dynamically get the user ID (logged-in user)
+            user_id = request.user.id
+
+            # Fetch the EmailDetails object that matches the email
+            email_details_qs = EmailDetails.objects.filter(recievers_email=data["email"])
+
+            if not email_details_qs.exists():
+                return JsonResponse({"error": "Email details not found."}, status=404)
+
+            # Retrieve the EmailDetails instance
+            email_details = email_details_qs.first()
+
+            # Check if a Dispute already exists for this email and msg_id
+            dispute_qs = Dispute.objects.filter(email=data["email"], msg_id=data["msgId"])
+            if dispute_qs.exists():
+                # If a dispute exists, retrieve it
+                dispute = dispute_qs.first()
+
+                # Check if the counter is >= 3
+                if dispute.counter >= 3:
+                    return JsonResponse(
+                        {"error": "Cannot raise dispute. Counter has reached the limit of 3."},
+                        status=400
+                    )
+
+                # Increment the counter
+                dispute.counter = dispute.counter + 1 if dispute.counter else 1
+                dispute.updated_by_id = user_id
+                dispute.save()
+            else:
+                # Create a new Dispute object
+                dispute_data = {
+                    'email': data["email"],
+                    'msg_id': data["msgId"],
+                    'counter': 1,  # Initial counter value
+                    'status': Dispute.UNSAFE,  # Set default status to Unsafe
+                    'created_by_id': user_id,
+                    'updated_by_id': user_id,
+                    'emaildetails': email_details,  # Pass the EmailDetails instance
+                }
+                dispute = Dispute.objects.create(**dispute_data)
+
+            # Step 2: Create the DisputeInfo object and increment its counter
+            dispute_info_data = {
+                'dispute': dispute,  # Link to the created or updated Dispute
+                'user_comment': data["userComment"],
+                'counter': dispute.counter,  # Sync counter with the Dispute counter
+                'created_by_id': user_id,
+                'updated_by_id': user_id,
+            }
+            dispute_info = DisputeInfo.objects.create(**dispute_info_data)
+
+            # Step 3: Return a JSON response with the created dispute and dispute info
+            response_data = {
+                "dispute_id": dispute.id,
+                "email": dispute.email,
+                "msg_id": dispute.msg_id,
+                "status": dispute.get_status_display(),
+                "counter": dispute.counter,  # Current counter value
+                "user_comment": dispute_info.user_comment,
+                "dispute_info_id": dispute_info.id,
+            }
+
+            return JsonResponse(response_data, status=201)
+
+        except EmailDetails.DoesNotExist:
+            return JsonResponse({"error": "Email details not found."}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid HTTP method. Use POST."}, status=405)
