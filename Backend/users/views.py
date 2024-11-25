@@ -1302,27 +1302,17 @@ class DisputeStatusUpdateView(generics.UpdateAPIView):
 
 class DisputeCommentCreateView(CreateAPIView):
     """
-    API view for creating a new comment on a Dispute.
-
-    This view allows adding a comment to a specific DisputeInfo object.
-
-    Args:
-        - dispute_id (str): The ID of the dispute to add a comment to.
-        - comment (str): The comment text to add to the dispute.
-
-    Returns:
-        - A JSON response with the newly created comment.
-        - 400 error if the data is invalid.
+    API view to create a comment for a specific dispute.
     """
     queryset = DisputeInfo.objects.all()
     serializer_class = DisputeCommentSerializer
+
     def perform_create(self, serializer):
         """
-            Save the new comment to the DisputeInfo model.
-
-            The method is overridden to handle saving the comment to the database.
-            """
+        Overridden to handle any custom save logic if needed.
+        """
         serializer.save()
+
 class AvailableAttachmentsView(APIView):
     def get(self, request):
         """
