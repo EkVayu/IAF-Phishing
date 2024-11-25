@@ -181,7 +181,7 @@ DEBUG = True
 APPEND_SLASH = False
 
 
-CORS_ALLOW_METHODS = [ 'GET', 'POST', 'OPTIONS', ]  
+CORS_ALLOW_METHODS = [ 'GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE', 'PUT', ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'content-disposition',
