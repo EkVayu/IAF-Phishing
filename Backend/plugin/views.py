@@ -1050,7 +1050,7 @@ class UpdateEmailDetailsView(APIView):
                 }
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-@csrf_exempt    
+
 @csrf_exempt
 def browser_uninstall(request):
     """
@@ -1077,15 +1077,15 @@ def browser_uninstall(request):
             if not license_allocations.exists():
                 return JsonResponse({"error": "No license allocation found for the provided email."}, status=404)
 
-            if license_allocations.count() > 1:
-                return JsonResponse({"error": "Multiple license allocations found for the provided email. Please clarify."}, status=400)
+            # if license_allocations.count() > 1:
+            #     return JsonResponse({"error": "Multiple license allocations found for the provided email. Please clarify."}, status=400)
 
             # Get the first matching LicenseAllocation (if there is exactly one)
             license_allocation = license_allocations.first()
 
             # Retrieve the user's system details using the license allocation
             try:
-                user_system = UserSystemDetails.objects.get(license_allocation=license_allocation)
+                user_system = UserSystemDetails.objects.get(license_allocation=license_allocation).first()
             except UserSystemDetails.DoesNotExist:
                 return JsonResponse({"error": "User system not found for the given license."}, status=404)
 
@@ -1100,7 +1100,7 @@ def browser_uninstall(request):
                 # Soft delete (mark unregistered)
                 browser_details.unregistered_at = now()
                 browser_details.save()
-                return JsonResponse({"success": f"Browser '{browser_name}' unregistered successfully."})
+                return JsonResponse({"success": f"Browser '{browser_name}' unregistered successfully."},status=200)
 
             except SystemBrowserDetails.DoesNotExist:
                 return JsonResponse({"error": "Browser not found for the specified license and system."}, status=404)
