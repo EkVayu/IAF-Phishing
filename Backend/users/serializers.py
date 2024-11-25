@@ -481,68 +481,55 @@ class DisputeSerializer(serializers.ModelSerializer):
             DisputeInfo.objects.filter(dispute=instance).update(updated_at=timezone.now())
 
         return instance
+
+
 class DisputeCommentSerializer(serializers.ModelSerializer):
-    dispute = serializers.PrimaryKeyRelatedField(queryset=Dispute.objects.all())
+    dispute_id = serializers.PrimaryKeyRelatedField(
+        queryset=Dispute.objects.all(),
+        source='dispute',  # Maps dispute_id to the dispute field in the model
+        write_only=True
+    )
+    admin_comment = serializers.CharField(required=True)
+
     class Meta:
         model = DisputeInfo
-        fields = ['dispute', 'admin_comment']
+        fields = ['dispute_id', 'admin_comment']
+
     def validate(self, data):
-        """
-        Validates the incoming data before creating the `DisputeInfo` instance.
-
-        Ensures that:
-            1. The `dispute` has a valid `msg_id`.
-            2. There is an existing `EmailDetails` record associated with the `msg_id`.
-
-        Args:
-            data (dict): The incoming data that includes `dispute` and `admin_comment`.
-
-        Raises:
-            ValidationError: If the dispute does not have a valid `msg_id` or if no matching `EmailDetails` are found.
-        """
         dispute = data.get('dispute')
-        if not dispute.msg_id:
+        if not dispute:
             raise serializers.ValidationError({
-                "dispute": "The selected dispute does not have a valid msg_id."
+                "dispute_id": "A valid dispute ID is required."
             })
-        emaildetails = EmailDetails.objects.filter(msg_id=dispute.msg_id).first()
-        if not emaildetails:
+        if not data.get('admin_comment'):
             raise serializers.ValidationError({
-                "dispute": "No EmailDetails found for the provided dispute's msg_id."
+                "admin_comment": "Admin comment is required."
             })
-        data['emaildetails'] = emaildetails
         return data
+
     def create(self, validated_data):
         """
-        Creates a new `DisputeInfo` record with the provided `admin_comment` and associated email details.
-
-        Ensures the `admin_comment` field is provided before creating the record.
-
-        Args:
-            validated_data (dict): The validated data containing `dispute`, `admin_comment`, and associated `emaildetails`.
-
-        Returns:
-            DisputeInfo: The newly created `DisputeInfo` instance.
-
-        Raises:
-            ValidationError: If the `admin_comment` field is missing or empty.
+        Creates a new DisputeInfo record and updates the associated Dispute record.
         """
-        admin_comment = validated_data.get('admin_comment')
-        if not admin_comment:
-            raise serializers.ValidationError({
-                "admin_comment": "This field is required."
-            })
-        emaildetails = validated_data.pop('emaildetails')
         dispute = validated_data.get('dispute')
+        admin_comment = validated_data.get('admin_comment')
+
         with transaction.atomic():
-            dispute_info = DisputeInfo.objects.create(emaildetails=emaildetails, **validated_data)
+            # Create a new DisputeInfo entry
+            dispute_info = DisputeInfo.objects.create(
+                dispute=dispute,
+                admin_comment=admin_comment,
+                created_by=None,  # Assign as per your requirements
+                updated_by=None  # Assign as per your requirements
+            )
+
+            # Update the `updated_at` field of the related Dispute
             dispute.updated_at = timezone.now()
             dispute.save()
 
-            # Update the `updated_at` field for DisputeInfo
-            dispute_info.updated_at = timezone.now()
-            dispute_info.save()
         return dispute_info
+
+
 class AttachmentSerializer(serializers.ModelSerializer):
     msg_id = serializers.SerializerMethodField()
     ai_status = serializers.SerializerMethodField()
