@@ -6,6 +6,7 @@ from django.utils import timezone
 from plugin.models import EmailDetails, DisputeInfo, Dispute, Attachment
 from .models import RoughURL, RoughDomain, RoughMail
 from django.db import transaction
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 class LoginSerializer(serializers.Serializer):
@@ -455,15 +456,30 @@ class DisputeSerializer(serializers.ModelSerializer):
         """
         new_status = validated_data.get('status', instance.status)
         if instance.status != new_status:
-            instance.status = new_status
-            instance.updated_at = timezone.now()
-            instance.save()
+            # Determine the new email status
             new_email_status = "safe" if new_status == Dispute.SAFE else "unsafe"
-            EmailDetails.objects.filter(
+
+            # Attempt to update EmailDetails
+            updated_rows = EmailDetails.objects.filter(
                 msg_id=instance.msg_id,
                 recievers_email=instance.email
             ).update(status=new_email_status)
+
+            # If no rows are updated, raise an error and do not change the dispute status
+            if updated_rows == 0:
+                raise ValidationError(
+                    f"Failed to update EmailDetails. No matching records found for msg_id={instance.msg_id} "
+                    f"and recievers_email={instance.email}."
+                )
+
+            # Only update the dispute status if EmailDetails update is successful
+            instance.status = new_status
+            instance.updated_at = timezone.now()
+            instance.save()
+
+            # Update DisputeInfo timestamp
             DisputeInfo.objects.filter(dispute=instance).update(updated_at=timezone.now())
+
         return instance
 class DisputeCommentSerializer(serializers.ModelSerializer):
     dispute = serializers.PrimaryKeyRelatedField(queryset=Dispute.objects.all())
