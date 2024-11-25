@@ -121,15 +121,67 @@ def verify_dmarc(from_email):
 
 
 
+def is_valid_email(email):
+    """Simple regex to check if the email format is valid."""
+    # Extract email from format like "Name <email@example.com>"
+    email_match = re.match(r'.*<(.+)>', email)  # Improved pattern to capture the email part
+    if email_match:
+        email = email_match.group(1)  # Extract the email address
+    regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(regex, email) is not None
+
 def check_external_apis(email_details, msg_id):
     status = "safe"
-    BASE_URL = 'http://192.168.0.2:6061'
-
+    BASE_URL = 'http://192.168.0.2:6061'  # Ensure this is the correct base URL
+    max_retries = 3  # Retry limit
     session = requests.Session()
+    
     session.headers.update({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     })
+
+    def send_request_with_retry(url, payload, retries=0):
+        """Helper function to send requests with retries."""
+        try:
+            response = session.post(url, json=payload, timeout=10)
+            
+            # Log the response from the API
+            logger.info(f"Received response for {url}: {response.status_code} - {response.text}")
+            
+            if response.status_code == 403:
+                logger.warning(f"Received 403 Forbidden response for {url} (retrying {retries + 1}/{max_retries})...")
+                if retries < max_retries:
+                    time.sleep(2 ** retries)  # Exponential backoff
+                    return send_request_with_retry(url, payload, retries + 1)
+                else:
+                    logger.error(f"API denied access for {url} after {max_retries} retries.")
+                    raise requests.exceptions.RequestException(f"Received 403 response after {max_retries} retries.")
+            
+            if response.status_code != 200:
+                raise requests.exceptions.RequestException(f"Received non-200 response: {response.status_code}")
+            
+            return response
+        
+        except requests.exceptions.Timeout:
+            if retries < max_retries:
+                logger.warning(f"Timeout occurred, retrying ({retries + 1}/{max_retries})...")
+                time.sleep(2 ** retries)  # Exponential backoff
+                return send_request_with_retry(url, payload, retries + 1)
+            else:
+                logger.error(f"API timeout for msg_id: {msg_id} after {max_retries} retries.")
+                raise
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Request Error: {e}")
+            raise
+
+    # Validate email addresses
+    if not is_valid_email(email_details['from_email']):
+        logger.error(f"Invalid 'from_email' format: {email_details['from_email']}")
+        return "unsafe"  # Or handle the status based on your business logic
+    if not is_valid_email(email_details['to_email']):
+        logger.error(f"Invalid 'to_email' format: {email_details['to_email']}")
+        return "unsafe"  # Or handle the status based on your business logic
 
     try:
         # 1. Content Check
@@ -139,12 +191,12 @@ def check_external_apis(email_details, msg_id):
             "from_ids": [email_details['from_email']],
             "to_ids": [email_details['to_email']],
             "body": email_details['body'],
+            "url": email_details.get('urls', []),
         }
-        logger.info(f"Sending content payload: {content_payload}")
-        content_response = session.post(
-            'http://192.168.0.2:6064/voxpd/process_content',
-            json=content_payload,
-            timeout=10,
+        logger.error(f"Sending content payload jeevan : {content_payload}")
+
+        content_response = send_request_with_retry(
+            f'http://192.168.0.2:6064/voxpd/process_content', content_payload
         )
         logger.info(f"Raw Content API Response: {content_response.text}")
 
@@ -152,17 +204,21 @@ def check_external_apis(email_details, msg_id):
             content_data = content_response.json()
             logger.info(f"Parsed Content API Response: {content_data}")
             if content_data.get('status') == 200 and content_data.get('data', {}).get('result') == 'unsafe':
-                status = "unsafe"  # Update to unsafe if detected
+                status = "unsafe"
 
         # 2. URL Check
-        if email_details['urls']:
-            for url in email_details['urls']:
+        if email_details.get('urls'):
+            valid_urls = [url for url in email_details['urls'] if url.startswith('http')]
+            if not valid_urls:
+                logger.warning("No valid URLs found in the email.")
+                return "unsafe"  # Handle the case when no valid URLs are present
+                
+            for url in valid_urls:
                 url_payload = {"msg_id": msg_id, "urls": [url]}
                 logger.info(f"Sending URL payload: {url_payload}")
-                url_response = session.post(
-                    f'{BASE_URL}/voxpd/process_url',
-                    json=url_payload,
-                    timeout=5,
+                
+                url_response = send_request_with_retry(
+                    f'http://192.168.0.2:6061/voxpd/process_url', url_payload
                 )
                 logger.info(f"Raw URL API Response for {url}: {url_response.text}")
 
@@ -170,44 +226,16 @@ def check_external_apis(email_details, msg_id):
                     url_data = url_response.json()
                     logger.info(f"Parsed URL API Response: {url_data}")
                     if url_data.get('status') == 200 and url_data.get('data', {}).get('result') == 'unsafe':
-                        status = "unsafe"  # Update to unsafe if detected
+                        status = "unsafe"
+        
 
-        # 3. Attachment Check
-        if email_details.get('attachments'):
-            for attachment in email_details['attachments']:
-                file_path = os.path.join(settings.MEDIA_ROOT, f'temp_attachments/{attachment}')
-                if os.path.exists(file_path):
-                    with open(file_path, 'rb') as f:
-                        files = {'attachment': (attachment, f, 'application/octet-stream')}
-                        attachment_payload = {'msg_id': msg_id}
-                        
-                        logger.info(f"Sending attachment: {attachment}")
-                        attachment_response = session.post(
-                            f'{BASE_URL}/voxpd/process_attachment',
-                            data=attachment_payload,
-                            files=files,
-                            timeout=5,
-                        )
-                        logger.info(f"Raw Attachment API Response for {attachment}: {attachment_response.text}")
-
-                        if attachment_response.text:
-                            attachment_data = attachment_response.json()
-                            logger.info(f"Parsed Attachment API Response: {attachment_data}")
-                            if attachment_data.get('status') == 200 and attachment_data.get('data', {}).get('result') == 'unsafe':
-                                status = "unsafe"  # Update to unsafe if detected
-
-    except requests.exceptions.Timeout:
-        logger.warning(f"API timeout for msg_id: {msg_id}")
-        status = "pending"  # Save as pending in case of timeout
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request Error: {e}")
-        status = "pending"  # Save as pending in case of a request error
     except Exception as e:
         logger.error(f"Unexpected Error: {e}")
         status = "pending"  # Save as pending for unexpected errors
 
     return status
 
+    return status # Save as pending for unexpected errors
 def check_email_authentication(from_email, eml_content, email_details, msg_id):
     start_time = time.time()
     
