@@ -676,25 +676,11 @@ class DisputeraiseSerializer(serializers.ModelSerializer):
         ]
 
 class DisputeISerializer(serializers.ModelSerializer):
-    """
-    Serializer for representing dispute information related to email details.
-
-    Fields:
-        - id (int): The unique identifier for the dispute info record.
-        - dispute (str): The unique identifier or reference for the dispute.
-        - user_comment (str): The comment from the user regarding the dispute.
-        - counter (int): A counter indicating the number of dispute interactions or updates.
-        - emaildetails_id (int): The primary key related to the `EmailDetails` instance, linking the dispute to specific email details.
-
-    Purpose:
-        This serializer is used to represent and serialize the `DisputeInfo` model, including details such as
-        the dispute reference, user comments, counter, and associated email details through a foreign key relationship.
-        It allows easy retrieval and display of dispute-related data for emails in API responses.
-    """
-    emaildetails_id = serializers.PrimaryKeyRelatedField(queryset=EmailDetails.objects.all(), source='emaildetails')
+    EmailDetails = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = DisputeInfo
-        fields = ['id', 'dispute', 'user_comment', 'counter', 'emaildetails_id']
+        fields = ['id', 'dispute', 'user_comment', 'counter','EmailDetails']
+
 class DisputeUpdateInfoSerializer(serializers.Serializer):
     msg_id = serializers.CharField(required=True)
     def fetch(self, validated_data):
@@ -721,4 +707,21 @@ class DisputeUpdateInfoSerializer(serializers.Serializer):
     
         except EmailDetails.DoesNotExist:
             raise serializers.ValidationError("No EmailDetails found with the provided msg_id.")
+class DisputeWithInfoSerializer(serializers.ModelSerializer):
+    # Nested serializer for DisputeInfo
+    dispute_info = DisputeInfoSerializer()
+
+    class Meta:
+        model = Dispute
+        fields = ['email', 'msg_id', 'counter', 'status', 'created_by', 'updated_by', 'emaildetails', 'dispute_info']
+
+    def create(self, validated_data):
+        dispute_info_data = validated_data.pop('dispute_info')
+        # Create the Dispute
+        dispute = Dispute.objects.create(**validated_data)
+        
+        # Create the DisputeInfo using the nested data
+        dispute_info = DisputeInfo.objects.create(dispute=dispute, **dispute_info_data)
+        
+        return dispute
         

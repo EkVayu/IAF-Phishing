@@ -93,7 +93,7 @@ class Dispute(models.Model):
         (SAFE, 'Safe'),
         (UNSAFE, 'Unsafe'),
     ]
-    emaildetails = models.ForeignKey('EmailDetails', on_delete=models.CASCADE, related_name='info')
+    emaildetails = models.ForeignKey('EmailDetails', on_delete=models.CASCADE, related_name='info',blank=True,null=True)
     msg_id = models.CharField(max_length=256, null=True, blank=True)
     email = models.EmailField()
     counter = models.IntegerField(null=True)
