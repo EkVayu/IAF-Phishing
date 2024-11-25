@@ -15,6 +15,8 @@ import dns.resolver
 from plugin.models import EmailDetails, URL, RoughURL, RoughDomain, RoughMail, Attachment
 import time
 import ipaddress
+from requests.adapters import HTTPAdapter, Retry
+import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -117,71 +119,58 @@ def verify_dmarc(from_email):
         logger.error(f"Error in DMARC check for {domain}: {e}")
         return False
 
-import os
-import re
-import requests
-from requests.adapters import HTTPAdapter, Retry
-from django.conf import settings
-import logging
 
-logger = logging.getLogger(__name__)
 
 def check_external_apis(email_details, msg_id):
     status = "safe"
+    BASE_URL = 'http://192.168.0.2:6061'
 
-    def clean_email(email_str):
-        email = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', email_str)
-        return email.group(0) if email else ''
-
-    from_email = clean_email(email_details['from_email'])
-    to_email = clean_email(email_details['to_email'])
-
-    # Retry logic setup
     session = requests.Session()
-    retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
-    session.mount('https://', HTTPAdapter(max_retries=retries))
+    session.headers.update({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    })
 
     try:
         # 1. Content Check
         content_payload = {
             "msg_id": msg_id,
             "subject": email_details['subject'],
-            "from_ids": [from_email],
-            "to_ids": [to_email],
-            "body": email_details['body']
+            "from_ids": [email_details['from_email']],
+            "to_ids": [email_details['to_email']],
+            "body": email_details['body'],
         }
-
         logger.info(f"Sending content payload: {content_payload}")
         content_response = session.post(
-            'https://anti-phishing.voxomos.ai/voxpd/process_content',
+            f'{BASE_URL}/voxpd/process_content',
             json=content_payload,
-            timeout=10  # Increased timeout for content check
+            timeout=10,
         )
-        content_data = content_response.json()
-        logger.info(f"Content API Response: {content_data}")
+        logger.info(f"Raw Content API Response: {content_response.text}")
 
-        if content_data.get('status') == 200 and content_data.get('data', {}).get('result') == 'unsafe':
-            return "unsafe"
+        if content_response.text:
+            content_data = content_response.json()
+            logger.info(f"Parsed Content API Response: {content_data}")
+            if content_data.get('status') == 200 and content_data.get('data', {}).get('result') == 'unsafe':
+                status = "unsafe"  # Update to unsafe if detected
 
         # 2. URL Check
-        if email_details.get('urls'):
+        if email_details['urls']:
             for url in email_details['urls']:
-                url_payload = {
-                    "msg_id": msg_id,
-                    "urls": [url]
-                }
-
+                url_payload = {"msg_id": msg_id, "urls": [url]}
                 logger.info(f"Sending URL payload: {url_payload}")
                 url_response = session.post(
-                    'https://anti-phishing.voxomos.ai/voxpd/process_url',
+                    f'{BASE_URL}/voxpd/process_url',
                     json=url_payload,
-                    timeout=3 # Increased timeout for URL check
+                    timeout=5,
                 )
-                url_data = url_response.json()
-                logger.info(f"URL API Response for {url}: {url_data}")
+                logger.info(f"Raw URL API Response for {url}: {url_response.text}")
 
-                if url_data.get('status') == 200 and url_data.get('data', {}).get('result') == 'unsafe':
-                    return "unsafe"
+                if url_response.text:
+                    url_data = url_response.json()
+                    logger.info(f"Parsed URL API Response: {url_data}")
+                    if url_data.get('status') == 200 and url_data.get('data', {}).get('result') == 'unsafe':
+                        status = "unsafe"  # Update to unsafe if detected
 
         # 3. Attachment Check
         if email_details.get('attachments'):
@@ -191,33 +180,33 @@ def check_external_apis(email_details, msg_id):
                     with open(file_path, 'rb') as f:
                         files = {'attachment': (attachment, f, 'application/octet-stream')}
                         attachment_payload = {'msg_id': msg_id}
-
-                        logger.info(f"Sending attachment payload for: {attachment}")
+                        
+                        logger.info(f"Sending attachment: {attachment}")
                         attachment_response = session.post(
-                            'https://anti-phishing.voxomos.ai/voxpd/process_attachment',
+                            f'{BASE_URL}/voxpd/process_attachment',
                             data=attachment_payload,
                             files=files,
-                            timeout=3  # Increased timeout for attachment check
+                            timeout=5,
                         )
-                        attachment_data = attachment_response.json()
-                        logger.info(f"Attachment API Response for {attachment}: {attachment_data}")
+                        logger.info(f"Raw Attachment API Response for {attachment}: {attachment_response.text}")
 
-                        if attachment_data.get('status') == 200 and attachment_data.get('data', {}).get('result') == 'unsafe':
-                            return "unsafe"
-
-        return status
+                        if attachment_response.text:
+                            attachment_data = attachment_response.json()
+                            logger.info(f"Parsed Attachment API Response: {attachment_data}")
+                            if attachment_data.get('status') == 200 and attachment_data.get('data', {}).get('result') == 'unsafe':
+                                status = "unsafe"  # Update to unsafe if detected
 
     except requests.exceptions.Timeout:
         logger.warning(f"API timeout for msg_id: {msg_id}")
-        return "pending"
-    except requests.RequestException as e:
-        logger.error(f"API request error: {e}")
-        return "pending"
+        status = "pending"  # Save as pending in case of timeout
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request Error: {e}")
+        status = "pending"  # Save as pending in case of a request error
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-        return "pending"
+        logger.error(f"Unexpected Error: {e}")
+        status = "pending"  # Save as pending for unexpected errors
 
-
+    return status
 
 def check_email_authentication(from_email, eml_content, email_details, msg_id):
     start_time = time.time()
