@@ -142,7 +142,7 @@ def check_external_apis(email_details, msg_id):
         }
         logger.info(f"Sending content payload: {content_payload}")
         content_response = session.post(
-            f'{BASE_URL}/voxpd/process_content',
+            'http://192.168.0.2:6064/voxpd/process_content',
             json=content_payload,
             timeout=10,
         )

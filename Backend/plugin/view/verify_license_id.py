@@ -9,14 +9,12 @@ def verify_lid(data):
     try:
         # Extract required fields from the input data
         license_id = data.get('licenseId')
-        uuid = data.get('uuid')
-        mac_address = data.get('macAddress')
-        browser = data.get('browser')
+        
 
         # Validate mandatory fields
-        if not license_id or not uuid or not mac_address or not browser:
+        if not license_id:
             return JsonResponse({
-                "message": "Missing required fields (licenseId, uuid, macAddress, browser)",
+                "message": "Missing required fields (licenseId)",
                 "STATUS": "Error",
                 "Code": 0
             }, status=400)
@@ -63,65 +61,10 @@ def verify_lid(data):
                 "message": "License allocation mismatch. Please contact the administrator.",
                 "STATUS": "Wrong Allocation",
                 "Code": 0
-            }, status=400)
-
-        # Check if the mac_address and uuid are already registered
-        existing_system = UserSystemDetails.objects.filter(license_allocation=allocation, uuid=uuid).first()
-        if existing_system:
-            # If the mac_address matches, proceed
-            if existing_system.mac_address == mac_address:
-                # Check if the browser is already registered
-                if SystemBrowserDetails.objects.filter(device_information=existing_system, browser=browser).exists():
-                    return JsonResponse({
-                        "message": "This device with browser are already registered.",
-                        "STATUS": "Already Registered",
-                        "Code": 0
-                    }, status=400)
-                else:
-                    # Allow new browser registration for the same device
-                    SystemBrowserDetails.objects.create(
-                        device_information=existing_system,
-                        ipv4=data.get('ipAddress'),
-                        browser=browser
-                    )
-                    return JsonResponse({
-                        "message": "New browser registered successfully.",
-                        "STATUS": "Browser Registered",
-                        "Code": 1,
-                        "data": {"email": allocated_to}
-                    }, status=200)
-            else:
-                # mac_address mismatch
-                return JsonResponse({
-                    "message": "License is already registered on another device.",
-                    "STATUS": "Device Mismatch",
-                    "Code": 0
-                }, status=400)
-
-        # If no existing record, create new system details and browser registration
-        with transaction.atomic():
-            user_system_details, created = UserSystemDetails.objects.update_or_create(
-            uuid=uuid,
-        defaults={
-        "license_allocation": allocation,
-        "mac_address": mac_address,
-        "serial_number": data.get('serialNumber'),
-        "os_type": data.get('osType'),
-        "os_platform": data.get('osPlatform'),
-        "os_release": data.get('osRelease'),
-        "host_name": data.get('hostName'),
-        "architecture": data.get('architecture'),
-    }
-)
-            # Register the browser details
-            SystemBrowserDetails.objects.create(
-                device_information=user_system_details,
-                ipv4=data.get('ipAddress'),
-                browser=browser
-            )
+            }, status=400)       
 
         return JsonResponse({
-            "message": "License and browser details registered successfully.",
+            "message": "License verify  successfully.",
             "STATUS": "Success",
             "Code": 1,
             "data": {"email": allocated_to}
