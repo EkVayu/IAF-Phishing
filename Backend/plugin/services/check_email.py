@@ -193,7 +193,7 @@ def check_external_apis(email_details, msg_id):
             "body": email_details['body'],
             "url": email_details.get('urls', []),
         }
-        logger.error(f"Sending content payload jeevan : {content_payload}")
+        logger.info(f"Sending content payload : {content_payload}")
 
         content_response = send_request_with_retry(
             f'http://192.168.0.2:6064/voxpd/process_content', content_payload
@@ -228,6 +228,7 @@ def check_external_apis(email_details, msg_id):
                     if url_data.get('status') == 200 and url_data.get('data', {}).get('result') == 'unsafe':
                         status = "unsafe"
         
+        # Optionally handle attachments or other checks here...
 
     except Exception as e:
         logger.error(f"Unexpected Error: {e}")
@@ -332,8 +333,8 @@ def check_email(request):
             for url in email_details['urls']:
                 URL.objects.create(email_detail=email_entry, url=url)
 
-            for attachment_filename in email_details['attachments']:
-                Attachment.objects.create(email_detail=email_entry, name=attachment_filename)
+            # for attachment_filename in email_details['attachments']:
+            #     attachment_file_path = newpath_set / attachment_filename
 
             return JsonResponse({
                 "message": "Email processed successfully",
