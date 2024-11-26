@@ -1030,7 +1030,14 @@ def browser_uninstall(request):
 
     return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)
 
-@csrf_exempt # Ensure the user is logged in before allowing dispute creation
+def extract_email(email_string):
+    """Extract clean email address from different formats"""
+    import re
+    pattern = r'(?:"?([^"]*)"?\s)?(?:<)?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(?:>)?'
+    match = re.search(pattern, email_string)
+    return match.group(2) if match else email_string
+
+@csrf_exempt
 def raise_dispute_view(request):
     """
     Handle raising a dispute and creating the related dispute info in a single function.
@@ -1038,68 +1045,65 @@ def raise_dispute_view(request):
     """
     if request.method == 'POST':
         try:
-            # Parse the JSON data from the request body
             data = json.loads(request.body)
-
-            # Dynamically get the user ID (logged-in user)
             user_id = request.user.id
+            
+            # Clean the email address from the input
+            clean_email = extract_email(data["email"])
 
-            # Fetch the EmailDetails object that matches the email
-            email_details_qs = EmailDetails.objects.filter(recievers_email=data["email"],msg_id=data["msgId"])
+            # Fetch EmailDetails with cleaned email
+            email_details_qs = EmailDetails.objects.filter(
+                recievers_email__icontains=clean_email, 
+                msg_id=data["msgId"]
+            )
 
             if not email_details_qs.exists():
                 return JsonResponse({"error": "Email details not found."}, status=404)
 
-            # Retrieve the EmailDetails instance
             email_details = email_details_qs.first()
 
-            # Check if a Dispute already exists for this email and msg_id
-            dispute_qs = Dispute.objects.filter(email=data["email"], msg_id=data["msgId"])
+            # Use cleaned email for dispute lookup
+            dispute_qs = Dispute.objects.filter(email=clean_email, msg_id=data["msgId"])
+            
             if dispute_qs.exists():
-                # If a dispute exists, retrieve it
                 dispute = dispute_qs.first()
 
-                # Check if the counter is >= 3
                 if dispute.counter >= 3:
                     return JsonResponse(
                         {"error": "Cannot raise dispute. Counter has reached the limit of 3."},
                         status=400
                     )
 
-                # Increment the counter
                 dispute.counter = dispute.counter + 1 if dispute.counter else 1
                 dispute.updated_by_id = user_id
                 dispute.save()
             else:
-                # Create a new Dispute object
                 dispute_data = {
-                    'email': data["email"],
+                    'email': clean_email,
                     'msg_id': data["msgId"],
-                    'counter': 1,  # Initial counter value
-                    'status': Dispute.UNSAFE,  # Set default status to Unsafe
+                    'counter': 1,
+                    'status': Dispute.UNSAFE,
                     'created_by_id': user_id,
                     'updated_by_id': user_id,
-                    'emaildetails': email_details,  # Pass the EmailDetails instance
+                    'emaildetails': email_details,
                 }
                 dispute = Dispute.objects.create(**dispute_data)
 
-            # Step 2: Create the DisputeInfo object and increment its counter
             dispute_info_data = {
-                'dispute': dispute,  # Link to the created or updated Dispute
+                'dispute': dispute,
                 'user_comment': data["userComment"],
-                'counter': dispute.counter,  # Sync counter with the Dispute counter
+                'counter': dispute.counter,
                 'created_by_id': user_id,
                 'updated_by_id': user_id,
             }
             dispute_info = DisputeInfo.objects.create(**dispute_info_data)
 
-            # Step 3: Return a JSON response with the created dispute and dispute info
             response_data = {
                 "dispute_id": dispute.id,
                 "email": dispute.email,
                 "msg_id": dispute.msg_id,
                 "status": dispute.get_status_display(),
-                "counter": dispute.counter,  # Current counter value
+                "counter": dispute.counter,
                 "user_comment": dispute_info.user_comment,
                 "dispute_info_id": dispute_info.id,
             }
@@ -1112,7 +1116,6 @@ def raise_dispute_view(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method. Use POST."}, status=405)
-
 @csrf_exempt
 @api_view(['POST'])
 def pending_status_check(request):
