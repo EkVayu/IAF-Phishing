@@ -332,6 +332,7 @@ class SystemBrowserDetails(models.Model):
     browser = models.CharField(max_length=100, choices=BROWSER_CHOICES, blank=True, null=True)
     registered_at = models.DateTimeField(auto_now_add=True)
     unregistered_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'system_browser_details'
