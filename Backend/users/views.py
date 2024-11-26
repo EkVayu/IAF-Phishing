@@ -562,8 +562,11 @@ class LicenseListView(viewsets.ModelViewSet):
             valid_till = datetime.strptime(valid_till_str, '%Y-%m-%d %H:%M:%S') if valid_till_str else None
         except ValueError:
             return Response({"error": "Invalid date format. Use 'YYYY-MM-DD HH:MM:SS' format."}, status=status.HTTP_400_BAD_REQUEST)
-        valid_from = timezone.make_aware(valid_from) if valid_from else timezone.now()
-        valid_till = timezone.make_aware(valid_till) if valid_till else timezone.now()
+        
+        if valid_from:
+            valid_from = valid_from.replace(tzinfo=None)
+        if valid_till:
+            valid_till = valid_till.replace(tzinfo=None)
         last_license = License.objects.filter(license_id__startswith="LIC-").order_by('-license_id').first()
         base_license_number = int(last_license.license_id.split('-')[1]) + 1 if last_license else 1
         licenses_to_create = []
@@ -575,7 +578,6 @@ class LicenseListView(viewsets.ModelViewSet):
                 organisation=organisation,
                 valid_from=valid_from,
                 valid_till=valid_till,
-                created_timestamp=timezone.now()
             )
             licenses_to_create.append(license)
         if licenses_to_create:
