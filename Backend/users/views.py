@@ -572,7 +572,7 @@ class LicenseListView(viewsets.ModelViewSet):
         licenses_to_create = []
         for i in range(number_of_licenses):
             serial_number = base_license_number + i
-            license_id = f"LIC-{serial_number:04d}"
+            license_id = f"LIC-{serial_number:05d}"
             license = License(
                 license_id=license_id,
                 organisation=organisation,
