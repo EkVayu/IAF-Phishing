@@ -39,6 +39,7 @@ from PyPDF2 import PdfReader, PdfWriter
 from rest_framework.views import APIView
 import time
 from django.utils.timezone import now
+from rest_framework.decorators import api_view
 @csrf_exempt
 def registration_view(request):
     if request.method == 'POST':
@@ -1044,7 +1045,7 @@ def raise_dispute_view(request):
             user_id = request.user.id
 
             # Fetch the EmailDetails object that matches the email
-            email_details_qs = EmailDetails.objects.filter(recievers_email=data["email"])
+            email_details_qs = EmailDetails.objects.filter(recievers_email=data["email"],msg_id=data["msgId"])
 
             if not email_details_qs.exists():
                 return JsonResponse({"error": "Email details not found."}, status=404)
@@ -1111,3 +1112,33 @@ def raise_dispute_view(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid HTTP method. Use POST."}, status=405)
+
+@csrf_exempt
+@api_view(['POST'])
+def pending_status_check(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            msg_id = data.get('msgId')
+            email = data.get('email')
+
+            
+            email_details = EmailDetails.objects.filter(
+                msg_id=msg_id,
+                status='pending'
+            ).first()
+
+            if not email_details:
+                return JsonResponse({"error": "No pending email found for given message ID."}, status=404)
+
+            return Response({
+                "status": email_details.status,
+                "msgId": email_details.msg_id
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)
