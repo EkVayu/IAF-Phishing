@@ -43,3 +43,4 @@ class RoughDomainAdmin(admin.ModelAdmin):
     search_fields = ('ip', 'prototype')
 
 admin.site.register(RoughDomain, RoughDomainAdmin)
+admin.site.register(LicenseAllocation)
