@@ -47,10 +47,24 @@ def check_eml(eml_content, newpath_set, msg_id):
 
 def extract_body(msg):
     for part in msg.iter_parts():
-        if part.get_content_type() == 'text/plain':
-            return part.get_payload(decode=True).decode(part.get_content_charset(), errors='ignore')
-        elif part.get_content_type() == 'text/html':
-            return part.get_payload(decode=True).decode(part.get_content_charset(), errors='ignore')
+        try:
+            if part.get_content_type() == 'text/plain':
+                body = part.get_payload(decode=True)
+                charset = part.get_content_charset() or 'utf-8'
+                decoded_body = body.decode(charset, errors='ignore')
+                # Clean and normalize the text before database insertion
+                cleaned_body = ''.join(char for char in decoded_body if ord(char) < 65536)
+                return cleaned_body
+            elif part.get_content_type() == 'text/html':
+                body = part.get_payload(decode=True)
+                charset = part.get_content_charset() or 'utf-8'
+                decoded_body = body.decode(charset, errors='ignore')
+                # Clean and normalize the text before database insertion
+                cleaned_body = ''.join(char for char in decoded_body if ord(char) < 65536)
+                return cleaned_body
+        except Exception as e:
+            logger.error(f"Error processing email body part: {e}")
+            continue
     return ""
 
 def extract_attachments(msg, newpath_set):
@@ -130,10 +144,18 @@ def is_valid_email(email):
     regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(regex, email) is not None
 
+def extract_email_from_string(email_string):
+    """Extract email address from a string like 'Name <email@domain.com>'"""
+    import re
+    email_pattern = r'<(.+?)>|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
+    match = re.search(email_pattern, email_string)
+    return match.group(1) or match.group(2) if match else email_string
+
 def check_external_apis(email_details, msg_id):
+    logger.info(f"Starting AI check for message ID: {msg_id}")
     status = "safe"
-    BASE_URL = 'http://192.168.0.2:6061'  # Ensure this is the correct base URL
-    max_retries = 3  # Retry limit
+    BASE_URL = 'http://192.168.0.2:6061'
+    max_retries = 3
     session = requests.Session()
     
     session.headers.update({
@@ -142,101 +164,97 @@ def check_external_apis(email_details, msg_id):
     })
 
     def send_request_with_retry(url, payload, retries=0):
-        """Helper function to send requests with retries."""
         try:
             response = session.post(url, json=payload, timeout=10)
-            
-            # Log the response from the API
-            logger.info(f"Received response for {url}: {response.status_code} - {response.text}")
+            logger.info(f"AI Response received for {url}: {response.status_code} - {response.text}")
             
             if response.status_code == 403:
-                logger.warning(f"Received 403 Forbidden response for {url} (retrying {retries + 1}/{max_retries})...")
                 if retries < max_retries:
-                    time.sleep(2 ** retries)  # Exponential backoff
+                    time.sleep(2 ** retries)
                     return send_request_with_retry(url, payload, retries + 1)
-                else:
-                    logger.error(f"API denied access for {url} after {max_retries} retries.")
-                    raise requests.exceptions.RequestException(f"Received 403 response after {max_retries} retries.")
-            
-            if response.status_code != 200:
-                raise requests.exceptions.RequestException(f"Received non-200 response: {response.status_code}")
+                raise requests.exceptions.RequestException(f"Received 403 response after {max_retries} retries.")
             
             return response
         
         except requests.exceptions.Timeout:
             if retries < max_retries:
-                logger.warning(f"Timeout occurred, retrying ({retries + 1}/{max_retries})...")
-                time.sleep(2 ** retries)  # Exponential backoff
+                time.sleep(2 ** retries)
                 return send_request_with_retry(url, payload, retries + 1)
-            else:
-                logger.error(f"API timeout for msg_id: {msg_id} after {max_retries} retries.")
-                raise
+            logger.error(f"AI Analysis Timeout: Request timed out after {max_retries} retries")
+            return "pending"
+            
         except requests.exceptions.RequestException as e:
-            logger.error(f"Request Error: {e}")
+            logger.error(f"AI Request Error: {e}")
             raise
 
-    # Validate email addresses
-    if not is_valid_email(email_details['from_email']):
-        logger.error(f"Invalid 'from_email' format: {email_details['from_email']}")
-        return "unsafe"  # Or handle the status based on your business logic
-    if not is_valid_email(email_details['to_email']):
-        logger.error(f"Invalid 'to_email' format: {email_details['to_email']}")
-        return "unsafe"  # Or handle the status based on your business logic
-
     try:
-        # 1. Content Check
+        from_email = extract_email_from_string(email_details['from_email'])
+        to_email = extract_email_from_string(email_details['to_email'])
+        logger.info(f"AI Processing emails - From: {from_email}, To: {to_email}")
+
+        if not is_valid_email(from_email) or not is_valid_email(to_email):
+            logger.warning(f"AI Email Validation: Invalid email format detected")
+            return "unsafe"
+
+        # Content Check
         content_payload = {
             "msg_id": msg_id,
             "subject": email_details['subject'],
-            "from_ids": [email_details['from_email']],
-            "to_ids": [email_details['to_email']],
+            "from_ids": [from_email],
+            "to_ids": [to_email],
             "body": email_details['body'],
-            "url": email_details.get('urls', []),
+            "urls": email_details.get('urls', [])
         }
-        logger.info(f"Sending content payload : {content_payload}")
+        logger.info(f"AI Content Analysis Request: {content_payload}")
 
         content_response = send_request_with_retry(
-            f'http://192.168.0.2:6064/voxpd/process_content', content_payload
+            f'http://192.168.0.2:6064/voxpd/process_content',
+            content_payload
         )
-        logger.info(f"Raw Content API Response: {content_response.text}")
-
-        if content_response.text:
-            content_data = content_response.json()
-            logger.info(f"Parsed Content API Response: {content_data}")
-            if content_data.get('status') == 200 and content_data.get('data', {}).get('result') == 'unsafe':
-                status = "unsafe"
-
-        # 2. URL Check
-        if email_details.get('urls'):
-            valid_urls = [url for url in email_details['urls'] if url.startswith('http')]
-            if not valid_urls:
-                logger.warning("No valid URLs found in the email.")
-                return "unsafe"  # Handle the case when no valid URLs are present
-                
-            for url in valid_urls:
-                url_payload = {"msg_id": msg_id, "urls": [url]}
-                logger.info(f"Sending URL payload: {url_payload}")
-                
-                url_response = send_request_with_retry(
-                    f'http://192.168.0.2:6061/voxpd/process_url', url_payload
-                )
-                logger.info(f"Raw URL API Response for {url}: {url_response.text}")
-
-                if url_response.text:
-                    url_data = url_response.json()
-                    logger.info(f"Parsed URL API Response: {url_data}")
-                    if url_data.get('status') == 200 and url_data.get('data', {}).get('result') == 'unsafe':
-                        status = "unsafe"
         
-        # Optionally handle attachments or other checks here...
+        content_data = content_response.json()
+        logger.info(f"AI Content Analysis Response: {content_data}")
+        
+        if content_data.get('status') == 200 and content_data.get('data', {}).get('result') == 'unsafe':
+            logger.warning(f"AI Content Analysis Result: Unsafe content detected")
+            return "unsafe"
+
+        # URL Check - only if URLs exist
+        if email_details.get('urls'):
+            valid_urls = [url.strip() for url in email_details['urls'] if url.strip().startswith('http')]
+            logger.info(f"AI URL Analysis: Processing {len(valid_urls)} valid URLs")
+            
+            if valid_urls:
+                for url in valid_urls:
+                    url_payload = {
+                        "msg_id": msg_id,
+                        "url": [url]
+                    }
+                    logger.info(f"AI URL Analysis Request for {url}: {url_payload}")
+                    
+                    url_response = send_request_with_retry(
+                        f'{BASE_URL}/voxpd/process_url',
+                        url_payload
+                    )
+                    
+                    url_data = url_response.json()
+                    logger.info(f"AI URL Analysis Response for {url}: {url_data}")
+                    
+                    if url_data.get('status') == 200 and url_data.get('data'):
+                        if url_data['data'][0].get('result') == 'unsafe':
+                            logger.warning(f"AI URL Analysis Result: Unsafe URL detected - {url}")
+                            return "unsafe"
+            else:
+                logger.warning("AI URL Analysis: No valid URLs found in email")
+                return "unsafe"
+
+        logger.info(f"AI Final Analysis Result: {status}")
+        return status
 
     except Exception as e:
-        logger.error(f"Unexpected Error: {e}")
-        status = "pending"  # Save as pending for unexpected errors
+        logger.error(f"AI Analysis Error: {str(e)}")
+        return "pending"
 
-    return status
-
-    return status # Save as pending for unexpected errors
 def check_email_authentication(from_email, eml_content, email_details, msg_id):
     start_time = time.time()
     
@@ -317,30 +335,31 @@ def check_email(request):
             )
             email_entry.save()
 
-            email_status = check_email_authentication(
-                email_details['from_email'], 
+            # Get authentication status
+            auth_status = check_email_authentication(
+                email_details['from_email'],
                 eml_content,
                 email_details,
                 msg_id
             )
 
-            if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
-                email_entry.status = "pending"
-            else:
-                email_entry.status = email_status
+            # Get AI analysis status
+            ai_status = check_external_apis(email_details, msg_id)
+            
+            # Determine final status
+            final_status = "safe" if auth_status == "safe" and ai_status == "safe" else "unsafe"
+
+            email_entry.status = final_status
             email_entry.save()
 
             for url in email_details['urls']:
                 URL.objects.create(email_detail=email_entry, url=url)
 
-            # for attachment_filename in email_details['attachments']:
-            #     attachment_file_path = newpath_set / attachment_filename
-
             return JsonResponse({
                 "message": "Email processed successfully",
                 "STATUS": "Success",
                 "Code": 1,
-                "email_status": email_entry.status,
+                "email_status": final_status,
                 "messageId": msg_id,
             })
 
