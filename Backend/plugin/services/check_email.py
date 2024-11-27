@@ -335,20 +335,25 @@ def check_email(request):
             )
             email_entry.save()
 
-            # Get authentication status
-            auth_status = check_email_authentication(
-                email_details['from_email'],
-                eml_content,
-                email_details,
-                msg_id
-            )
-
-            # Get AI analysis status
+            # First get AI analysis status
             ai_status = check_external_apis(email_details, msg_id)
+            logger.info(f"Initial AI Analysis Status: {ai_status}")
             
-            # Determine final status
-            final_status = "safe" if auth_status == "safe" and ai_status == "safe" else "unsafe"
+            # Only check authentication if AI check is safe
+            if ai_status == "safe":
+                auth_status = check_email_authentication(
+                    email_details['from_email'],
+                    eml_content,
+                    email_details,
+                    msg_id
+                )
+                logger.info(f"Authentication Status: {auth_status}")
+                final_status = auth_status
+            else:
+                final_status = ai_status
 
+            logger.info(f"Setting Final Status: {final_status}")
+            
             email_entry.status = final_status
             email_entry.save()
 
