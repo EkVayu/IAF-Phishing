@@ -1128,7 +1128,7 @@ def pending_status_check(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            msg_id = data.get('msgId')
+            msg_id = data.get('messageId')
             email = data.get('email')
 
             # Filter by both msg_id and email
@@ -1149,8 +1149,8 @@ def pending_status_check(request):
                 "status": "success",
                 "code": 200,
                 "data": {
-                    "status": email_details.status,
-                    "msgId": email_details.msg_id,
+                    "eml_status": email_details.status,
+                    "messageId": email_details.msg_id,
                     "email": email_details.recievers_email
                 }
             }, status=200)
