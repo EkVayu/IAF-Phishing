@@ -1131,23 +1131,45 @@ def pending_status_check(request):
             msg_id = data.get('msgId')
             email = data.get('email')
 
-            
+            # Filter by both msg_id and email
             email_details = EmailDetails.objects.filter(
                 msg_id=msg_id,
-                status='pending'
+                recievers_email__icontains=email  # Using icontains for case-insensitive email matching
             ).first()
 
             if not email_details:
-                return JsonResponse({"error": "No pending email found for given message ID."}, status=404)
+                return JsonResponse({
+                    "message": "Email details not found",
+                    "status": "error",
+                    "code": 404
+                }, status=404)
 
             return Response({
-                "status": email_details.status,
-                "msgId": email_details.msg_id
+                "message": "Email details retrieved successfully",
+                "status": "success",
+                "code": 200,
+                "data": {
+                    "status": email_details.status,
+                    "msgId": email_details.msg_id,
+                    "email": email_details.recievers_email
+                }
             }, status=200)
 
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+            return JsonResponse({
+                "message": "Invalid JSON format",
+                "status": "error", 
+                "code": 400
+            }, status=400)
         except Exception as e:
-            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+            return JsonResponse({
+                "message": f"An error occurred: {str(e)}",
+                "status": "error",
+                "code": 500
+            }, status=500)
 
-    return JsonResponse({"error": "Invalid request method. Only POST is allowed."}, status=405)
+    return JsonResponse({
+        "message": "Invalid request method. Only POST is allowed",
+        "status": "error",
+        "code": 405
+    }, status=405)

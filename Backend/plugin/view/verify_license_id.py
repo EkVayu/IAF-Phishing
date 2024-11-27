@@ -1,8 +1,6 @@
 from django.http import JsonResponse
 from django.utils import timezone
-from django.db import transaction
 from users.models import License, LicenseAllocation
-from plugin.models import UserSystemDetails, SystemBrowserDetails
 
 
 def verify_lid(data):
@@ -21,14 +19,19 @@ def verify_lid(data):
 
         # Fetch license
         try:
-            license = License.objects.get(hashed_license_id=license_id)
+            license = License.objects.get(hashed_license_id = license_id)
         except License.DoesNotExist:
             return JsonResponse({
                 "message": "License not found",
                 "STATUS": "Not Found",
                 "Code": 0
             }, status=404)
-
+        if license.hashed_license_id != license_id:
+            return JsonResponse({
+                "message": "License id not matched",
+                "STATUS": "Found",
+                "Code": 1
+            }, status=200)
         # Check license validity dates
         if not license.valid_from or not license.valid_till:
             return JsonResponse({
@@ -64,7 +67,7 @@ def verify_lid(data):
             }, status=400)       
 
         return JsonResponse({
-            "message": "License verify  successfully.",
+            "message": "License verified successfully.",
             "STATUS": "Success",
             "Code": 1,
             "data": {"email": allocated_to}
