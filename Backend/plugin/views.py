@@ -1134,7 +1134,7 @@ def pending_status_check(request):
             # Filter by both msg_id and email
             email_details = EmailDetails.objects.filter(
                 msg_id=msg_id,
-                recievers_email__icontains=email  # Using icontains for case-insensitive email matching
+                recievers_email__icontains=email
             ).first()
 
             if not email_details:
