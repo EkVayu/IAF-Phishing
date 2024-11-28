@@ -650,34 +650,59 @@ class DisputeUpdateSerializer(serializers.Serializer):
             return email_detail, admin_comment
         except EmailDetails.DoesNotExist:
             raise serializers.ValidationError("No EmailDetails found with the provided msg_id.")
-class DisputeraiseSerializer(serializers.ModelSerializer):
+class DisputeraiseSerializer(serializers.Serializer):
     """
-    Serializer for the DisputeInfo model with specific EmailDetails fields.
+    Serializer to include full data for each dispute with grouped comments.
     """
-    dispute_id = serializers.IntegerField(source='dispute.id', read_only=True)  # Add Dispute ID
-    recievers_email = serializers.CharField(source='dispute.emaildetails.recievers_email', allow_null=True)
-    senders_email = serializers.CharField(source='dispute.emaildetails.senders_email', allow_null=True)
-    subject = serializers.CharField(source='dispute.emaildetails.subject', allow_null=True)
-    status = serializers.CharField(source='dispute.emaildetails.status', allow_null=True)
-    msg_id = serializers.CharField(source='dispute.emaildetails.msg_id', allow_null=True)
+    dispute_id = serializers.CharField(source='latest_dispute_id', read_only=True)
+    msg_id = serializers.CharField(source='dispute__emaildetails__msg_id')
+    # email = serializers.EmailField(source='dispute__emaildetails__recievers_email')
+    max_counter = serializers.IntegerField()
+    recievers_email = serializers.CharField(source='dispute__emaildetails__recievers_email', allow_null=True)
+    senders_email = serializers.CharField(source='dispute__emaildetails__senders_email', allow_null=True)
+    subject = serializers.CharField(source='dispute__emaildetails__subject', allow_null=True)
+    status = serializers.CharField(source='dispute__emaildetails__status', allow_null=True)
+    comments = serializers.SerializerMethodField()
+    # dispute_id = serializers.CharField(source='latest_dispute_id', read_only=True)
+
+    def get_comments(self, obj):
+        msg_id = obj['dispute__emaildetails__msg_id']
+        email = obj['dispute__emaildetails__recievers_email']
+
+        # Get related comments
+        dispute_info_queryset = DisputeInfo.objects.filter(
+            dispute__emaildetails__msg_id=msg_id,
+            dispute__emaildetails__recievers_email=email,
+        ).values('user_comment', 'admin_comment', 'created_at')
+
+        comments = []
+        for info in dispute_info_queryset:
+            if info['user_comment']:
+                comments.append({
+                    "comment_type": "user",
+                    "comment": info['user_comment'],
+                    "created_at": info['created_at'],
+                })
+            if info['admin_comment']:
+                comments.append({
+                    "comment_type": "admin",
+                    "comment": info['admin_comment'],
+                    "created_at": info['created_at'],
+                })
+        return comments
+
     class Meta:
-        model = DisputeInfo
         fields = [
-            'id',
             'dispute_id',
-            'counter',
-            'created_at',
-            'updated_at',
+            'msg_id',
+            'email',
+            'max_counter',
             'recievers_email',
             'senders_email',
             'subject',
             'status',
-            'user_comment',
-            'admin_comment',
-            'msg_id',
-
+            'comments',
         ]
-
 class DisputeISerializer(serializers.ModelSerializer):
     EmailDetails = serializers.SerializerMethodField(read_only=True)
     class Meta:

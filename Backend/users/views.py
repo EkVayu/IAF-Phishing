@@ -42,7 +42,6 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.generics import CreateAPIView
 from django.utils.timezone import localtime
-from django.template.loader import render_to_string
 
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
@@ -1551,34 +1550,63 @@ class ResetPassword(APIView):
             oldest_password.delete()
         return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
 class DisputeRaiseDataView(APIView):
-    """
-    View to get disputes where the counter is not null and include specific email details.
-    """
     def get(self, request, *args, **kwargs):
         try:
-            disputes = DisputeInfo.objects.select_related('dispute__emaildetails').filter(counter__isnull=False)
-            if not disputes.exists():
+            # Fetch disputes with unique msg_id and recievers_email
+            disputes = (
+                DisputeInfo.objects
+                .select_related('dispute__emaildetails')  # Select related emaildetails
+                .values(
+                    'dispute__emaildetails__msg_id',  # Unique identifier for messages
+                    'dispute__emaildetails__recievers_email',  # Email of receiver
+                    'dispute__emaildetails__senders_email',  # Include sender's email
+                    'dispute__emaildetails__subject',  # Include subject
+                    'dispute__emaildetails__status',  # Include status
+                )
+                .annotate(
+                    max_counter=Max('counter'),  # Get the max counter
+                    latest_dispute_id=Subquery(  # Get the latest dispute_id
+                        DisputeInfo.objects.filter(
+                            dispute__emaildetails__msg_id=OuterRef('dispute__emaildetails__msg_id'),
+                            dispute__emaildetails__recievers_email=OuterRef('dispute__emaildetails__recievers_email')
+                        ).order_by('-created_at')
+                        .values('dispute_id')[:1]
+                    )
+                )
+            )
+
+            if not disputes:
                 raise NotFound("No disputes found.")
+
+            # Serialize the data
             serializer = DisputeraiseSerializer(disputes, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
         except NotFound as e:
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"error": "An unexpected error occurred.", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": "An unexpected error occurred.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 class EmailDetailsView(APIView):
     """
-    API to fetch email details and related attachment data by msg_id.
+    API to fetch email details and related attachment data by msg_id and receivers_email.
+    Both parameters are mandatory.
     """
 
     def get(self, request):
         msg_id = request.GET.get("msg_id")
-        if not msg_id:
-            return Response({"error": "msg_id is required"}, status=400)
+        receivers_email = request.GET.get("recievers_email")
+        if not msg_id or not receivers_email:
+            return Response({"error": "Both msg_id and receivers_email are required."}, status=400)
         try:
-            email_detail = EmailDetails.objects.get(msg_id=msg_id)
+            email_detail = EmailDetails.objects.get(msg_id=msg_id, recievers_email=receivers_email)
         except EmailDetails.DoesNotExist:
             raise NotFound("Email details not found.")
         attachments = Attachment.objects.filter(email_detail=email_detail)
+
+        # Prepare the response data
         data = {
             "receivers_email": email_detail.recievers_email,
             "senders_email": email_detail.senders_email,
@@ -1588,13 +1616,14 @@ class EmailDetailsView(APIView):
             "attachments": [
                 {
                     "file_name": attachment.attachment.name,
-                    "ai_status": attachment.get_ai_status_display(),
-                    "ai_remarks": attachment.ai_Remarks,
+                    "ai_status": attachment.get_ai_status_display() if attachment.ai_status else "N/A",
+                    "ai_remarks": attachment.ai_Remarks or "No remarks",
                 }
                 for attachment in attachments
             ],
             "email_body": email_detail.email_body,
         }
+
         return Response(data, status=200)
 # class DisputeCommentsView(APIView):
 #     """
