@@ -755,5 +755,26 @@ class DisputeWithInfoSerializer(serializers.ModelSerializer):
         # Create the DisputeInfo using the nested data
         dispute_info = DisputeInfo.objects.create(dispute=dispute, **dispute_info_data)
         
-        return dispute
-        
+        return dispute  
+
+
+
+
+class EmailInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = EmailDetails
+        fields = ["recievers_email",  "msg_id"]
+
+class DisputeSerializer(serializers.ModelSerializer):
+    emaildetails = EmailInfoSerializer()
+    class Meta:
+        model = Dispute
+        fields = [ 'emaildetails' ,'id']
+
+
+class DisputeInfoSerializer(serializers.ModelSerializer):
+    dispute = DisputeSerializer()
+    class Meta:
+        model  = DisputeInfo
+        fields = ['dispute','admin_comment'] 
+

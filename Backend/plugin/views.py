@@ -40,6 +40,7 @@ from rest_framework.views import APIView
 import time
 from django.utils.timezone import now
 from rest_framework.decorators import api_view
+from plugin.models import  Dispute as ds
 @csrf_exempt
 def registration_view(request):
     if request.method == 'POST':
@@ -963,24 +964,36 @@ def get_counter_count(request):
         
 # 
 class UpdateEmailDetailsView(APIView):
-
     def post(self, request):
-        # Pass the request data to the serializer
-        serializer = DisputeUpdateInfoSerializer(data=request.data)
+        data = json.loads(request.body)
+        email_detail = data.get('email')
+        msg_id = data.get('messageId')
 
-        if serializer.is_valid():
-            # Call the fetch method to retrieve the details
-            email_detail, admin_comment = serializer.fetch(serializer.validated_data)
+        try:
+            email = EmailDetails.objects.get(recievers_email=email_detail, msg_id=msg_id)
+            data = ds.objects.get(emaildetails_id=email)
+            disputes = DisputeInfo.objects.filter(
+                dispute=data,
+                dispute__emaildetails__recievers_email=email_detail,
+                dispute__emaildetails__msg_id=msg_id
+            ).order_by('-id')[:1]
+            dispute_serialized = DisputeInfoSerializer(disputes, many=True)
+
             return Response({
-                "message": "Details fetched successfully",
-                "data": {
-                    "msg_id": email_detail.msg_id,
-                    "status": email_detail.status,
-                    "admin_remarks": admin_comment
-                }
-            }, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                "message": "Admin remarks data fetched successfully",
+                "STATUS": "Success",
+                "Code": 0,
+                "data": dispute_serialized.data
+            }, status=200)
 
+        except EmailDetails.DoesNotExist:
+            return Response({
+                "message": "Email and msg id not exists",
+                "STATUS": "Error",
+                "Code": 0,
+                "data": []
+            }, status=400)
+        
 @csrf_exempt
 def browser_uninstall(request):
     """
