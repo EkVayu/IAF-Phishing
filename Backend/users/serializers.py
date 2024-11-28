@@ -7,6 +7,7 @@ from plugin.models import EmailDetails, DisputeInfo, Dispute, Attachment
 from .models import RoughURL, RoughDomain, RoughMail
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from django.utils.timezone import now
 
 User = get_user_model()
 class LoginSerializer(serializers.Serializer):
@@ -514,17 +515,20 @@ class DisputeCommentSerializer(serializers.ModelSerializer):
         dispute = validated_data.get('dispute')
         admin_comment = validated_data.get('admin_comment')
 
+        # Get current time in the 'Asia/Kolkata' timezone
+        current_time = now()
+
         with transaction.atomic():
             # Create a new DisputeInfo entry
             dispute_info = DisputeInfo.objects.create(
                 dispute=dispute,
                 admin_comment=admin_comment,
-                created_by=None,  # Assign as per your requirements
-                updated_by=None  # Assign as per your requirements
+                updated_by=None,
+                updated_at=current_time
             )
 
             # Update the `updated_at` field of the related Dispute
-            dispute.updated_at = timezone.now()
+            dispute.updated_at = current_time
             dispute.save()
 
         return dispute_info
@@ -673,7 +677,7 @@ class DisputeraiseSerializer(serializers.Serializer):
         dispute_info_queryset = DisputeInfo.objects.filter(
             dispute__emaildetails__msg_id=msg_id,
             dispute__emaildetails__recievers_email=email,
-        ).values('user_comment', 'admin_comment', 'created_at')
+        ).values('user_comment', 'admin_comment', 'created_at', 'updated_at')
 
         comments = []
         for info in dispute_info_queryset:
@@ -687,7 +691,7 @@ class DisputeraiseSerializer(serializers.Serializer):
                 comments.append({
                     "comment_type": "admin",
                     "comment": info['admin_comment'],
-                    "created_at": info['created_at'],
+                    "created_at": info['updated_at'],
                 })
         return comments
 
