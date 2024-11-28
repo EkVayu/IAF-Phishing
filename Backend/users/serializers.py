@@ -537,9 +537,11 @@ class DisputeCommentSerializer(serializers.ModelSerializer):
 class AttachmentSerializer(serializers.ModelSerializer):
     msg_id = serializers.SerializerMethodField()
     ai_status = serializers.SerializerMethodField()
+
     class Meta:
         model = Attachment
         fields = ['msg_id', 'ai_status', 'created_at', 'ai_sended_at', 'attachment']
+
     def get_msg_id(self, obj):
         """
         Retrieves the `msg_id` from the associated `EmailDetails` record.
@@ -550,7 +552,11 @@ class AttachmentSerializer(serializers.ModelSerializer):
         Returns:
             str: The `msg_id` of the associated email.
         """
-        return obj.email_detail.msg_id
+        email_detail = obj.email_detail
+        if email_detail:
+            return email_detail.msg_id
+        return None  # In case there's no associated email_detail
+
     def get_ai_status(self, obj):
         """
         Maps the AI status code to a human-readable string.
