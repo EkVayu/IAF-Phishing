@@ -1237,6 +1237,7 @@ class DisputeCommentCreateView(CreateAPIView):
     """
     queryset = DisputeInfo.objects.all()
     serializer_class = DisputeCommentSerializer
+    # permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         """
