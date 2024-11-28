@@ -16,7 +16,6 @@ def verify_lid(data):
                 "STATUS": "Error",
                 "Code": 0
             }, status=400)
-
         # Fetch license
         try:
             license = License.objects.get(hashed_license_id = license_id)
