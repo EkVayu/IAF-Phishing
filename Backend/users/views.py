@@ -42,7 +42,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.generics import CreateAPIView
 from django.utils.timezone import localtime
-
+from django.template.loader import render_to_string
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
