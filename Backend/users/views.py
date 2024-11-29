@@ -1214,7 +1214,7 @@ class DisputeStatusUpdateView(generics.UpdateAPIView):
     API view for updating the status of a Dispute.
     """
     queryset = Dispute.objects.all()
-    serializer_class = DisputeSerializer
+    serializer_class = DisputeSerializers
 
     def update(self, request, *args, **kwargs):
         """
