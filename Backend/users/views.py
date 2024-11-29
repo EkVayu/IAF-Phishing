@@ -45,6 +45,7 @@ from django.utils.timezone import localtime
 from django.template.loader import render_to_string
 from django.db.models import Max, Subquery, OuterRef
 from rest_framework.exceptions import NotFound
+from django.http import Http404
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
