@@ -53,14 +53,36 @@
         .step {
             margin-bottom: 15px;
         }
+        
+        /* Default styling for all screen sizes */
         .download-link {
             display: inline-block;
-            background-color: #0044cc;
-            color: white;
+            background-color: #8aacf0;
+            color: #ffffff;
             padding: 10px 20px;
             text-decoration: none;
             border-radius: 4px;
             margin: 10px 0;
+            font-size: 16px; /* Default font size */
+            max-width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Styling for screens smaller than 768px */
+        @media (max-width: 768px) {
+            .download-link {
+                font-size: 14px;
+                padding: 12px 25px;
+            }
+        }
+
+        /* Additional tweaks for very small screens */
+        @media (max-width: 480px) {
+            .download-link {
+                font-size: 12px;
+                padding: 10px 15px;
+            }
         }
     </style>
 </head>

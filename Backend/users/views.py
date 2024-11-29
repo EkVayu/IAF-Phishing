@@ -401,19 +401,21 @@ class LicenseListView(viewsets.ModelViewSet):
                 allocated_to=allocated_to,
                 allocation_date=allocation_date
             )
+            download_url = request.build_absolute_uri('/plugin/download-agent/')
             html_message = render_to_string('license_allocation.html', {
             'allocated_to': allocated_to,
             'formatted_allocation_date': formatted_allocation_date,
-            'license': license
-            })
+            'license': license,
+            'download_link': download_url
+        })
             send_mail(
             subject='License Allocation',
             message='',
-            from_email='no-reply@yourdomain.com',
+            from_email=settings.EMAIL_HOST_USER,
             recipient_list=[allocated_to],
             fail_silently=False,
             html_message=html_message
-    )
+        )
             return Response({'status': 'License allocated successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

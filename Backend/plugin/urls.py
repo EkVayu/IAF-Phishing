@@ -7,9 +7,7 @@ from .views import spam_email_view
 from plugin.views import DisputeViewSet
 from plugin.views import PluginInstallUninstallViewSet
 from plugin.views import PluginEnableDisableViewSet
-from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data,get_counter_count,UpdateEmailDetailsView,browser_uninstall, raise_dispute_view,pending_status_check,download_agent
-from django.conf.urls.static import static
-from django.conf import settings
+from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data,get_counter_count,UpdateEmailDetailsView,browser_uninstall, raise_dispute_view,pending_status_check,download_latest_agent
 
 router = DefaultRouter()
 router.register(r'disputes', DisputeViewSet, basename='dispute')
@@ -32,7 +30,8 @@ urlpatterns = [
     path('browser-uninstall/', browser_uninstall, name='browser-uninstall'),
     path('raise-dispute/', raise_dispute_view, name='raise-dispute'),
     path('pending-status-check/', pending_status_check, name='pending-status-check'),
-    path('download/agent/', download_agent, name='download_agent'),
+    path('download-agent/', download_latest_agent, name='download_latest_agent'),
+
 
 
     
@@ -45,5 +44,3 @@ urlpatterns = [
     
     path('', include(router.urls)),
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
