@@ -1605,33 +1605,41 @@ class EmailDetailsView(APIView):
     def get(self, request):
         msg_id = request.GET.get("msg_id")
         receivers_email = request.GET.get("recievers_email")
+
         if not msg_id or not receivers_email:
             return Response({"error": "Both msg_id and receivers_email are required."}, status=400)
+
         try:
             email_detail = EmailDetails.objects.get(msg_id=msg_id, recievers_email=receivers_email)
+            attachments = Attachment.objects.filter(email_detail=email_detail)
+            data = {
+                "receivers_email": email_detail.recievers_email,
+                "senders_email": email_detail.senders_email,
+                "subject": email_detail.subject,
+                "eml_file_name": email_detail.eml_file_name,
+                "urls": email_detail.urls,
+                "attachments": [
+                    {
+                        "file_name": attachment.attachment.name,
+                        "ai_status": attachment.get_ai_status_display() if attachment.ai_status else "N/A",
+                        "ai_remarks": attachment.ai_Remarks or "No remarks",
+                    }
+                    for attachment in attachments
+                ],
+                "email_body": email_detail.email_body,
+            }
+
+            return Response(data, status=200)
+
         except EmailDetails.DoesNotExist:
-            raise NotFound("Email details not found.")
-        attachments = Attachment.objects.filter(email_detail=email_detail)
-
-        # Prepare the response data
-        data = {
-            "receivers_email": email_detail.recievers_email,
-            "senders_email": email_detail.senders_email,
-            "subject": email_detail.subject,
-            "eml_file_name": email_detail.eml_file_name,
-            "urls": email_detail.urls,
-            "attachments": [
+            # Return 200 with a "data not available" message
+            return Response(
                 {
-                    "file_name": attachment.attachment.name,
-                    "ai_status": attachment.get_ai_status_display() if attachment.ai_status else "N/A",
-                    "ai_remarks": attachment.ai_Remarks or "No remarks",
-                }
-                for attachment in attachments
-            ],
-            "email_body": email_detail.email_body,
-        }
-
-        return Response(data, status=200)
+                    "message": "Data not available",
+                    "data": None
+                },
+                status=200
+            )
 # class DisputeCommentsView(APIView):
 #     """
 #     API to fetch user comments with user-time and admin comments with admin-time for a given dispute_id.
