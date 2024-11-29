@@ -339,31 +339,42 @@ class SystemBrowserDetails(models.Model):
         def __str__(self):
             return f"Browser History for {self.device_information.serial_number}"
         
+def generate_checksum(file):
+    sha256 = hashlib.sha256()
+    for chunk in file.chunks():
+        sha256.update(chunk)
+    return sha256.hexdigest()
+        
 class AgentFile(models.Model):
-    name = models.CharField(max_length=255, help_text="Name of the file (e.g., agent setup)")
-    file = models.FileField(upload_to='agents/', help_text="Upload the agent file (.exe or similar)")
-    file_type = models.CharField(
-        max_length=50, 
-        default="Executable", 
-        help_text="Type of the file, e.g., Executable, Installer, or Setup"
-    )
-    version = models.CharField(max_length=50, null=True, blank=True, help_text="Version of the agent (e.g., v1.2.3)")
-    description = models.TextField(null=True, blank=True, help_text="Description of the file or its purpose")
+    name = models.CharField(max_length=255)
+    file = models.FileField(upload_to='agents/')
+    file_type = models.CharField(max_length=50, default="Executable")
+    version = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     operating_system = models.CharField(
         max_length=100,
         choices=[('Windows', 'Windows'), ('Linux', 'Linux'), ('MacOS', 'MacOS'), ('Cross-platform', 'Cross-platform'), ('Other', 'Other')],
-        default='Windows',
-        help_text="Operating system compatible with the file"
+        default='Windows'
     )
-    uploaded_at = models.DateTimeField(auto_now_add=True, help_text="Date and time when the file was uploaded")
-    active_date = models.DateTimeField(null=True, blank=True, help_text="Date and time when the file became active")
-    is_active = models.BooleanField(default=True, help_text="Whether the file is currently active")
-    is_disabled = models.BooleanField(default=False, help_text="Disable this file to prevent further downloads")
-    size = models.BigIntegerField(null=True, blank=True, help_text="Size of the file in bytes")
-    checksum = models.CharField(max_length=64, null=True, blank=True, help_text="SHA256 checksum for file integrity verification")
-    download_count = models.PositiveIntegerField(default=0, help_text="Number of times the file has been downloaded")
-    expiry_date = models.DateTimeField(null=True, blank=True, help_text="Date after which the file is no longer valid")
-    support_email = models.EmailField(null=True, blank=True, help_text="Contact email for file-related support or queries")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    active_date = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_disabled = models.BooleanField(default=False)
+    size = models.BigIntegerField(null=True, blank=True)
+    checksum = models.CharField(max_length=64, null=True, blank=True)
+    download_count = models.PositiveIntegerField(default=0)
+    expiry_date = models.DateTimeField(null=True, blank=True)
+    support_email = models.EmailField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            if not self.size:
+                self.size = self.file.size
+            if not self.checksum:
+                self.checksum = generate_checksum(self.file)
+        if self.expiry_date and self.expiry_date < timezone.now():
+            self.is_disabled = True
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

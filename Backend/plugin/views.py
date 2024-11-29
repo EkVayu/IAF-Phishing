@@ -41,6 +41,8 @@ import time
 from django.utils.timezone import now
 from rest_framework.decorators import api_view
 from plugin.models import  Dispute as ds
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 @csrf_exempt
 def registration_view(request):
     if request.method == 'POST':
@@ -1186,3 +1188,15 @@ def pending_status_check(request):
         "status": "error",
         "code": 405
     }, status=405)
+
+def download_agent(request):
+    file_name = 'agent_setup.exe'  # This can be dynamic based on the uploaded file
+    file_path = os.path.join(settings.MEDIA_ROOT, 'agents', file_name)
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+            return response
+    else:
+        return HttpResponse("File not found", status=404)
