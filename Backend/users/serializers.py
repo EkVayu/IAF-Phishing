@@ -421,7 +421,7 @@ class DisputeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dispute
         fields = ['status']
-class DisputeSerializer(serializers.ModelSerializer):
+class DisputeSerializers(serializers.ModelSerializer):
     """
     Serializer for Dispute model that updates the `status`
     and corresponding `EmailDetails` records, ensuring both statuses
