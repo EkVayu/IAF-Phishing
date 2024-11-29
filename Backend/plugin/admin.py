@@ -13,3 +13,18 @@ admin.site.register(Attachment)
 admin.site.register(CDRFile)
 admin.site.register(UserSystemDetails)
 admin.site.register(SystemBrowserDetails)
+@admin.register(AgentFile)
+class AgentFileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'version', 'operating_system', 'is_active', 'is_disabled', 'download_count', 'expiry_date')
+    list_filter = ('operating_system', 'is_active', 'is_disabled')
+    search_fields = ('name', 'version', 'description')
+    readonly_fields = ('uploaded_at', 'size', 'checksum', 'download_count')
+    actions = ['disable_files', 'enable_files']
+
+    @admin.action(description="Disable selected files")
+    def disable_files(self, request, queryset):
+        queryset.update(is_disabled=True)
+
+    @admin.action(description="Enable selected files")
+    def enable_files(self, request, queryset):
+        queryset.update(is_disabled=False)
