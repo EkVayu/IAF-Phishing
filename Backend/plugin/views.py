@@ -41,6 +41,9 @@ import time
 from django.utils.timezone import now
 from rest_framework.decorators import api_view
 from plugin.models import  Dispute as ds
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.http import FileResponse, HttpResponse
 @csrf_exempt
 def registration_view(request):
     if request.method == 'POST':
@@ -1186,3 +1189,45 @@ def pending_status_check(request):
         "status": "error",
         "code": 405
     }, status=405)
+
+def download_latest_agent(request):
+    try:
+        agent_file = AgentFile.objects.filter(
+            is_active=True,
+            is_disabled=False,
+            operating_system='Windows'
+        ).latest('uploaded_at')
+        
+        if agent_file.expiry_date and agent_file.expiry_date < timezone.now():
+            return JsonResponse({
+                "message": "Latest agent file has expired",
+                "status": "error"
+            }, status=400)
+        print(agent_file.file.path)
+        file_path = agent_file.file.path
+        
+        if os.path.exists(file_path):
+            agent_file.download_count += 1
+            agent_file.save()
+            
+            response = FileResponse(
+                open(file_path, 'rb'),
+                as_attachment=True,
+                filename=agent_file.name
+            )
+            
+            response['Content-Type'] = 'application/octet-stream'
+            response['Content-Length'] = agent_file.size
+            
+            return response
+        else:
+            return JsonResponse({
+                "message": "Agent file not found on server",
+                "status": "error"
+            }, status=404)
+
+    except AgentFile.DoesNotExist:
+        return JsonResponse({
+            "message": "No active agent file available",
+            "status": "error"
+        }, status=404)
