@@ -145,11 +145,17 @@ def is_valid_email(email):
     return re.match(regex, email) is not None
 
 def extract_email_from_string(email_string):
-    """Extract email address from a string like 'Name <email@domain.com>'"""
-    import re
+    """Extract email address from a string like 'Name <email@domain.com>' or just 'email@domain.com'"""
+    
+    # Define a regular expression pattern for extracting the email
+    # This pattern matches either an email inside angle brackets or just the email itself
     email_pattern = r'<(.+?)>|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
+
+    # Search for the email pattern in the string
     match = re.search(email_pattern, email_string)
-    return match.group(1) or match.group(2) if match else email_string
+
+    # If a match is found, return the email address from the first or second group
+    return match.group(1) or match.group(2) if match else None
 
 def check_external_apis(email_details, msg_id):
     logger.info(f"Starting AI check for message ID: {msg_id}")
