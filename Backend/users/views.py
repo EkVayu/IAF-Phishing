@@ -1558,7 +1558,7 @@ class ResetPassword(APIView):
 class DisputeRaiseDataView(APIView):
     def get(self, request, *args, **kwargs):
         try:
-            # Fetch disputes with unique msg_id and recievers_email
+            # Fetch disputes with unique msg_id and recievers_email, order by latest dispute
             disputes = (
                 DisputeInfo.objects
                 .select_related('dispute__emaildetails')  # Select related emaildetails
@@ -1579,6 +1579,7 @@ class DisputeRaiseDataView(APIView):
                         .values('dispute_id')[:1]
                     )
                 )
+                .order_by('-latest_dispute_id')  # Order by the latest dispute_id to get the most recent first
             )
 
             if not disputes:  # If no disputes are found
@@ -1590,7 +1591,7 @@ class DisputeRaiseDataView(APIView):
                     status=status.HTTP_200_OK
                 )
 
-                # Serialize the data
+            # Serialize the data
             serializer = DisputeraiseSerializer(disputes, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
