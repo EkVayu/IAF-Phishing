@@ -103,30 +103,27 @@ class LoginViewset(viewsets.ViewSet):
             return Response(serializer.errors, status=400)
 class RegisterViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
-    queryset = User.objects.all()
     serializer_class = RegisterSerializer
+
     def create(self, request):
         """
-                Create a new user account.
+        Create a new user account.
 
-                This method validates the user-provided data (e.g., username, email, password).
-                If the data is valid, it saves the user information in the database.
+        Args:
+            request: The HTTP request object containing user registration details.
 
-                Args:
-                    request: The HTTP request object containing user registration details.
-
-                Returns:
-                    Response: A JSON response containing the serialized user data and HTTP status 200 (OK)
-                              if registration is successful.
-                    If validation fails:
-                        - Validation errors with HTTP status 400 (Bad Request).
-                """
+        Returns:
+            Response: Serialized user data on success or a single error message as plain text on failure.
+        """
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=201)
         else:
-            return Response(serializer.errors, status=400)
+            # Extract the first error message directly
+            error_message = next(iter(serializer.errors.values()))[0]
+            return Response({"message": error_message}, status=400)
+
 class UserViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
