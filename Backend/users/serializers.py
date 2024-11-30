@@ -28,11 +28,31 @@ class LoginSerializer(serializers.Serializer):
         ret['username'] = instance.username
         ret.pop('password', None,)
         return ret
+
+
 class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()  # Redefine field to remove default unique validator
+    username = serializers.CharField()  # Redefine field to remove default unique validator
+
     class Meta:
         model = User
-        fields = ('id','email','password','first_name','last_name','username','is_staff')
-        extra_kwargs = { 'password': {'write_only':True}}
+        fields = ('id', 'email', 'password', 'first_name', 'last_name', 'username', 'is_staff')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate(self, data):
+        """
+        Perform custom validation for email and username.
+        """
+        # Check for duplicate email
+        if User.objects.filter(email=data.get('email')).exists():
+            raise serializers.ValidationError("User with this email already exists.")
+
+        # Check for duplicate username
+        if User.objects.filter(username=data.get('username')).exists():
+            raise serializers.ValidationError("A user with this username already exists.")
+
+        return data
+
     def create(self, validated_data):
         """
         Create a new user instance with validated data.
@@ -46,6 +66,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data['is_staff'] = True
         user = User.objects.create_user(**validated_data)
         return user
+
 class PasswordResetRequestSerializer(serializers.Serializer):
     """
     Serializer for handling password reset requests.
