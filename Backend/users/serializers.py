@@ -65,6 +65,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         """
         validated_data['is_staff'] = True
         user = User.objects.create_user(**validated_data)
+
+        # Create an empty UserProfile instance after the user is created
+        UserProfile.objects.create(user=user)
+
         return user
 
 class PasswordResetRequestSerializer(serializers.Serializer):

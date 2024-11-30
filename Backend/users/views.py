@@ -117,13 +117,12 @@ class RegisterViewset(viewsets.ViewSet):
         """
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()  # Create the user and the profile automatically
             return Response(serializer.data, status=201)
         else:
             # Extract the first error message directly
             error_message = next(iter(serializer.errors.values()))[0]
             return Response({"message": error_message}, status=400)
-
 class UserViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
