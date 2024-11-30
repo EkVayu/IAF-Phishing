@@ -1203,7 +1203,7 @@ def download_latest_agent(request):
                 "message": "Latest agent file has expired",
                 "status": "error"
             }, status=400)
-
+        print(agent_file.file.path)
         file_path = agent_file.file.path
         
         if os.path.exists(file_path):
