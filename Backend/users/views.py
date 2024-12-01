@@ -1247,19 +1247,31 @@ class DisputeCommentCreateView(CreateAPIView):
         """
         serializer.save()
 
+
 class AvailableAttachmentsView(APIView):
     def get(self, request):
         """
-           Retrieve a list of all available attachments.
+        Retrieve a list of all available attachments.
 
-           Filters out attachments that are null or empty.
+        Filters out attachments that are null or empty.
 
-           Returns:
-               - A JSON response with the list of available attachments.
-           """
+        Returns:
+            - A JSON response with the list of available attachments.
+        """
         attachments = Attachment.objects.exclude(attachment__isnull=True).exclude(attachment='')
-        serializer = AttachmentSerializer(attachments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        if attachments.exists():
+            # If there are available attachments, serialize and return the response
+            serializer = AttachmentSerializer(attachments, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            # If no attachments are found, return a custom message with 404 status
+            return Response(
+                {"message": "Data not available"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
 class PendingAttachmentsView(generics.ListAPIView):
     """
     API endpoint that lists all Attachments associated with EmailDetails records
@@ -1280,8 +1292,12 @@ class PendingAttachmentsView(generics.ListAPIView):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
         else:
-            # If no records found, return a custom message
-            return Response({"message": "Data not available"}, status=status.HTTP_200_OK)
+            # If no records found, return a custom message with 404 status
+            return Response(
+                {"message": "Data not available"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 class quarentineAttachmentsView(generics.ListAPIView):
     """
     API endpoint that lists all Attachments associated with EmailDetails records
