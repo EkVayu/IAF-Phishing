@@ -46,6 +46,7 @@ from django.template.loader import render_to_string
 from django.db.models import Max, Subquery, OuterRef
 from rest_framework.exceptions import NotFound
 from django.http import Http404
+from django.utils.timezone import now
 User = get_user_model()
 class LoginViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
@@ -1640,6 +1641,15 @@ class EmailDetailsView(APIView):
                 },
                 status=200
             )
+
+class DashboardDataView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        current_year = now().year
+        data = {"year": current_year}
+        serializer = DashboardSerializer(data)
+        return Response(serializer.data)
 # class DisputeCommentsView(APIView):
 #     """
 #     API to fetch user comments with user-time and admin comments with admin-time for a given dispute_id.
