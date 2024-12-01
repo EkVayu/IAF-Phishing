@@ -821,12 +821,8 @@ class DisputeInfoSerializer(serializers.ModelSerializer):
         fields = ['dispute','admin_comment'] 
 
 class DashboardSerializer(serializers.Serializer):
-    year = serializers.IntegerField()
-    total_users = serializers.SerializerMethodField()
-    total_licenses = serializers.SerializerMethodField()
-
-    def get_total_users(self, obj):
-        current_year = obj['year']
+    def to_representation(self, instance):
+        current_year = instance['year']
 
         # Fetch and group user data by month
         users_data = (
@@ -838,14 +834,9 @@ class DashboardSerializer(serializers.Serializer):
         )
 
         total_users = sum(item['count'] for item in users_data)
-        chart_data = [
+        chart_data_users = [
             {"month": item["month"].strftime("%Y-%m"), "count": item["count"]} for item in users_data
         ]
-
-        return {"total_count": total_users, "chart_data": chart_data}
-
-    def get_total_licenses(self, obj):
-        current_year = obj['year']
 
         # Fetch and group license data by month
         licenses_data = (
@@ -857,9 +848,19 @@ class DashboardSerializer(serializers.Serializer):
         )
 
         total_licenses = sum(item['count'] for item in licenses_data)
-        chart_data = [
+        chart_data_licenses = [
             {"month": item["month"].strftime("%Y-%m"), "count": item["count"]} for item in licenses_data
         ]
 
-        return {"total_count": total_licenses, "chart_data": chart_data}
-
+        return {
+            str(current_year): {
+                "total_users": {
+                    "total_count": total_users,
+                    "chart_data": chart_data_users
+                },
+                "total_licenses": {
+                    "total_count": total_licenses,
+                    "chart_data": chart_data_licenses
+                }
+            }
+        }
