@@ -1643,7 +1643,7 @@ class EmailDetailsView(APIView):
             )
 
 class DashboardDataView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []  # Set to [] or other permission if necessary
 
     def get(self, request):
         current_year = now().year
