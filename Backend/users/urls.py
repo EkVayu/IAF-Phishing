@@ -57,5 +57,6 @@ urlpatterns = [
     path('dispute-raise-data/', DisputeRaiseDataView.as_view(), name='dispute-raise-data'),
     path('emaildetails/eml-datails/', EmailDetailsView.as_view(), name='email-details'),
     # path('dispute-comments', DisputeCommentsView.as_view(), name='dispute-comments'),
+    path('superadmin-dashboard-data/', DashboardDataView.as_view(), name='dashboard-data'),
 
 ]

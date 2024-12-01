@@ -7,6 +7,8 @@ from plugin.models import EmailDetails, DisputeInfo, Dispute, Attachment
 from .models import RoughURL, RoughDomain, RoughMail
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
 from django.utils.timezone import now
 
 User = get_user_model()
@@ -817,4 +819,47 @@ class DisputeInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model  = DisputeInfo
         fields = ['dispute','admin_comment'] 
+
+class DashboardSerializer(serializers.Serializer):
+    year = serializers.IntegerField()
+    total_users = serializers.SerializerMethodField()
+    total_licenses = serializers.SerializerMethodField()
+
+    def get_total_users(self, obj):
+        current_year = obj['year']
+
+        # Fetch and group user data by month
+        users_data = (
+            User.objects.filter(date_joined__year=current_year)
+            .annotate(month=TruncMonth('date_joined'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+
+        total_users = sum(item['count'] for item in users_data)
+        chart_data = [
+            {"month": item["month"].strftime("%Y-%m"), "count": item["count"]} for item in users_data
+        ]
+
+        return {"total_count": total_users, "chart_data": chart_data}
+
+    def get_total_licenses(self, obj):
+        current_year = obj['year']
+
+        # Fetch and group license data by month
+        licenses_data = (
+            License.objects.filter(created_timestamp__year=current_year)
+            .annotate(month=TruncMonth('created_timestamp'))
+            .values('month')
+            .annotate(count=Count('license_id'))
+            .order_by('month')
+        )
+
+        total_licenses = sum(item['count'] for item in licenses_data)
+        chart_data = [
+            {"month": item["month"].strftime("%Y-%m"), "count": item["count"]} for item in licenses_data
+        ]
+
+        return {"total_count": total_licenses, "chart_data": chart_data}
 
