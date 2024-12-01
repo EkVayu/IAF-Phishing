@@ -481,9 +481,9 @@ class DisputeSerializers(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """
         Updates the status of a dispute and its associated email details.
-        Ensures both `Dispute` and `EmailDetails` statuses match, even if they are the same.
-        Additionally, when the Dispute status is 'safe' or 'unsafe', we ensure both
-        tables are synchronized to the correct status.
+        Ensures both `Dispute` and `EmailDetails` statuses match,
+        synchronizing them when the Dispute status changes to 'safe' or 'unsafe'.
+        Matches only on `msg_id`.
         """
         new_status = validated_data.get('status', instance.status)
         status_map = dict(Dispute.STATUS_CHOICES)
@@ -494,49 +494,22 @@ class DisputeSerializers(serializers.ModelSerializer):
             new_email_status = "safe" if new_status == Dispute.SAFE else "unsafe"
 
             with transaction.atomic():
-                # Handle when Dispute status is set to 'safe'
-                if new_status == Dispute.SAFE:
-                    # Update both Dispute and EmailDetails to 'safe'
-                    email_details = EmailDetails.objects.filter(
-                        msg_id=instance.msg_id,
-                        recievers_email=instance.email
+                # Filter EmailDetails by `msg_id` only
+                email_details = EmailDetails.objects.filter(msg_id=instance.msg_id)
+
+                # If no matching EmailDetails, raise an error
+                if not email_details.exists():
+                    raise ValidationError(
+                        f"No matching EmailDetails record found for msg_id={instance.msg_id}."
                     )
 
-                    # If no matching EmailDetails, raise an error
-                    if not email_details.exists():
-                        raise ValidationError(
-                            f"No matching EmailDetails record found for msg_id={instance.msg_id} "
-                            f"and recievers_email={instance.email}."
-                        )
+                # Update EmailDetails status to match the new Dispute status
+                for email_detail in email_details:
+                    if email_detail.status != new_email_status:
+                        email_detail.status = new_email_status
+                        email_detail.save()
 
-                    # Update EmailDetails status to 'safe'
-                    for email_detail in email_details:
-                        if email_detail.status != "safe":
-                            email_detail.status = "safe"
-                            email_detail.save()
-
-                # Handle when Dispute status is set to 'unsafe'
-                elif new_status == Dispute.UNSAFE:
-                    # Update both Dispute and EmailDetails to 'unsafe'
-                    email_details = EmailDetails.objects.filter(
-                        msg_id=instance.msg_id,
-                        recievers_email=instance.email
-                    )
-
-                    # If no matching EmailDetails, raise an error
-                    if not email_details.exists():
-                        raise ValidationError(
-                            f"No matching EmailDetails record found for msg_id={instance.msg_id} "
-                            f"and recievers_email={instance.email}."
-                        )
-
-                    # Update EmailDetails status to 'unsafe'
-                    for email_detail in email_details:
-                        if email_detail.status != "unsafe":
-                            email_detail.status = "unsafe"
-                            email_detail.save()
-
-                # Update Dispute instance status to the new status
+                # Update Dispute instance status
                 instance.status = new_status
                 instance.updated_at = timezone.now()
                 instance.save()
