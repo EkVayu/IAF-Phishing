@@ -484,28 +484,28 @@ class DisputeSerializers(serializers.ModelSerializer):
         """
         Updates the status of a dispute and its associated email details.
         Ensures both `Dispute` and `EmailDetails` statuses match,
-        synchronizing them when the Dispute status changes to 'safe' or 'unsafe'.
-        Matches only on `msg_id`.
+        synchronizing them when the Dispute status changes to 'safe' or 'unsafe',
+        including handling the case where EmailDetails is 'pending' and the Dispute status is the same.
         """
         new_status = validated_data.get('status', instance.status)
         status_map = dict(Dispute.STATUS_CHOICES)
 
-        # If the status has actually changed
-        if instance.status != new_status:
-            # Determine the new email status
-            new_email_status = "safe" if new_status == Dispute.SAFE else "unsafe"
+        # Determine the new email status based on the new Dispute status
+        new_email_status = "safe" if new_status == Dispute.SAFE else "unsafe"
 
-            with transaction.atomic():
-                # Filter EmailDetails by `msg_id` only
-                email_details = EmailDetails.objects.filter(msg_id=instance.msg_id)
+        with transaction.atomic():
+            # Filter EmailDetails by `msg_id` only
+            email_details = EmailDetails.objects.filter(msg_id=instance.msg_id)
 
-                # If no matching EmailDetails, raise an error
-                if not email_details.exists():
-                    raise ValidationError(
-                        f"No matching EmailDetails record found for msg_id={instance.msg_id}."
-                    )
+            # If no matching EmailDetails, raise an error
+            if not email_details.exists():
+                raise ValidationError(
+                    f"No matching EmailDetails record found for msg_id={instance.msg_id}."
+                )
 
-                # Update EmailDetails status to match the new Dispute status
+            # If the status has actually changed
+            if instance.status != new_status:
+                # Update EmailDetails to match the new Dispute status
                 for email_detail in email_details:
                     if email_detail.status != new_email_status:
                         email_detail.status = new_email_status
@@ -519,7 +519,15 @@ class DisputeSerializers(serializers.ModelSerializer):
                 # Update DisputeInfo timestamps
                 DisputeInfo.objects.filter(dispute=instance).update(updated_at=timezone.now())
 
+            else:
+                # If the Dispute status is the same as before but EmailDetails is 'pending', update it
+                for email_detail in email_details:
+                    if email_detail.status == 'pending':
+                        email_detail.status = new_email_status
+                        email_detail.save()
+
         return instance
+
 class DisputeCommentSerializer(serializers.ModelSerializer):
     dispute_id = serializers.PrimaryKeyRelatedField(
         queryset=Dispute.objects.all(),
