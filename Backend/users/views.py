@@ -1256,19 +1256,20 @@ class AvailableAttachmentsView(APIView):
         Filters out attachments that are null or empty.
 
         Returns:
-            - A JSON response with the list of available attachments.
+            - A JSON response with the list of available attachments,
+            - Or an empty list with a custom message if no records are found.
         """
         attachments = Attachment.objects.exclude(attachment__isnull=True).exclude(attachment='')
 
         if attachments.exists():
             # If there are available attachments, serialize and return the response
             serializer = AttachmentSerializer(attachments, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"data": serializer.data, "message": "Records found"}, status=status.HTTP_200_OK)
         else:
-            # If no attachments are found, return a custom message with 404 status
+            # If no attachments are found, return an empty list with a custom message
             return Response(
-                {"message": "Data not available"},
-                status=status.HTTP_404_NOT_FOUND
+                {"data": [], "message": "No records found"},
+                status=status.HTTP_200_OK
             )
 
 
@@ -1290,13 +1291,14 @@ class PendingAttachmentsView(generics.ListAPIView):
         if queryset.exists():
             # If there are records, serialize them and return the response
             serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
+            return Response({"data": serializer.data, "message": "Records found"}, status=status.HTTP_200_OK)
         else:
-            # If no records found, return a custom message with 404 status
+            # If no records found, return an empty list with a custom message
             return Response(
-                {"message": "Data not available"},
-                status=status.HTTP_404_NOT_FOUND
+                {"data": [], "message": "No records found"},
+                status=status.HTTP_200_OK
             )
+
 
 class quarentineAttachmentsView(generics.ListAPIView):
     """
