@@ -1272,6 +1272,16 @@ class PendingAttachmentsView(generics.ListAPIView):
             email_detail__status='pending',
             attachment__isnull=False
         ).exclude(attachment='').order_by('created_at')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset.exists():
+            # If there are records, serialize them and return the response
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            # If no records found, return a custom message
+            return Response({"message": "Data not available"}, status=status.HTTP_200_OK)
 class quarentineAttachmentsView(generics.ListAPIView):
     """
     API endpoint that lists all Attachments associated with EmailDetails records
