@@ -17,6 +17,7 @@ import time
 import ipaddress
 from requests.adapters import HTTPAdapter, Retry
 import requests
+from .timing_logger import log_time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -27,7 +28,7 @@ FILE_PATH = Path(settings.EMAIL_BACKUP_DIR)
 
 # Timeout threshold in seconds
 AI_RESPONSE_TIMEOUT = 1
-
+@log_time
 def check_eml(eml_content, newpath_set, msg_id):
     try:
         msg = email.message_from_bytes(eml_content, policy=policy.default)
@@ -44,7 +45,7 @@ def check_eml(eml_content, newpath_set, msg_id):
     except Exception as e:
         logger.error(f"Error extracting email details: {e}")
         return None
-
+@log_time
 def extract_body(msg):
     for part in msg.iter_parts():
         try:
@@ -66,7 +67,7 @@ def extract_body(msg):
             logger.error(f"Error processing email body part: {e}")
             continue
     return ""
-
+@log_time
 def extract_attachments(msg, newpath_set):
     attachments = []
     for part in msg.iter_parts():
@@ -78,7 +79,7 @@ def extract_attachments(msg, newpath_set):
                     f.write(part.get_payload(decode=True))
                 attachments.append(filename)
     return {'attachments': attachments}
-
+@log_time
 def extract_urls(eml_content):
     url_regex = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
     urls = set()
@@ -87,7 +88,7 @@ def extract_urls(eml_content):
     if body:
         urls.update(re.findall(url_regex, body))
     return list(urls)
-
+@log_time
 def verify_dkim(eml_content):
     try:
         headers = email.message_from_bytes(eml_content)
@@ -98,7 +99,7 @@ def verify_dkim(eml_content):
     except Exception as e:
         logger.error(f"Error in DKIM check: {e}")
         return False
-
+@log_time
 def get_sender_ip_from_eml(eml_content):
     msg = email.message_from_bytes(eml_content)
     ip_headers = ['X-Originating-IP', 'X-Sender-IP', 'Received-SPF', 'Authentication-Results', 'Received']
@@ -108,7 +109,7 @@ def get_sender_ip_from_eml(eml_content):
             if ip_match:
                 return ip_match.group(0)
     return None
-
+@log_time
 def verify_spf(from_email, eml_content):
     sender_ip = get_sender_ip_from_eml(eml_content) or '127.0.0.1'
     domain = from_email.split('@')[-1].strip('>')
@@ -121,6 +122,7 @@ def verify_spf(from_email, eml_content):
     logger.info(f"SPF check with IP {sender_ip} for domain: {domain}")
     return result[0] == 'pass'
 
+@log_time
 def verify_dmarc(from_email):
     try:
         domain = from_email.split('@')[-1].strip('>')
@@ -134,7 +136,7 @@ def verify_dmarc(from_email):
         return False
 
 
-
+@log_time
 def is_valid_email(email):
     """Simple regex to check if the email format is valid."""
     # Extract email from format like "Name <email@example.com>"
@@ -144,19 +146,15 @@ def is_valid_email(email):
     regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     return re.match(regex, email) is not None
 
+@log_time
 def extract_email_from_string(email_string):
-    """Extract email address from a string like 'Name <email@domain.com>' or just 'email@domain.com'"""
-    
-    # Define a regular expression pattern for extracting the email
-    # This pattern matches either an email inside angle brackets or just the email itself
+    """Extract email address from a string like 'Name <email@domain.com>'"""
+    import re
     email_pattern = r'<(.+?)>|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
-
-    # Search for the email pattern in the string
     match = re.search(email_pattern, email_string)
+    return match.group(1) or match.group(2) if match else email_string
 
-    # If a match is found, return the email address from the first or second group
-    return match.group(1) or match.group(2) if match else None
-
+@log_time
 def check_external_apis(email_details, msg_id):
     logger.info(f"Starting AI check for message ID: {msg_id}")
     status = "safe"
@@ -206,8 +204,8 @@ def check_external_apis(email_details, msg_id):
         content_payload = {
             "msg_id": msg_id,
             "subject": email_details['subject'],
-            "from_ids": [from_email],
-            "to_ids": [to_email],
+            "from_ids": email_details[from_email],
+            "to_ids": email_details[to_email],
             "body": email_details['body'],
             "urls": email_details.get('urls', [])
         }
