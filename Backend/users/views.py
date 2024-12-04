@@ -1678,32 +1678,3 @@ class DashboardDataView(APIView):
         data = {"year": current_year}
         serializer = DashboardSerializer(data)
         return Response(serializer.data)
-# class DisputeCommentsView(APIView):
-#     """
-#     API to fetch user comments with user-time and admin comments with admin-time for a given dispute_id.
-#     """
-#     def get(self, request):
-#         dispute_id = request.query_params.get('dispute_id')
-#         if not dispute_id:
-#             return Response({"error": "dispute_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         # Fetch the Dispute object
-#         dispute = get_object_or_404(Dispute, id=dispute_id)
-#
-#         # Fetch related DisputeInfo objects
-#         dispute_info = DisputeInfo.objects.filter(dispute=dispute).values(
-#             'user_comment', 'created_at', 'admin_comment', 'updated_at'
-#         )
-#
-#         # Format the response data
-#         formatted_data = [
-#             {
-#                 "user_comment": info["user_comment"],
-#                 "user_time": info["created_at"].strftime("%Y-%m-%d %H:%M:%S") if info["created_at"] else None,
-#                 "admin_comment": info["admin_comment"],
-#                 "admin_time": info["updated_at"].strftime("%Y-%m-%d %H:%M:%S") if info["updated_at"] else None,
-#             }
-#             for info in dispute_info
-#         ]
-#
-#         return Response({"data": formatted_data}, status=status.HTTP_200_OK)
