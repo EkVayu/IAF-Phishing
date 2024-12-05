@@ -47,7 +47,18 @@ from django.db.models import Max, Subquery, OuterRef
 from rest_framework.exceptions import NotFound
 from django.http import Http404
 from django.utils.timezone import now
+from rest_framework.pagination import PageNumberPagination
 User = get_user_model()
+
+class ApiListPagination(PageNumberPagination):
+    """
+    Custom pagination class to define default page size and page query parameter.
+    """
+    page_size = 10
+    page_query_param = 'page'
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class LoginViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = LoginSerializer
@@ -341,6 +352,7 @@ class LicenseListView(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = License.objects.all()
     serializer_class = LicenseSerializer
+    pagination_class = ApiListPagination
     def list(self, request):
         """
            List licenses based on the user's role.
@@ -365,8 +377,11 @@ class LicenseListView(viewsets.ModelViewSet):
         if user_is_superuser:
            queryset = License.objects.all() 
         else:
-           queryset = License.objects.filter(is_reserved=0)  
-        print(queryset)
+           queryset = License.objects.filter(is_reserved=0)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = self.serializer_class(queryset, many=True)
         count = queryset.count()
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -1678,32 +1693,3 @@ class DashboardDataView(APIView):
         data = {"year": current_year}
         serializer = DashboardSerializer(data)
         return Response(serializer.data)
-# class DisputeCommentsView(APIView):
-#     """
-#     API to fetch user comments with user-time and admin comments with admin-time for a given dispute_id.
-#     """
-#     def get(self, request):
-#         dispute_id = request.query_params.get('dispute_id')
-#         if not dispute_id:
-#             return Response({"error": "dispute_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         # Fetch the Dispute object
-#         dispute = get_object_or_404(Dispute, id=dispute_id)
-#
-#         # Fetch related DisputeInfo objects
-#         dispute_info = DisputeInfo.objects.filter(dispute=dispute).values(
-#             'user_comment', 'created_at', 'admin_comment', 'updated_at'
-#         )
-#
-#         # Format the response data
-#         formatted_data = [
-#             {
-#                 "user_comment": info["user_comment"],
-#                 "user_time": info["created_at"].strftime("%Y-%m-%d %H:%M:%S") if info["created_at"] else None,
-#                 "admin_comment": info["admin_comment"],
-#                 "admin_time": info["updated_at"].strftime("%Y-%m-%d %H:%M:%S") if info["updated_at"] else None,
-#             }
-#             for info in dispute_info
-#         ]
-#
-#         return Response({"data": formatted_data}, status=status.HTTP_200_OK)
