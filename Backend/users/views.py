@@ -47,7 +47,18 @@ from django.db.models import Max, Subquery, OuterRef
 from rest_framework.exceptions import NotFound
 from django.http import Http404
 from django.utils.timezone import now
+from rest_framework.pagination import PageNumberPagination
 User = get_user_model()
+
+class ApiListPagination(PageNumberPagination):
+    """
+    Custom pagination class to define default page size and page query parameter.
+    """
+    page_size = 10
+    page_query_param = 'page'
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class LoginViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = LoginSerializer
@@ -341,6 +352,7 @@ class LicenseListView(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = License.objects.all()
     serializer_class = LicenseSerializer
+    pagination_class = ApiListPagination
     def list(self, request):
         """
            List licenses based on the user's role.
@@ -365,8 +377,11 @@ class LicenseListView(viewsets.ModelViewSet):
         if user_is_superuser:
            queryset = License.objects.all() 
         else:
-           queryset = License.objects.filter(is_reserved=0)  
-        print(queryset)
+           queryset = License.objects.filter(is_reserved=0)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = self.serializer_class(queryset, many=True)
         count = queryset.count()
         return Response(serializer.data, status=status.HTTP_200_OK)
