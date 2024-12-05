@@ -325,3 +325,12 @@
 2024-12-02 14:20:38,182 | Function: is_valid_email | Time: 0.0000 seconds
 2024-12-02 14:20:38,183 | Function: is_valid_email | Time: 0.0000 seconds
 2024-12-02 14:20:38,184 | Function: check_external_apis | Time: 0.0039 seconds
+2024-12-05 11:18:41,488 | Function: extract_body | Time: 0.0000 seconds
+2024-12-05 11:18:41,492 | Function: extract_body | Time: 0.0000 seconds
+2024-12-05 11:18:41,494 | Function: extract_urls | Time: 0.0028 seconds
+2024-12-05 11:18:41,496 | Function: extract_attachments | Time: 0.0000 seconds
+2024-12-05 11:18:41,497 | Function: check_eml | Time: 0.0100 seconds
+2024-12-05 11:18:41,505 | Function: extract_email_from_string | Time: 0.0006 seconds
+2024-12-05 11:18:41,508 | Function: extract_email_from_string | Time: 0.0000 seconds
+2024-12-05 11:18:41,512 | Function: is_valid_email | Time: 0.0007 seconds
+2024-12-05 11:18:41,515 | Function: check_external_apis | Time: 0.0128 seconds
