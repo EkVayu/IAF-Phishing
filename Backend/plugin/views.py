@@ -1193,6 +1193,7 @@ def pending_status_check(request):
         "code": 405
     }, status=405)
 
+# download agent file 
 def download_latest_agent(request):
     try:
         agent_file = AgentFile.objects.filter(
