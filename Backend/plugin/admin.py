@@ -28,3 +28,9 @@ class AgentFileAdmin(admin.ModelAdmin):
     @admin.action(description="Enable selected files")
     def enable_files(self, request, queryset):
         queryset.update(is_disabled=False)
+
+@admin.register(FunctionLog)
+class FunctionLogAdmin(admin.ModelAdmin):
+    list_display = ('function_name', 'execution_time', 'status', 'created_at','error_message')
+    list_filter = ('status', 'created_at')
+    search_fields = ('function_name',)

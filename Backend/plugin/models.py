@@ -384,3 +384,17 @@ class AgentFile(models.Model):
         verbose_name = "Agent File"
         verbose_name_plural = "Agent Files"
         ordering = ['-uploaded_at']
+
+class FunctionLog(models.Model):
+    function_name = models.CharField(max_length=255)
+    execution_time = models.FloatField()
+    status = models.CharField(max_length=50)
+    error_message = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'function_log'
+        verbose_name = "Function Log"
+        verbose_name_plural = "Function Logs"
+        ordering = ['-created_at']
+    def __str__(self):
+        return f"{self.function_name} - {self.status}"

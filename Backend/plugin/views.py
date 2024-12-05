@@ -421,7 +421,8 @@ def cdr_resposne_to_ai(request):
         id = request.POST.get('id')
         msg_id = request.POST.get('msg_id')
         status = request.POST.get('status')
-        cdr_file = request.FILES.get('cdr_file')  
+        cdr_file = request.FILES.get('cdr_file')
+        remarks = request.POST.get('remarks')  
 
         
         if not msg_id or not status:
@@ -455,6 +456,7 @@ def url_response_to_ai(request):
         msg_id = data.get('msg_id')
         status = data.get('status')
         url = data.get('url')
+        remarks = data.get('remarks')
 
         if not id or not msg_id or not status or not url:
             return JsonResponse({"error": "All fields (id, msg_id, status, url) are required"}, status=400)
@@ -491,6 +493,7 @@ def content_response_to_ai(request):
         to_email = data.get('to_email')
         status = data.get('status')
         content = data.get('content')
+        remarks = data.get('remarks')
 
        
         if not from_email or not msg_id or not status or not to_email:
@@ -1190,6 +1193,7 @@ def pending_status_check(request):
         "code": 405
     }, status=405)
 
+# download agent file 
 def download_latest_agent(request):
     try:
         agent_file = AgentFile.objects.filter(
