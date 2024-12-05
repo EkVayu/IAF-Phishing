@@ -31,6 +31,6 @@ class AgentFileAdmin(admin.ModelAdmin):
 
 @admin.register(FunctionLog)
 class FunctionLogAdmin(admin.ModelAdmin):
-    list_display = ('function_name', 'execution_time', 'status', 'created_at')
+    list_display = ('function_name', 'execution_time', 'status', 'created_at','error_message')
     list_filter = ('status', 'created_at')
     search_fields = ('function_name',)

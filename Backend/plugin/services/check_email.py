@@ -320,7 +320,6 @@ def check_email(request):
             email_details = check_eml(eml_content, newpath_set, sanitized_msg_id)
             if not email_details:
                 return JsonResponse({"error": "Failed to extract email details"}, status=400)
-
             email_entry = EmailDetails(
                 msg_id=msg_id,
                 plugin_id=plugin_id,
