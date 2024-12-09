@@ -508,3 +508,13 @@
 2024-12-09 12:24:06,487 | Function: is_valid_email | Time: 0.0000 seconds
 2024-12-09 12:24:06,491 | Function: is_valid_email | Time: 0.0000 seconds
 2024-12-09 12:24:06,496 | Function: check_external_apis | Time: 0.0157 seconds
+2024-12-09 13:04:12,506 | Function: extract_body | Time: 0.0015 seconds
+2024-12-09 13:04:12,517 | Function: extract_body | Time: 0.0008 seconds
+2024-12-09 13:04:12,523 | Function: extract_urls | Time: 0.0118 seconds
+2024-12-09 13:04:12,526 | Function: extract_attachments | Time: 0.0000 seconds
+2024-12-09 13:04:12,528 | Function: check_eml | Time: 0.0330 seconds
+2024-12-09 13:04:12,534 | Function: extract_email_from_string | Time: 0.0006 seconds
+2024-12-09 13:04:12,538 | Function: extract_email_from_string | Time: 0.0000 seconds
+2024-12-09 13:04:12,542 | Function: is_valid_email | Time: 0.0007 seconds
+2024-12-09 13:04:12,544 | Function: is_valid_email | Time: 0.0000 seconds
+2024-12-09 13:04:12,548 | Function: check_external_apis | Time: 0.0150 seconds
