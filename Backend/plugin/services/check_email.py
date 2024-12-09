@@ -12,12 +12,17 @@ from django.db import transaction
 import dkim
 import spf
 import dns.resolver
-from plugin.models import EmailDetails, URL, RoughURL, RoughDomain, RoughMail, Attachment
+from plugin.models import EmailDetails, URL, Attachment
 import time
 import ipaddress
 from requests.adapters import HTTPAdapter, Retry
 import requests
 from .timing_logger import log_time
+from urllib.parse import urlparse
+from users.models import  RoughURL, RoughDomain, RoughMail
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.utils import formatdate
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -50,19 +55,18 @@ def extract_body(msg):
     for part in msg.iter_parts():
         try:
             if part.get_content_type() == 'text/plain':
+                # Decode the body content
                 body = part.get_payload(decode=True)
                 charset = part.get_content_charset() or 'utf-8'
                 decoded_body = body.decode(charset, errors='ignore')
-                # Clean and normalize the text before database insertion
-                cleaned_body = ''.join(char for char in decoded_body if ord(char) < 65536)
-                return cleaned_body
+                # Return the plain text
+                return decoded_body
             elif part.get_content_type() == 'text/html':
+                # Optionally handle HTML parts similarly
                 body = part.get_payload(decode=True)
                 charset = part.get_content_charset() or 'utf-8'
                 decoded_body = body.decode(charset, errors='ignore')
-                # Clean and normalize the text before database insertion
-                cleaned_body = ''.join(char for char in decoded_body if ord(char) < 65536)
-                return cleaned_body
+                return decoded_body
         except Exception as e:
             logger.error(f"Error processing email body part: {e}")
             continue
@@ -153,6 +157,39 @@ def extract_email_from_string(email_string):
     email_pattern = r'<(.+?)>|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
     match = re.search(email_pattern, email_string)
     return match.group(1) or match.group(2) if match else email_string
+
+
+def extract_domain_from_url(url):
+    """ Extract the domain from the URL. """
+    try:
+        parsed_url = urlparse(url)
+        return parsed_url.netloc
+    except Exception as e:
+        return None
+
+def check_existence_in_db(urls, domains, ips):
+    # Check if any URL domain exists in the RoughURL table
+    for url in urls:
+        domain = extract_domain_from_url(url)
+        if domain and RoughURL.objects.filter(url__icontains=domain).exists():  # Checking URL domain
+            return 'unsafe'
+
+    # Check if any domain exists in the RoughDomain table
+    for domain in domains:
+        if RoughDomain.objects.filter(ip__icontains=domain).exists():  # Assuming domain check is by IP
+            return 'unsafe'
+    
+    # Check if any IP exists in the RoughMail table
+    for ip in ips:
+        try:
+            ip_address = ipaddress.ip_address(ip)
+            if RoughMail.objects.filter(mailid=ip_address).exists():  # Check IP in RoughMail (if needed)
+                return 'unsafe'
+        except ValueError:
+            # If it's not a valid IP address, ignore and continue
+            continue
+    
+    return 'safe'
 
 @log_time
 def check_external_apis(email_details, msg_id):
@@ -322,6 +359,20 @@ def check_email(request):
             email_details = check_eml(eml_content, newpath_set, sanitized_msg_id)
             if not email_details:
                 return JsonResponse({"error": "Failed to extract email details"}, status=400)
+            
+            simplified_eml_filename = f"{sanitized_msg_id}_simplified.eml"
+            simplified_eml_path = newpath_set / simplified_eml_filename
+
+            # Build the simplified email
+            simplified_msg = MIMEMultipart()
+            simplified_msg['From'] = email_details['from_email']
+            simplified_msg['To'] = email_details['to_email']
+            simplified_msg['Subject'] = email_details['subject']
+            simplified_msg['Date'] = formatdate(localtime=True)
+            simplified_msg.attach(MIMEText(email_details['body'], 'plain'))
+
+            with open(simplified_eml_path, 'wb') as simplified_file:
+                simplified_file.write(simplified_msg.as_bytes())
             email_entry = EmailDetails(
                 msg_id=msg_id,
                 plugin_id=plugin_id,
