@@ -1607,7 +1607,11 @@ class ResetPassword(APIView):
             oldest_password = recent_passwords.last()
             oldest_password.delete()
         return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
+
+
 class DisputeRaiseDataView(APIView):
+    pagination_class = ApiListPagination
+
     def get(self, request, *args, **kwargs):
         try:
             # Fetch disputes with unique msg_id and recievers_email, order by latest dispute
@@ -1643,9 +1647,13 @@ class DisputeRaiseDataView(APIView):
                     status=status.HTTP_200_OK
                 )
 
-            # Serialize the data
-            serializer = DisputeraiseSerializer(disputes, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            # Pagination setup
+            paginator = self.pagination_class()
+            paginated_disputes = paginator.paginate_queryset(disputes, request)
+
+            # Serialize the paginated data
+            serializer = DisputeraiseSerializer(paginated_disputes, many=True)
+            return paginator.get_paginated_response(serializer.data)
 
         except Exception as e:
             return Response(
