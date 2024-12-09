@@ -7,6 +7,7 @@ from django.utils import timezone
 import hashlib
 from datetime import timedelta
 from django.utils.dateparse import parse_datetime
+from django.utils.timezone import now
 # User Models
 class CustomUserManager(BaseUserManager):
     """
@@ -214,6 +215,7 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=10)
     address = models.TextField(max_length=500)
     organization = models.CharField(max_length=255)
+    created_at = models.DateTimeField(null=True, blank=True, default=now)
     def __str__(self):
         return self.user.email
     @property

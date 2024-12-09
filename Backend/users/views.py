@@ -138,24 +138,18 @@ class RegisterViewset(viewsets.ViewSet):
 class UserViewset(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
+
     def list(self, request):
         """
-               List all active staff users (excluding superusers).
-
-               Fetches all users who meet the following criteria:
-               - `is_deleted` is False.
-               - `is_staff` is True.
-               - `is_superuser` is False.
-
-               Args:
-                   request: The HTTP request object.
-
-               Returns:
-                   Response: A JSON response containing the serialized user data and HTTP status 200 (OK).
-               """
-        queryset = User.objects.filter(is_deleted=False,is_staff=True,is_superuser=False)
+        List all active staff users (excluding superusers).
+        """
+        queryset = User.objects.filter(
+            is_deleted=False, is_staff=True, is_superuser=False
+        ).select_related('userprofile')  # Preload UserProfile
         serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
     @action(detail=True, methods=['delete'], url_path='soft-delete')
     def soft_delete(self, request, pk=None):
         """
