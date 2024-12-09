@@ -119,10 +119,13 @@ class Organisations(models.Model):
         db_table = 'organisation_masters'
     def __str__(self):
             return self.organisation_name
+
+
 class License(models.Model):
     """
     Model representing a license.
-    attributes:
+
+    Attributes:
         license_id (CharField): The unique identifier for the license.
         organisation (CharField): The organisation associated with the license.
         allocated_to (CharField): The user to whom the license is allocated.
@@ -134,7 +137,7 @@ class License(models.Model):
         plugin_id (ForeignKey): The plugin associated with the license.
     """
     license_id = models.CharField(max_length=10, primary_key=True)
-    organisation = models.CharField(max_length=5,null=True,default='IAF')
+    organisation = models.CharField(max_length=5, null=True, default='IAF')
     allocated_to = models.CharField(max_length=150, null=True, blank=True)
     status = models.CharField(max_length=2, null=False, default=0)
     is_reserved = models.IntegerField(blank=True, default=0)
@@ -144,17 +147,20 @@ class License(models.Model):
     hashed_license_id = models.CharField(max_length=64, editable=False, null=True)
     plugin_id = models.ForeignKey('PluginMaster', on_delete=models.SET_NULL, null=True, blank=True,
                                   related_name='licenses')
+
     class Meta:
         db_table = 'license_masters'
+        ordering = ['created_timestamp']
+
     def save(self, *args, **kwargs):
         self.hashed_license_id = self.generate_hashed_license_id()
         super().save(*args, **kwargs)
+
     def generate_hashed_license_id(self):
         """
         Generate a hashed value for the license ID.
-        attributes:
-            self (License): The license instance.
-        returns:
+
+        Returns:
             str: The hashed value of the license ID.
         """
         ip_address = '127.0.0.1'
@@ -162,8 +168,11 @@ class License(models.Model):
         message = f"{self.license_id}{ip_address}{secret_key}"
         hashed_value = hashlib.sha256(message.encode()).hexdigest()
         return hashed_value
+
     def __str__(self):
         return self.license_id
+
+
 class PluginMaster(models.Model):
     """
     Model representing a plugin.
