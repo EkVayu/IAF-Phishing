@@ -840,21 +840,33 @@ class LicenseAllocationViewSet(viewsets.ModelViewSet):
             return Response({"detail": "License allocation not found."},
                             status=status.HTTP_200_OK)
 class EmailDetailsViewSet(viewsets.ViewSet):
+    pagination_class = ApiListPagination
+
     def list(self, request):
         """
-         Retrieve a combined list of all EmailDetails and DisputeInfo data.
+        Retrieve a combined list of all EmailDetails and DisputeInfo data.
 
-         Returns:
-             - A JSON response containing serialized EmailDetails and DisputeInfo data.
-         """
+        Returns:
+            - A JSON response containing serialized EmailDetails and DisputeInfo data.
+        """
+        # Query data
         email_details = EmailDetails.objects.all()
         dispute_info = DisputeInfo.objects.all()
-        combined_data = {
-            'email_details': email_details,
-            'dispute_info': dispute_info
-        }
-        serializer = CombinedEmailDisputeSerializer(combined_data)
-        return Response(serializer.data)
+
+        # Serialize data
+        email_serializer = EmailDetailsSerializer(email_details, many=True)
+        dispute_serializer = DisputeInfoSerializer(dispute_info, many=True)
+
+        combined_data = email_serializer.data + dispute_serializer.data
+
+        # Paginate combined data
+        paginator = self.pagination_class()
+        paginated_combined_data = paginator.paginate_queryset(combined_data, request)
+
+        if paginated_combined_data is not None:
+            return paginator.get_paginated_response(paginated_combined_data)
+
+        return Response(combined_data)
     @action(detail=False, methods=['patch'], url_path='update-status')
     def update_status(self, request):
         """
