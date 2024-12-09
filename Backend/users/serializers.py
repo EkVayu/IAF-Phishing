@@ -30,41 +30,34 @@ class LoginSerializer(serializers.Serializer):
         ret['username'] = instance.username
         ret.pop('password', None,)
         return ret
+class UserProfileSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(read_only=True)  # Ensure it's read-only
 
+    class Meta:
+        model = UserProfile
+        fields = ('phone_number', 'address', 'organization', 'created_at')
 
 class RegisterSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField()  # Redefine field to remove default unique validator
-    username = serializers.CharField()  # Redefine field to remove default unique validator
+    created_at = serializers.SerializerMethodField()  # Dynamically fetch UserProfile's created_at
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'first_name', 'last_name', 'username', 'is_staff')
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ('id', 'email', 'first_name', 'last_name', 'username', 'is_staff', 'created_at')
+
+    def get_created_at(self, obj):
+        # Access the related UserProfile and return its created_at field
+        profile = getattr(obj, 'userprofile', None)
+        return profile.created_at if profile else None
+
 
     def validate(self, data):
-        """
-        Perform custom validation for email and username.
-        """
-        # Check for duplicate email
         if User.objects.filter(email=data.get('email')).exists():
             raise serializers.ValidationError("User with this email already exists.")
-
-        # Check for duplicate username
         if User.objects.filter(username=data.get('username')).exists():
             raise serializers.ValidationError("A user with this username already exists.")
-
         return data
 
     def create(self, validated_data):
-        """
-        Create a new user instance with validated data.
-
-        Args:
-            validated_data (dict): The validated data from the registration request.
-
-        Returns:
-            User: The newly created user instance.
-        """
         validated_data['is_staff'] = True
         user = User.objects.create_user(**validated_data)
 
