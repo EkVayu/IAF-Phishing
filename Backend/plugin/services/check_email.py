@@ -280,6 +280,8 @@ def check_email_authentication(from_email, eml_content, email_details, msg_id):
         return "safe"
     return "unsafe"
 
+
+
 @csrf_exempt
 @transaction.atomic
 def check_email(request):
