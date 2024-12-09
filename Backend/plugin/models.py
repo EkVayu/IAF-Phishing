@@ -346,6 +346,23 @@ def generate_checksum(file):
     return sha256.hexdigest()
         
 class AgentFile(models.Model):
+    """
+    Attributes:
+        name (CharField): The name of the agent file.
+        file (FileField): The uploaded agent file.
+        file_type (CharField): The type of the agent file.
+        version (
+        CharField): The version of the agent file.
+        description (TextField): The description of the agent file.
+        operating_system (CharField): The operating system for which the agent file is intended.
+        uploaded_at (DateTimeField): The timestamp when the agent file was uploaded.
+        active_date (DateTimeField): The date when the agent file became active.
+        is_active (BooleanField): Indicates whether the agent file is active or not.
+        checksum (CharField): The checksum of the agent file.
+        download_count (IntegerField): The number of times the agent file has been downloaded.
+        expiry_date (DateTimeField): The date when the agent file expires.
+        support_email (EmailField): The support email associated with the agent file.
+        """
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to='agents/')
     file_type = models.CharField(max_length=50, default="Executable")
@@ -386,6 +403,14 @@ class AgentFile(models.Model):
         ordering = ['-uploaded_at']
 
 class FunctionLog(models.Model):
+    """
+    Attributes:
+        function_name (CharField): The name of the function being logged.
+        execution_time (FloatField): The time taken to execute the function.
+        status (CharField): The status of the function execution.
+        created_at (DateTimeField): The timestamp when the function log was created.
+        error_message (TextField): The error message if the function execution failed.
+        """
     function_name = models.CharField(max_length=255)
     execution_time = models.FloatField()
     status = models.CharField(max_length=50)
