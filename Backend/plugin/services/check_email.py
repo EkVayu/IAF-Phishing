@@ -280,6 +280,8 @@ def check_email_authentication(from_email, eml_content, email_details, msg_id):
         return "safe"
     return "unsafe"
 
+
+
 @csrf_exempt
 @transaction.atomic
 def check_email(request):
@@ -362,6 +364,9 @@ def check_email(request):
 
             for url in email_details['urls']:
                 URL.objects.create(email_detail=email_entry, url=url)
+
+            for attachment in email_details['attachments']:
+                    Attachment.objects.create(email_detail=email_entry, attachment=attachment)
 
             return JsonResponse({
                 "message": "Email processed successfully",

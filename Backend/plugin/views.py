@@ -439,8 +439,8 @@ def cdr_resposne_to_ai(request):
         )
         return JsonResponse({
             'status': 200,
-            'message': 'Status Updated successfully.',
-            'data':{'id': email_detail.id},
+            'message': 'Recieved successfully.',
+            'data':{'Result': "recieved"},
             'errors': None
         }, status=200)
 
@@ -470,8 +470,8 @@ def url_response_to_ai(request):
         )
         return JsonResponse({
             'status': 200,
-            'message': 'Status updated successfully.',
-            'data': {'id': email_detail.id},
+            'message': 'Recieved successfully.',
+            'data': {'Result': "recieved"},
             'errors': None
         }, status=200)
 
@@ -509,8 +509,8 @@ def content_response_to_ai(request):
         )
         return JsonResponse({
             'status': 200,
-            'message': 'Status updated successfully.',
-            'data': {'id': email_detail.id},
+            'message': 'Recieved Successfully.',
+            'data': {'Result':"recieved"},
             'errors': None
         }, status=200)
 
