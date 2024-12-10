@@ -1276,6 +1276,8 @@ class DisputeCommentCreateView(CreateAPIView):
 
 
 class AvailableAttachmentsView(APIView):
+    pagination_class = ApiListPagination
+
     def get(self, request):
         """
         Retrieve a list of all available attachments.
@@ -1283,15 +1285,21 @@ class AvailableAttachmentsView(APIView):
         Filters out attachments that are null or empty.
 
         Returns:
-            - A JSON response with the list of available attachments,
+            - A paginated JSON response with the list of available attachments,
             - Or an empty list with a custom message if no records are found.
         """
         attachments = Attachment.objects.exclude(attachment__isnull=True).exclude(attachment='')
 
         if attachments.exists():
-            # If there are available attachments, serialize and return the response
-            serializer = AttachmentSerializer(attachments, many=True)
-            return Response({"data": serializer.data, "message": "Records found"}, status=status.HTTP_200_OK)
+            # Paginate the queryset
+            paginator = self.pagination_class()
+            paginated_attachments = paginator.paginate_queryset(attachments, request)
+
+            # Serialize the paginated queryset
+            serializer = AttachmentSerializer(paginated_attachments, many=True)
+
+            # Return the paginated response
+            return paginator.get_paginated_response({"data": serializer.data, "message": "Records found"})
         else:
             # If no attachments are found, return an empty list with a custom message
             return Response(
