@@ -464,7 +464,7 @@ def url_response_to_ai(request):
 
         for url_item in urls_data:
             try:
-                row_id = url_item.get('row_id')
+                row_id = url_item.get('id')
                 ai_status = url_item.get('result')
                 url = url_item.get('url')
                 ai_remarks = url_item.get('remarks')

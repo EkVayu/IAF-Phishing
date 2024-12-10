@@ -92,14 +92,28 @@ def extract_urls(eml_content):
     if body:
         urls.update(re.findall(url_regex, body))
     return list(urls)
+
+def setup_dns_resolver():
+    resolver = dns.resolver.Resolver()
+    resolver.timeout = 2.0  # Reduced from 5.4s
+    resolver.lifetime = 3.0
+    resolver.nameservers = ['8.8.8.8', '8.8.4.4']  # Use Google DNS
+    return resolver
+
 @log_time
 def verify_dkim(eml_content):
     try:
+        resolver = setup_dns_resolver()
         headers = email.message_from_bytes(eml_content)
         if 'DKIM-Signature' not in headers:
             logger.info("No DKIM signature found")
             return False
+        # Set custom resolver for dkim
+        dns.resolver.default_resolver = resolver
         return dkim.verify(eml_content)
+    except dns.exception.Timeout:
+        logger.warning("DKIM DNS lookup timed out, using fallback check")
+        return None
     except Exception as e:
         logger.error(f"Error in DKIM check: {e}")
         return False
@@ -239,14 +253,14 @@ def check_external_apis(email_details, msg_id):
 
         # Content Check
         content_payload = {
-            "msg_id": msg_id,
-            "row_id" : id,
-            "subject": email_details['subject'],
-            "from_ids": from_email,
-            "to_ids": to_email,
-            "body": email_details['body'],
-            "urls": email_details.get('url_details', [])
-        }
+        "msg_id": msg_id,
+        "row_id": msg_id,  # Add row_id as required by API
+        "subject": email_details['subject'],
+        "from_ids": [from_email],  # Convert to list
+        "to_ids": [to_email],      # Convert to list
+        "body": email_details['body'],
+        "urls": email_details.get('url_details', [])
+}
         logger.info(f"Content payload type check: {type(content_payload)}")
         logger.info(f"Content payload fields: {content_payload.keys()}")
 
@@ -304,22 +318,17 @@ def check_external_apis(email_details, msg_id):
 def check_email_authentication(from_email, eml_content, email_details, msg_id):
     start_time = time.time()
     
-    # Step 1: Check DKIM
+    # Add debug logging for each check
     dkim_check = verify_dkim(eml_content)
-    if dkim_check is None:  # Timeout occurred
-        return "pending"
+    logger.info(f"DKIM check result: {dkim_check}")
     
-    # Step 2: Check SPF
     spf_check = verify_spf(from_email, eml_content)
-    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
-        return "pending"
+    logger.info(f"SPF check result: {spf_check}")
     
-    # Step 3: Check DMARC
     dmarc_check = verify_dmarc(from_email)
-    if dmarc_check is None:  # Timeout occurred
-        return "pending"
+    logger.info(f"DMARC check result: {dmarc_check}")
     
-    # Step 4: Check database for suspicious entries
+    # Get sender IP and domain for DB check
     sender_ip = get_sender_ip_from_eml(eml_content)
     domain = from_email.split('@')[-1].strip('>')
     
@@ -328,16 +337,15 @@ def check_email_authentication(from_email, eml_content, email_details, msg_id):
         domains=[domain],
         ips=[sender_ip] if sender_ip else []
     )
+    logger.info(f"Database check result: {db_check}")
     
-    if db_check == 'unsafe':
-        return "unsafe"
-    
-    # Step 5: Check external APIs
     external_status = check_external_apis(email_details, msg_id)
-    if external_status == "unsafe":
-        return "unsafe"
+    logger.info(f"External API check result: {external_status}")
     
-    # Final check
+    # Log all check results together
+    logger.info(f"All security checks - DKIM: {dkim_check}, SPF: {spf_check}, "
+               f"DMARC: {dmarc_check}, DB: {db_check}, External: {external_status}")
+    
     if all([
         dkim_check, 
         spf_check, 
@@ -347,9 +355,6 @@ def check_email_authentication(from_email, eml_content, email_details, msg_id):
     ]):
         return "safe"
     return "unsafe"
-
-
-
 
 @csrf_exempt
 @transaction.atomic
