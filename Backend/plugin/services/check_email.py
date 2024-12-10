@@ -240,13 +240,17 @@ def check_external_apis(email_details, msg_id):
         # Content Check
         content_payload = {
             "msg_id": msg_id,
+            "row_id" : id,
             "subject": email_details['subject'],
-            "from_ids": email_details[from_email],
-            "to_ids": email_details[to_email],
+            "from_ids": from_email,
+            "to_ids": to_email,
             "body": email_details['body'],
-            "urls": email_details.get('urls', [])
+            "urls": email_details.get('url_details', [])
         }
-        logger.info(f"AI Content Analysis Request: {content_payload}")
+        logger.info(f"Content payload type check: {type(content_payload)}")
+        logger.info(f"Content payload fields: {content_payload.keys()}")
+
+
 
         content_response = send_request_with_retry(
             f'http://192.168.0.2:6064/voxpd/process_content',
@@ -280,6 +284,7 @@ def check_external_apis(email_details, msg_id):
                     
                     url_data = url_response.json()
                     logger.info(f"AI URL Analysis Response for {url}: {url_data}")
+                    logger.info(f"urls response for {url}:{url_response}" )
                     
                     if url_data.get('status') == 200 and url_data.get('data'):
                         if url_data['data'][0].get('result') == 'unsafe':
@@ -299,23 +304,50 @@ def check_external_apis(email_details, msg_id):
 def check_email_authentication(from_email, eml_content, email_details, msg_id):
     start_time = time.time()
     
+    # Step 1: Check DKIM
     dkim_check = verify_dkim(eml_content)
+    if dkim_check is None:  # Timeout occurred
+        return "pending"
+    
+    # Step 2: Check SPF
     spf_check = verify_spf(from_email, eml_content)
+    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
+        return "pending"
+    
+    # Step 3: Check DMARC
     dmarc_check = verify_dmarc(from_email)
-    
-    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
-        logger.warning("Security checks timeout - marking as pending")
+    if dmarc_check is None:  # Timeout occurred
         return "pending"
     
+    # Step 4: Check database for suspicious entries
+    sender_ip = get_sender_ip_from_eml(eml_content)
+    domain = from_email.split('@')[-1].strip('>')
+    
+    db_check = check_existence_in_db(
+        urls=email_details.get('urls', []),
+        domains=[domain],
+        ips=[sender_ip] if sender_ip else []
+    )
+    
+    if db_check == 'unsafe':
+        return "unsafe"
+    
+    # Step 5: Check external APIs
     external_status = check_external_apis(email_details, msg_id)
-    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
-        return "pending"
-        
     if external_status == "unsafe":
         return "unsafe"
-    if all([dkim_check, spf_check, dmarc_check]):
+    
+    # Final check
+    if all([
+        dkim_check, 
+        spf_check, 
+        dmarc_check, 
+        db_check == 'safe',
+        external_status == 'safe'
+    ]):
         return "safe"
     return "unsafe"
+
 
 
 

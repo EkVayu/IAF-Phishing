@@ -425,7 +425,7 @@ def cdr_resposne_to_ai(request):
         detection_id = request.POST.get('detection_id')
 
         
-        if not id or not status:
+        if  not status:
             return JsonResponse({"error": "All fields (id, msg_id, status, cdr_file) are required"}, status=400)
 
         email_detail, created = EmailDetails.objects.update_or_create(
@@ -455,7 +455,7 @@ def url_response_to_ai(request):
         
         if not urls_data or not msg_id:
             return JsonResponse({
-                "error": "No URL data provided",
+                "error": "Required fields (msg_id, url_details) are missing",
                 "status": 400
             }, status=400)
 
