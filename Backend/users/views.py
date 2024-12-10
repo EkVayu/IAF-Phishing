@@ -755,6 +755,7 @@ class UserProfileView(viewsets.ModelViewSet):
 class LicenseAllocationViewSet(viewsets.ModelViewSet):
     queryset = LicenseAllocation.objects.all()
     serializer_class = LicenseAllocationSerializer
+    pagination_class = ApiListPagination
     @action(detail=False, methods=['get'], url_path='license/(?P<license_id>[^/.]+)')
     def list_allocations_by_license(self, request, license_id=None):
         """
@@ -774,6 +775,7 @@ class LicenseAllocationViewSet(viewsets.ModelViewSet):
         else:
             return Response({"detail": "No plugins found for the provided license_id"},
                             status=status.HTTP_404_NOT_FOUND)
+
     @action(detail=False, methods=['get'], url_path='license-report')
     def license_report(self, request):
         """
@@ -788,7 +790,7 @@ class LicenseAllocationViewSet(viewsets.ModelViewSet):
 
          Returns:
              - A detailed license allocation report in JSON format.
-         """
+        """
         allocations = LicenseAllocation.objects.all()
         report_data = []
         for idx, allocation in enumerate(allocations, start=1):
@@ -797,12 +799,16 @@ class LicenseAllocationViewSet(viewsets.ModelViewSet):
                 "License Key": allocation.license_id,
                 "Allocated Email": allocation.allocated_to,
                 "Allocation Date": allocation.allocation_date.strftime("%Y-%m-%d %H:%M:%S"),
-                "Revoke Date": allocation.revoke_date.strftime("%Y-%m-%d %H:%M:%S") if allocation.revoke_date else "N/A",
-                #"Revoke Reason": allocation.revoke_reason if allocation.revoke_reason else "N/A",
+                "Revoke Date": allocation.revoke_date.strftime(
+                    "%Y-%m-%d %H:%M:%S") if allocation.revoke_date else "N/A",
                 "Status": "Inactive" if allocation.revoke_date else "Active",
-                #"License Type": allocation.license_type,  # Assuming you have a field for this
-                #"Expiry Date": allocation.valid_till.strftime("%Y-%m-%d %H:%M:%S") if allocation.valid_till else "Does not expire"
             })
+        paginator = self.pagination_class()
+        paginated_report_data = paginator.paginate_queryset(report_data, request)
+
+        if paginated_report_data is not None:
+            return paginator.get_paginated_response(paginated_report_data)
+
         return Response({
             "message": "Full License report generated successfully.",
             "data": report_data
