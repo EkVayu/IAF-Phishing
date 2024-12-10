@@ -418,18 +418,16 @@ def cdr_resposne_to_ai(request):
     
     try:
        
-        id = request.POST.get('id')
-        msg_id = request.POST.get('msg_id')
-        status = request.POST.get('status')
+        id = request.POST.get('row_id')
+        status = request.POST.get('result')
         cdr_file = request.FILES.get('cdr_file')
         remarks = request.POST.get('remarks')  
+        detection_id = request.POST.get('detection_id')
 
         
-        if not msg_id or not status:
+        if not id or not status:
             return JsonResponse({"error": "All fields (id, msg_id, status, cdr_file) are required"}, status=400)
 
-        time.sleep(1)
-        
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
             defaults={
@@ -452,54 +450,86 @@ def cdr_resposne_to_ai(request):
 def url_response_to_ai(request):
     try:
         data = json.loads(request.body)
-        id = data.get('id')
-        msg_id = data.get('msg_id')
-        status = data.get('status')
-        url = data.get('url')
-        remarks = data.get('remarks')
+        urls_data = data.get('urls', [])
+        
+        if not urls_data:
+            return JsonResponse({
+                "error": "No URL data provided",
+                "status": 400
+            }, status=400)
 
-        if not id or not msg_id or not status or not url:
-            return JsonResponse({"error": "All fields (id, msg_id, status, url) are required"}, status=400)
-    
-        time.sleep(1)
-        email_detail, created = EmailDetails.objects.update_or_create(
-            id=id,
-            defaults={
-                'status': status,
-            }
-        )
+        processed_records = []
+        failed_records = []
+
+        for url_item in urls_data:
+            try:
+                row_id = url_item.get('row_id')
+                ai_status = url_item.get('result')
+                url = url_item.get('url')
+                ai_remarks = url_item.get('remarks')
+
+                if not all([row_id, ai_status, url]):
+                    failed_records.append({
+                        "row_id": row_id,
+                        "error": "Missing required fields"
+                    })
+                    continue
+
+                url_obj, created = URL.objects.update_or_create(
+                    id=row_id,
+                    defaults={
+                        'ai_status': ai_status,
+                        'ai_Remarks': ai_remarks,
+                        'ai_sended_at': timezone.now(),
+                    }
+                )
+                
+                processed_records.append({
+                    "row_id": row_id,
+                    "status": "success"
+                })
+
+            except Exception as e:
+                failed_records.append({
+                    "row_id": row_id,
+                    "error": str(e)
+                })
+
         return JsonResponse({
             'status': 200,
-            'message': 'Recieved successfully.',
-            'data': {'Result': "recieved"},
-            'errors': None
+            'message': 'Received Successfully.',
+            'data': {
+            'result': 'received'
+        },
+            'errors': None if not failed_records else "Some records failed"
         }, status=200)
 
     except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        return JsonResponse({
+            "error": "Invalid JSON format",
+            "status": 400
+        }, status=400)
     except Exception as e:
-        return JsonResponse({"error": "An unexpected error occurred", "details": str(e)}, status=500)
-    
-
+        return JsonResponse({
+            "error": "An unexpected error occurred",
+            "details": str(e),
+            "status": 500
+        }, status=500)
 @csrf_exempt
 @require_http_methods(["POST"])
 def content_response_to_ai(request):
     try:
         
         data = json.loads(request.body)
-        id = data.get('id')
-        msg_id = data.get('msg_id')
-        from_email = data.get('from_email')
-        to_email = data.get('to_email')
-        status = data.get('status')
-        content = data.get('content')
+        id = data.get('row_id')
+        status = data.get('result')
+        detection_id = data.get('detection_id')
         remarks = data.get('remarks')
 
        
-        if not from_email or not msg_id or not status or not to_email:
-            return JsonResponse({"error": "All fields ( msg_id, status,from_email,to_email ) are required"}, status=400)
+        if  not status or not  id:
+            return JsonResponse({"error": "All fields ( row_id,msg_id, status,from_email,to_email ) are required"}, status=400)
 
-        time.sleep(1)
 
         email_detail, created = EmailDetails.objects.update_or_create(
             id=id,
@@ -508,11 +538,12 @@ def content_response_to_ai(request):
             }
         )
         return JsonResponse({
-            'status': 200,
-            'message': 'Recieved Successfully.',
-            'data': {'Result':"recieved"},
-            'errors': None
-        }, status=200)
+        'status': 200,
+        'message': 'Received Successfully.',
+        'data': {
+        'result': 'received'
+        }
+}, status=200)
 
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON format"}, status=400)
