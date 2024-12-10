@@ -450,9 +450,10 @@ def cdr_resposne_to_ai(request):
 def url_response_to_ai(request):
     try:
         data = json.loads(request.body)
-        urls_data = data.get('urls', [])
+        msg_id = data.get('msg_id')
+        urls_data = data.get('url_details', [])
         
-        if not urls_data:
+        if not urls_data or not msg_id:
             return JsonResponse({
                 "error": "No URL data provided",
                 "status": 400

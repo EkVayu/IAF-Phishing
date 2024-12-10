@@ -359,19 +359,19 @@ def check_email(request):
             email_details = check_eml(eml_content, newpath_set, sanitized_msg_id)
             if not email_details:
                 return JsonResponse({"error": "Failed to extract email details"}, status=400)
-            
             simplified_eml_filename = f"{sanitized_msg_id}_simplified.eml"
             simplified_eml_path = newpath_set / simplified_eml_filename
-
-            # Build the simplified email
-            simplified_msg = MIMEMultipart()
+            simplified_msg = MIMEMultipart('alternative')  # Use 'alternative' instead of default mixed
             simplified_msg['From'] = email_details['from_email']
             simplified_msg['To'] = email_details['to_email']
             simplified_msg['Subject'] = email_details['subject']
             simplified_msg['Date'] = formatdate(localtime=True)
-            simplified_msg.attach(MIMEText(email_details['body'], 'plain'))
-
+            text_part = MIMEText(email_details['body'], 'plain', 'utf-8')
+            text_part.replace_header('Content-Transfer-Encoding', '8bit')
+            simplified_msg.attach(text_part)
             with open(simplified_eml_path, 'wb') as simplified_file:
+                simplified_msg['MIME-Version'] = '1.0'
+                simplified_msg['Content-Type'] = 'text/plain; charset="utf-8"'
                 simplified_file.write(simplified_msg.as_bytes())
             email_entry = EmailDetails(
                 msg_id=msg_id,
