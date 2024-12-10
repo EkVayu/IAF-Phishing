@@ -1314,6 +1314,7 @@ class PendingAttachmentsView(generics.ListAPIView):
     where the status is 'pending' and the attachment is not null.
     """
     serializer_class = AttachmentSerializer
+    pagination_class = ApiListPagination
 
     def get_queryset(self):
         return Attachment.objects.filter(
@@ -1323,17 +1324,22 @@ class PendingAttachmentsView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            # If pagination applies, serialize the paginated data
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response({"data": serializer.data, "message": "Records found"})
+
+        # If no pagination, handle normally
+        serializer = self.get_serializer(queryset, many=True)
         if queryset.exists():
-            # If there are records, serialize them and return the response
-            serializer = self.get_serializer(queryset, many=True)
             return Response({"data": serializer.data, "message": "Records found"}, status=status.HTTP_200_OK)
         else:
-            # If no records found, return an empty list with a custom message
             return Response(
                 {"data": [], "message": "No records found"},
                 status=status.HTTP_200_OK
             )
-
 
 class quarentineAttachmentsView(generics.ListAPIView):
     """
