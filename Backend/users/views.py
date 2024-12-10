@@ -1348,6 +1348,7 @@ class quarentineAttachmentsView(generics.ListAPIView):
     'Unsafe', 'Exception', or 'Failed'.
     """
     serializer_class = AttachmentSerializer
+    pagination_class = ApiListPagination
 
     def get_queryset(self):
         return Attachment.objects.filter(
@@ -1355,6 +1356,25 @@ class quarentineAttachmentsView(generics.ListAPIView):
             attachment__isnull=False,
             ai_status__in=[2, 3, 4]  # Filter for 'Unsafe', 'Exception', 'Failed'
         ).exclude(attachment='').order_by('created_at')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            # Paginate and serialize the data
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response({"data": serializer.data, "message": "Records found"})
+
+        # Handle case with no pagination
+        serializer = self.get_serializer(queryset, many=True)
+        if queryset.exists():
+            return Response({"data": serializer.data, "message": "Records found"}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"data": [], "message": "No records found"},
+                status=status.HTTP_200_OK
+            )
 class MonthlyCombinedEmailAndAttachmentCount(APIView):
     def get(self, request, *args, **kwargs):
         user_timezone = request.query_params.get('timezone', 'Asia/Kolkata')
