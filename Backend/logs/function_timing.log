@@ -82,3 +82,11 @@
 2024-12-11 12:45:17,489 | Function: extract_email_from_string | Time: 0.0000 seconds
 2024-12-11 12:45:17,491 | Function: extract_email_from_string | Time: 0.0000 seconds
 2024-12-11 12:45:17,608 | Function: check_external_apis | Time: 0.1213 seconds
+2024-12-11 12:48:15,992 | Function: extract_body | Time: 0.0008 seconds
+2024-12-11 12:48:16,001 | Function: extract_body | Time: 0.0005 seconds
+2024-12-11 12:48:16,005 | Function: extract_urls | Time: 0.0091 seconds
+2024-12-11 12:48:16,007 | Function: extract_attachments | Time: 0.0000 seconds
+2024-12-11 12:48:16,009 | Function: check_eml | Time: 0.0232 seconds
+2024-12-11 12:48:16,020 | Function: extract_email_from_string | Time: 0.0000 seconds
+2024-12-11 12:48:16,023 | Function: extract_email_from_string | Time: 0.0000 seconds
+2024-12-11 12:48:16,183 | Function: check_external_apis | Time: 0.1647 seconds
