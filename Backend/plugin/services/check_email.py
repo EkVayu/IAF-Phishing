@@ -12,12 +12,17 @@ from django.db import transaction
 import dkim
 import spf
 import dns.resolver
-from plugin.models import EmailDetails, URL, RoughURL, RoughDomain, RoughMail, Attachment
+from plugin.models import EmailDetails, URL, Attachment
 import time
 import ipaddress
 from requests.adapters import HTTPAdapter, Retry
 import requests
 from .timing_logger import log_time
+from urllib.parse import urlparse
+from users.models import  RoughURL, RoughDomain, RoughMail
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.utils import formatdate
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -50,19 +55,18 @@ def extract_body(msg):
     for part in msg.iter_parts():
         try:
             if part.get_content_type() == 'text/plain':
+                # Decode the body content
                 body = part.get_payload(decode=True)
                 charset = part.get_content_charset() or 'utf-8'
                 decoded_body = body.decode(charset, errors='ignore')
-                # Clean and normalize the text before database insertion
-                cleaned_body = ''.join(char for char in decoded_body if ord(char) < 65536)
-                return cleaned_body
+                # Return the plain text
+                return decoded_body
             elif part.get_content_type() == 'text/html':
+                # Optionally handle HTML parts similarly
                 body = part.get_payload(decode=True)
                 charset = part.get_content_charset() or 'utf-8'
                 decoded_body = body.decode(charset, errors='ignore')
-                # Clean and normalize the text before database insertion
-                cleaned_body = ''.join(char for char in decoded_body if ord(char) < 65536)
-                return cleaned_body
+                return decoded_body
         except Exception as e:
             logger.error(f"Error processing email body part: {e}")
             continue
@@ -88,14 +92,28 @@ def extract_urls(eml_content):
     if body:
         urls.update(re.findall(url_regex, body))
     return list(urls)
+
+def setup_dns_resolver():
+    resolver = dns.resolver.Resolver()
+    resolver.timeout = 2.0  # Reduced from 5.4s
+    resolver.lifetime = 3.0
+    resolver.nameservers = ['8.8.8.8', '8.8.4.4']  # Use Google DNS
+    return resolver
+
 @log_time
 def verify_dkim(eml_content):
     try:
+        resolver = setup_dns_resolver()
         headers = email.message_from_bytes(eml_content)
         if 'DKIM-Signature' not in headers:
             logger.info("No DKIM signature found")
             return False
+        # Set custom resolver for dkim
+        dns.resolver.default_resolver = resolver
         return dkim.verify(eml_content)
+    except dns.exception.Timeout:
+        logger.warning("DKIM DNS lookup timed out, using fallback check")
+        return None
     except Exception as e:
         logger.error(f"Error in DKIM check: {e}")
         return False
@@ -154,6 +172,39 @@ def extract_email_from_string(email_string):
     match = re.search(email_pattern, email_string)
     return match.group(1) or match.group(2) if match else email_string
 
+
+def extract_domain_from_url(url):
+    """ Extract the domain from the URL. """
+    try:
+        parsed_url = urlparse(url)
+        return parsed_url.netloc
+    except Exception as e:
+        return None
+
+def check_existence_in_db(urls, domains, ips):
+    # Check if any URL domain exists in the RoughURL table
+    for url in urls:
+        domain = extract_domain_from_url(url)
+        if domain and RoughURL.objects.filter(url__icontains=domain).exists():  # Checking URL domain
+            return 'unsafe'
+
+    # Check if any domain exists in the RoughDomain table
+    for domain in domains:
+        if RoughDomain.objects.filter(ip__icontains=domain).exists():  # Assuming domain check is by IP
+            return 'unsafe'
+    
+    # Check if any IP exists in the RoughMail table
+    for ip in ips:
+        try:
+            ip_address = ipaddress.ip_address(ip)
+            if RoughMail.objects.filter(mailid=ip_address).exists():  # Check IP in RoughMail (if needed)
+                return 'unsafe'
+        except ValueError:
+            # If it's not a valid IP address, ignore and continue
+            continue
+    
+    return 'safe'
+
 @log_time
 def check_external_apis(email_details, msg_id):
     logger.info(f"Starting AI check for message ID: {msg_id}")
@@ -202,14 +253,18 @@ def check_external_apis(email_details, msg_id):
 
         # Content Check
         content_payload = {
-            "msg_id": msg_id,
-            "subject": email_details['subject'],
-            "from_ids": email_details[from_email],
-            "to_ids": email_details[to_email],
-            "body": email_details['body'],
-            "urls": email_details.get('urls', [])
-        }
-        logger.info(f"AI Content Analysis Request: {content_payload}")
+        "msg_id": msg_id,
+        "row_id": msg_id,  # Add row_id as required by API
+        "subject": email_details['subject'],
+        "from_ids": [from_email],  # Convert to list
+        "to_ids": [to_email],      # Convert to list
+        "body": email_details['body'],
+        "urls": email_details.get('url_details', [])
+}
+        logger.info(f"Content payload type check: {type(content_payload)}")
+        logger.info(f"Content payload fields: {content_payload.keys()}")
+
+
 
         content_response = send_request_with_retry(
             f'http://192.168.0.2:6064/voxpd/process_content',
@@ -243,6 +298,7 @@ def check_external_apis(email_details, msg_id):
                     
                     url_data = url_response.json()
                     logger.info(f"AI URL Analysis Response for {url}: {url_data}")
+                    logger.info(f"urls response for {url}:{url_response}" )
                     
                     if url_data.get('status') == 200 and url_data.get('data'):
                         if url_data['data'][0].get('result') == 'unsafe':
@@ -262,25 +318,43 @@ def check_external_apis(email_details, msg_id):
 def check_email_authentication(from_email, eml_content, email_details, msg_id):
     start_time = time.time()
     
+    # Add debug logging for each check
     dkim_check = verify_dkim(eml_content)
-    spf_check = verify_spf(from_email, eml_content)
-    dmarc_check = verify_dmarc(from_email)
+    logger.info(f"DKIM check result: {dkim_check}")
     
-    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
-        logger.warning("Security checks timeout - marking as pending")
-        return "pending"
+    spf_check = verify_spf(from_email, eml_content)
+    logger.info(f"SPF check result: {spf_check}")
+    
+    dmarc_check = verify_dmarc(from_email)
+    logger.info(f"DMARC check result: {dmarc_check}")
+    
+    # Get sender IP and domain for DB check
+    sender_ip = get_sender_ip_from_eml(eml_content)
+    domain = from_email.split('@')[-1].strip('>')
+    
+    db_check = check_existence_in_db(
+        urls=email_details.get('urls', []),
+        domains=[domain],
+        ips=[sender_ip] if sender_ip else []
+    )
+    logger.info(f"Database check result: {db_check}")
     
     external_status = check_external_apis(email_details, msg_id)
-    if (time.time() - start_time) > AI_RESPONSE_TIMEOUT:
-        return "pending"
-        
-    if external_status == "unsafe":
-        return "unsafe"
-    if all([dkim_check, spf_check, dmarc_check]):
+    logger.info(f"External API check result: {external_status}")
+    
+    # Log all check results together
+    logger.info(f"All security checks - DKIM: {dkim_check}, SPF: {spf_check}, "
+               f"DMARC: {dmarc_check}, DB: {db_check}, External: {external_status}")
+    
+    if all([
+        dkim_check, 
+        spf_check, 
+        dmarc_check, 
+        db_check == 'safe',
+        external_status == 'safe'
+    ]):
         return "safe"
     return "unsafe"
-
-
 
 @csrf_exempt
 @transaction.atomic
@@ -322,6 +396,20 @@ def check_email(request):
             email_details = check_eml(eml_content, newpath_set, sanitized_msg_id)
             if not email_details:
                 return JsonResponse({"error": "Failed to extract email details"}, status=400)
+            simplified_eml_filename = f"{sanitized_msg_id}_simplified.eml"
+            simplified_eml_path = newpath_set / simplified_eml_filename
+            simplified_msg = MIMEMultipart('alternative')  # Use 'alternative' instead of default mixed
+            simplified_msg['From'] = email_details['from_email']
+            simplified_msg['To'] = email_details['to_email']
+            simplified_msg['Subject'] = email_details['subject']
+            simplified_msg['Date'] = formatdate(localtime=True)
+            text_part = MIMEText(email_details['body'], 'plain', 'utf-8')
+            text_part.replace_header('Content-Transfer-Encoding', '8bit')
+            simplified_msg.attach(text_part)
+            with open(simplified_eml_path, 'wb') as simplified_file:
+                simplified_msg['MIME-Version'] = '1.0'
+                simplified_msg['Content-Type'] = 'text/plain; charset="utf-8"'
+                simplified_file.write(simplified_msg.as_bytes())
             email_entry = EmailDetails(
                 msg_id=msg_id,
                 plugin_id=plugin_id,
