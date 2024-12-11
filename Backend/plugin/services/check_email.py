@@ -12,7 +12,7 @@ from django.db import transaction
 import dkim
 import spf
 import dns.resolver
-from plugin.models import EmailDetails, URL, Attachment
+from plugin.models import EmailDetails, URL, Attachment, Content
 import time
 import ipaddress
 from requests.adapters import HTTPAdapter, Retry
@@ -277,6 +277,7 @@ def check_external_apis(email_details, msg_id):
                     attachment_payload,
                     is_file=True
                 )
+
                 
                 if isinstance(attachment_response, str):
                     return "failed"
@@ -284,6 +285,8 @@ def check_external_apis(email_details, msg_id):
                 attachment_data = attachment_response.json()
                 if attachment_data.get('status') != 200:
                     return "failed"
+                
+
 
         return "Received"
 
@@ -426,12 +429,20 @@ def check_email(request):
             
             email_entry.status = final_status
             email_entry.save()
+            
+            Content.objects.create(
+           email_detail=email_entry,
+           recievers_email=email_details['to_email'],
+           subject=email_details['subject'],
+           senders_email=email_details['from_email'],
+           body=email_details['body']
 
+           )
             for url in email_details['urls']:
                 URL.objects.create(email_detail=email_entry, url=url)
-
+             
             for attachment in email_details['attachments']:
-                    Attachment.objects.create(email_detail=email_entry, attachment=attachment)
+                    Attachment.objects.create(email_detail=email_entry, attachment=attachment,)
 
             return JsonResponse({
                 "message": "Email processed successfully",
