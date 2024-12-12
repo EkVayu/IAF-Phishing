@@ -840,33 +840,35 @@ class LicenseAllocationViewSet(viewsets.ModelViewSet):
             return Response({"detail": "License allocation not found."},
                             status=status.HTTP_200_OK)
 class EmailDetailsViewSet(viewsets.ViewSet):
+    """
+    ViewSet for listing EmailDetails data with status 'unsafe' in descending order of creation time.
+    """
     pagination_class = ApiListPagination
 
     def list(self, request):
         """
-        Retrieve a combined list of all EmailDetails and DisputeInfo data.
+        Retrieve and return a paginated list of EmailDetails where status is 'unsafe',
+        ordered by latest creation time.
 
         Returns:
-            - A JSON response containing serialized EmailDetails and DisputeInfo data.
+            - A JSON response containing paginated and serialized EmailDetails with 'unsafe' status.
         """
-        # Query data
-        email_details = EmailDetails.objects.all()
-        dispute_info = DisputeInfo.objects.all()
+        # Query data with status 'unsafe' and order by creation time (latest first)
+        email_details = EmailDetails.objects.filter(status='unsafe').order_by('-create_time')
 
         # Serialize data
         email_serializer = EmailDetailsSerializer(email_details, many=True)
-        dispute_serializer = DisputeInfoSerializer(dispute_info, many=True)
 
-        combined_data = email_serializer.data + dispute_serializer.data
-
-        # Paginate combined data
+        # Paginate data
         paginator = self.pagination_class()
-        paginated_combined_data = paginator.paginate_queryset(combined_data, request)
+        paginated_data = paginator.paginate_queryset(email_details, request)
 
-        if paginated_combined_data is not None:
-            return paginator.get_paginated_response(paginated_combined_data)
+        if paginated_data is not None:
+            serialized_paginated_data = EmailDetailsSerializer(paginated_data, many=True)
+            return paginator.get_paginated_response(serialized_paginated_data.data)
 
-        return Response(combined_data)
+        return Response(email_serializer.data, status=200)
+
     @action(detail=False, methods=['patch'], url_path='update-status')
     def update_status(self, request):
         """
