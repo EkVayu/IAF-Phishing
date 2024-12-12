@@ -48,6 +48,7 @@ from rest_framework.exceptions import NotFound
 from django.http import Http404
 from django.utils.timezone import now
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import ListAPIView
 User = get_user_model()
 
 class ApiListPagination(PageNumberPagination):
@@ -1749,3 +1750,24 @@ class DashboardDataView(APIView):
         data = {"year": current_year}
         serializer = DashboardSerializer(data)
         return Response(serializer.data)
+
+class ReservedLicenseListView(ListAPIView):
+    """
+    API view to fetch licenses where `allocated_to` is null and `is_reserved` is 0.
+    """
+    queryset = License.objects.filter(allocated_to__isnull=True, is_reserved=0)
+    serializer_class = LicenseSerializer
+
+class PluginIdNotNullListView(ListAPIView):
+    """
+    API view to fetch objects where `plugin_id` is not null.
+    """
+    queryset = License.objects.filter(plugin_id__isnull=False)
+    serializer_class = LicenseSerializer
+
+class AllocatedToNotNullPluginIdNullView(ListAPIView):
+    """
+    API view to fetch objects where `allocated_to` is not null and `plugin_id` is null.
+    """
+    queryset = License.objects.filter(allocated_to__isnull=False, plugin_id__isnull=True)
+    serializer_class = LicenseSerializer

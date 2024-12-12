@@ -57,5 +57,8 @@ urlpatterns = [
     path('dispute-raise-data/', DisputeRaiseDataView.as_view(), name='dispute-raise-data'),
     path('emaildetails/eml-datails/', EmailDetailsView.as_view(), name='email-details'),
     path('superadmin-dashboard-data/', DashboardDataView.as_view(), name='dashboard-data'),
+    path('available-licenses/', ReservedLicenseListView.as_view(), name='unallocated-licenses'),
+    path('plugin-installed/', PluginIdNotNullListView.as_view(), name='licenses-with-plugins'),
+    path('plugin-not-installed/', AllocatedToNotNullPluginIdNullView.as_view(), name='allocated-without-plugins'),
 
 ]
