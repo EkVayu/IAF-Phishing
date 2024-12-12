@@ -840,33 +840,35 @@ class LicenseAllocationViewSet(viewsets.ModelViewSet):
             return Response({"detail": "License allocation not found."},
                             status=status.HTTP_200_OK)
 class EmailDetailsViewSet(viewsets.ViewSet):
+    """
+    ViewSet for listing EmailDetails data with status 'unsafe' in descending order of creation time.
+    """
     pagination_class = ApiListPagination
 
     def list(self, request):
         """
-        Retrieve a combined list of all EmailDetails and DisputeInfo data.
+        Retrieve and return a paginated list of EmailDetails where status is 'unsafe',
+        ordered by latest creation time.
 
         Returns:
-            - A JSON response containing serialized EmailDetails and DisputeInfo data.
+            - A JSON response containing paginated and serialized EmailDetails with 'unsafe' status.
         """
-        # Query data
-        email_details = EmailDetails.objects.all()
-        dispute_info = DisputeInfo.objects.all()
+        # Query data with status 'unsafe' and order by creation time (latest first)
+        email_details = EmailDetails.objects.filter(status='unsafe').order_by('-create_time')
 
         # Serialize data
         email_serializer = EmailDetailsSerializer(email_details, many=True)
-        dispute_serializer = DisputeInfoSerializer(dispute_info, many=True)
 
-        combined_data = email_serializer.data + dispute_serializer.data
-
-        # Paginate combined data
+        # Paginate data
         paginator = self.pagination_class()
-        paginated_combined_data = paginator.paginate_queryset(combined_data, request)
+        paginated_data = paginator.paginate_queryset(email_details, request)
 
-        if paginated_combined_data is not None:
-            return paginator.get_paginated_response(paginated_combined_data)
+        if paginated_data is not None:
+            serialized_paginated_data = EmailDetailsSerializer(paginated_data, many=True)
+            return paginator.get_paginated_response(serialized_paginated_data.data)
 
-        return Response(combined_data)
+        return Response(email_serializer.data, status=200)
+
     @action(detail=False, methods=['patch'], url_path='update-status')
     def update_status(self, request):
         """
@@ -1348,6 +1350,7 @@ class quarentineAttachmentsView(generics.ListAPIView):
     'Unsafe', 'Exception', or 'Failed'.
     """
     serializer_class = AttachmentSerializer
+    pagination_class = ApiListPagination
 
     def get_queryset(self):
         return Attachment.objects.filter(
@@ -1355,6 +1358,25 @@ class quarentineAttachmentsView(generics.ListAPIView):
             attachment__isnull=False,
             ai_status__in=[2, 3, 4]  # Filter for 'Unsafe', 'Exception', 'Failed'
         ).exclude(attachment='').order_by('created_at')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            # Paginate and serialize the data
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response({"data": serializer.data, "message": "Records found"})
+
+        # Handle case with no pagination
+        serializer = self.get_serializer(queryset, many=True)
+        if queryset.exists():
+            return Response({"data": serializer.data, "message": "Records found"}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"data": [], "message": "No records found"},
+                status=status.HTTP_200_OK
+            )
 class MonthlyCombinedEmailAndAttachmentCount(APIView):
     def get(self, request, *args, **kwargs):
         user_timezone = request.query_params.get('timezone', 'Asia/Kolkata')
