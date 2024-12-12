@@ -1757,6 +1757,7 @@ class ReservedLicenseListView(ListAPIView):
     """
     queryset = License.objects.filter(allocated_to__isnull=True, is_reserved=0)
     serializer_class = LicenseSerializer
+    pagination_class = ApiListPagination
 
 class PluginIdNotNullListView(ListAPIView):
     """
@@ -1764,6 +1765,7 @@ class PluginIdNotNullListView(ListAPIView):
     """
     queryset = License.objects.filter(plugin_id__isnull=False)
     serializer_class = LicenseSerializer
+    pagination_class = ApiListPagination
 
 class AllocatedToNotNullPluginIdNullView(ListAPIView):
     """
@@ -1771,3 +1773,4 @@ class AllocatedToNotNullPluginIdNullView(ListAPIView):
     """
     queryset = License.objects.filter(allocated_to__isnull=False, plugin_id__isnull=True)
     serializer_class = LicenseSerializer
+    pagination_class = ApiListPagination
