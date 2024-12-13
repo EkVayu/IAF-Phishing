@@ -1267,3 +1267,13 @@ def download_latest_agent(request):
             "message": "No active agent file available",
             "status": "error"
         }, status=404)
+    
+
+def ai_report_view(request):
+    file_path = os.path.join('reports', 'email_reports.json')
+    try:
+        with open(file_path, 'r') as json_file:
+            data = json.load(json_file)
+        return JsonResponse(data, safe=False)
+    except FileNotFoundError:
+        return JsonResponse({"error": "Report not found."}, status=404)

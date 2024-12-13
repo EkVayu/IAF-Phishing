@@ -23,6 +23,7 @@ from users.models import  RoughURL, RoughDomain, RoughMail
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
+from django.utils.timezone import now
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -226,70 +227,107 @@ def check_external_apis(email_details, msg_id):
             logger.error(f"AI Request Error: {e}")
             return "failed"
 
+    def get_remarks_and_time(response):
+        """Extract remarks and set timestamp."""
+        if isinstance(response, str):  # Handle failed request
+            return "Failed to process", now()
+        response_data = response.json()
+        return response_data.get("data", {}).get("result", "No remarks provided"), now()
+
     try:
+        email_obj = EmailDetails.objects.get(msg_id=msg_id)
+        
+
         # Content Check
-        content_payload = {
-            "row_id": msg_id,
-            "msg_id": msg_id,
-            "subject": email_details['subject'],
-            "to_ids": [extract_email_from_string(email_details['to_email'])],
-            "from_ids": [extract_email_from_string(email_details['from_email'])],
-            "body": email_details['body']
-        }
-        
-        content_response = send_request('http://192.168.0.2:6064/voxpd/process_content', content_payload)
-        if isinstance(content_response, str):
-            return "failed"
-        
-        content_data = content_response.json()
-        if content_data.get('status') != 200:
-            return "failed"
+        with transaction.atomic():
+            content_payload = {
+                "row_id": email_obj.id,
+                "msg_id": msg_id,
+                "subject": email_details['subject'],
+                "to_ids": [extract_email_from_string(email_details['to_email'])],
+                "from_ids": [extract_email_from_string(email_details['from_email'])],
+                "body": email_details['body'],
+                "files": [email_details['file']]
+            }
+
+            content_response = send_request('http://192.168.0.2:6064/voxpd/process_content', content_payload)
+            ai_remarks, ai_sended_at = get_remarks_and_time(content_response)
+            
+            
+            Content.objects.update_or_create(
+                email_detail=email_obj,
+                defaults={
+                    'ai_Remarks': ai_remarks,
+                    'ai_sended_at': ai_sended_at
+                }
+            )
 
         # URL Check
         if email_details.get('urls'):
-            valid_urls = [url.strip() for url in email_details['urls'] if url.strip().startswith('http')]
-            if valid_urls:
-                url_details = [{"url": url, "row_id": msg_id} for url in valid_urls]
-                url_payload = {
-                    "msg_id": msg_id,
-                    "url_details": url_details
-                }
-                
-                url_response = send_request('http://192.168.0.2:6061/voxpd/process_url', url_payload)
-                if isinstance(url_response, str):
-                    return "failed"
-                
-                url_data = url_response.json()
-                if url_data.get('status') != 200:
-                    return "failed"
+            with transaction.atomic():
+                valid_urls = [url.strip() for url in email_details['urls'] if url.strip().startswith('http')]
+                for url in valid_urls:
+                    url_details = [{"url": url, "row_id": msg_id}]
+                    url_payload = {
+                        "msg_id": msg_id,
+                        "url_details": url_details
+                    }
+
+                    url_response = send_request('http://192.168.0.2:6061/voxpd/process_url', url_payload)
+                    ai_remarks, ai_sended_at = get_remarks_and_time(url_response)
+
+                    # Save for each URL
+                    URL.objects.update_or_create(
+                        email_detail=email_obj,
+                        url=url,
+                        defaults={
+                            'ai_Remarks': ai_remarks,
+                            'ai_sended_at': ai_sended_at
+                        }
+                    )
 
         # Attachment Check
         if email_details.get('attachments'):
             for attachment in email_details['attachments']:
-                attachment_payload = {
-                    'attachment': (attachment, open(attachment, 'rb')),
-                    'msg_id': (None, msg_id),
-                    'row_id': (None, msg_id)
-                }
-                
-                attachment_response = send_request(
-                    'http://192.168.0.2:6065/voxpd/process_attachment',
-                    attachment_payload,
-                    is_file=True
-                )
+                with transaction.atomic():
+                    try:
+                        attachment_payload = {
+                            'attachment': (attachment, open(attachment, 'rb')),
+                            'msg_id': (None, msg_id),
+                            'row_id': (None, msg_id)
+                        }
 
-                
-                if isinstance(attachment_response, str):
-                    return "failed"
-                    
-                attachment_data = attachment_response.json()
-                if attachment_data.get('status') != 200:
-                    return "failed"
-                
+                        attachment_response = send_request(
+                            'http://192.168.0.2:6065/voxpd/process_attachment',
+                            attachment_payload,
+                            is_file=True
+                        )
+                        ai_remarks, ai_sended_at = get_remarks_and_time(attachment_response)
 
+                        Attachment.objects.update_or_create(
+                            email_detail=email_obj,
+                            attachment=attachment,
+                            defaults={
+                                'ai_Remarks': ai_remarks,
+                                'ai_sended_at': ai_sended_at
+                            }
+                        )
+                    except FileNotFoundError:
+                        logger.error(f"Attachment file not found: {attachment}")
+                        Attachment.objects.update_or_create(
+                            email_detail=email_obj,
+                            attachment=attachment,
+                            defaults={
+                                'ai_Remarks': "File not found",
+                                'ai_sended_at': now()
+                            }
+                        )
 
         return "Received"
 
+    except EmailDetails.DoesNotExist:
+        logger.error(f"EmailDetails object with msg_id {msg_id} does not exist.")
+        return "failed"
     except Exception as e:
         logger.error(f"AI Analysis Error: {str(e)}")
         return "failed"
@@ -409,8 +447,25 @@ def check_email(request):
             email_entry.save()
 
             # First get AI analysis status
+           
+            
+            Content.objects.create(
+           email_detail=email_entry,
+           recievers_email=email_details['to_email'],
+           subject=email_details['subject'],
+           senders_email=email_details['from_email'],
+           body=email_details['body']
+
+           )
+            for url in email_details['urls']:
+                URL.objects.create(email_detail=email_entry, url=url)
+             
+            for attachment in email_details['attachments']:
+                    Attachment.objects.create(email_detail=email_entry, attachment=attachment,)
+
             ai_status = check_external_apis(email_details, msg_id)
             logger.info(f"Initial AI Analysis Status: {ai_status}")
+            
             
             # Only check authentication if AI check is safe
             if ai_status == "safe":
@@ -429,26 +484,12 @@ def check_email(request):
             
             email_entry.status = final_status
             email_entry.save()
-            
-            Content.objects.create(
-           email_detail=email_entry,
-           recievers_email=email_details['to_email'],
-           subject=email_details['subject'],
-           senders_email=email_details['from_email'],
-           body=email_details['body']
-
-           )
-            for url in email_details['urls']:
-                URL.objects.create(email_detail=email_entry, url=url)
-             
-            for attachment in email_details['attachments']:
-                    Attachment.objects.create(email_detail=email_entry, attachment=attachment,)
 
             return JsonResponse({
                 "message": "Email processed successfully",
                 "STATUS": "Success",
                 "Code": 1,
-                "email_status": final_status,
+                "email_status": email_entry.status,
                 "messageId": msg_id,
             })
 

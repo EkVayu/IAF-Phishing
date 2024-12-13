@@ -7,7 +7,7 @@ from .views import spam_email_view
 from plugin.views import DisputeViewSet
 from plugin.views import PluginInstallUninstallViewSet
 from plugin.views import PluginEnableDisableViewSet
-from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data,get_counter_count,UpdateEmailDetailsView,browser_uninstall, raise_dispute_view,pending_status_check,download_latest_agent
+from plugin.views import PluginRegistrationCheckViewSet,cdr_resposne_to_ai, url_response_to_ai,content_response_to_ai,spam_email,GetDisputesView,graph_count,get_disputes_raise_data,get_allocation_data,get_counter_count,UpdateEmailDetailsView,browser_uninstall, raise_dispute_view,pending_status_check,download_latest_agent,ai_report_view
 
 
 router = DefaultRouter()
@@ -32,6 +32,7 @@ urlpatterns = [
     path('raise-dispute/', raise_dispute_view, name='raise-dispute'),
     path('pending-status-check/', pending_status_check, name='pending-status-check'),
     path('download-agent/', download_latest_agent, name='download_latest_agent'),
+    path('ai-report/',ai_report_view, name='ai_report'),
 
 
     
