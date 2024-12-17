@@ -895,8 +895,9 @@ class EmailDetailsViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class RoughURLViewSet(viewsets.ModelViewSet):
-    queryset = RoughURL.objects.all()
+    queryset = RoughURL.objects.all().order_by('id')
     serializer_class = RoughURLSerializer
+    pagination_class = ApiListPagination
     def retrieve(self, request, *args, **kwargs):
         """
           Retrieve a specific RoughURL by its ID.
@@ -920,12 +921,19 @@ class RoughURLViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        Retrieve a list of all RoughURLs without pagination.
+        Retrieve a paginated list of RoughURLs.
 
         Returns:
-            - A JSON response containing a list of all RoughURLs.
+            - A JSON response containing a paginated list of RoughURLs.
         """
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())  # Apply filtering if any
+        page = self.paginate_queryset(queryset)  # Paginate the queryset
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)  # Use built-in paginated response
+
+        # Fallback for unpaginated response (should rarely execute due to pagination_class)
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             "message": "List of all RoughUrls retrieved successfully.",
@@ -987,9 +995,10 @@ class RoughURLViewSet(viewsets.ModelViewSet):
             "message": f"RoughUrl with id {kwargs['pk']} has been deleted successfully."
         }, status=status.HTTP_200_OK)
 class RoughDomainViewSet(viewsets.ModelViewSet):
-    queryset = RoughDomain.objects.all()
+    queryset = RoughDomain.objects.all().order_by('id')
     serializer_class = RoughDomainSerializer
     authentication_classes = [SessionAuthentication]
+    pagination_class = ApiListPagination
     def retrieve(self, request, *args, **kwargs):
         """
          Retrieve a specific RoughDomain by its ID.
@@ -1013,12 +1022,19 @@ class RoughDomainViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        Retrieve a list of all RoughDomains without pagination.
+        Retrieve a paginated list of RoughDomains.
 
         Returns:
-            - A JSON response containing a list of all RoughDomains.
+            - A JSON response containing a paginated list of RoughDomains.
         """
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())  # Apply any filtering if needed
+        page = self.paginate_queryset(queryset)  # Paginate the queryset
+
+        if page is not None:  # If pagination is applied
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)  # Return a paginated response
+
+        # Fallback for unpaginated response
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             "message": "List of all RoughDomains retrieved successfully.",
